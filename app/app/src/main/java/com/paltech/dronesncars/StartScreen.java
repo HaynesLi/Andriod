@@ -7,9 +7,16 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.paltech.dronesncars.databinding.FragmentStartScreenBinding;
+
 public class StartScreen extends Fragment {
+
+    private FragmentStartScreenBinding view_binding;
 
     @Override
     public View onCreateView(
@@ -17,13 +24,26 @@ public class StartScreen extends Fragment {
             Bundle savedInstanceState
     ) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_first, container, false);
+        return inflater.inflate(R.layout.fragment_start_screen, container, false);
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        view.findViewById(R.id.button_first).setOnClickListener(view1 -> NavHostFragment.findNavController(StartScreen.this)
-                .navigate(R.id.action_FirstFragment_to_SecondFragment));
+        view_binding = FragmentStartScreenBinding.bind(view);
+
+        setListeners();
+    }
+
+    private void setListeners() {
+        view_binding.importKMLButton.setOnClickListener(v -> {
+            NavDirections actionStartScreenToDroneScreen = StartScreenDirections.actionStartScreenToDroneScreen();
+            NavHostFragment.findNavController(this).navigate(actionStartScreenToDroneScreen);
+        });
+
+        view_binding.manualMapButton.setOnClickListener(v -> {
+            NavDirections actionStartScreenToDroneScreen = StartScreenDirections.actionStartScreenToDroneScreen();
+            NavHostFragment.findNavController(this).navigate(actionStartScreenToDroneScreen);
+        });
     }
 }

@@ -11,4 +11,11 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="import_kml">Import KML</string>
+    <string name="polygon_select">Polygon Select</string>
+    <string name="todo_this_still_is_a_mock">TODO: This still is a mock</string>
+    <string name="drone_settings_header">Drone Settings</string>
+    <string name="height_descriptor">Height:</string>
+    <string name="compute_flight_route">compute flight route</string>
+    <string name="start_flight">Start Flight</string>
 </resources>
