@@ -4,6 +4,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavDirections;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -85,5 +87,10 @@ public class RoverStatusFragment extends Fragment {
         setListeners();
     }
 
-    private void setListeners(){}
+    private void setListeners(){
+        view_binding.buttonAssumeFinished.setOnClickListener(v -> {
+            NavDirections action = RoverStatusFragmentDirections.actionRoverStatusFragmentToReportFragment();
+            NavHostFragment.findNavController(this).navigate(action);
+        });
+    }
 }

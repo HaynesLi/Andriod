@@ -43,6 +43,15 @@
         android:id="@+id/roverStatusFragment"
         android:name="com.paltech.dronesncars.RoverStatusFragment"
         android:label="fragment_rover_status"
-        tools:layout="@layout/fragment_rover_status" />
+        tools:layout="@layout/fragment_rover_status" >
+        <action
+            android:id="@+id/action_roverStatusFragment_to_reportFragment"
+            app:destination="@id/reportFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/reportFragment"
+        android:name="com.paltech.dronesncars.ReportFragment"
+        android:label="fragment_report"
+        tools:layout="@layout/fragment_report" />
 
 </navigation>

@@ -27,4 +27,7 @@
     <string name="rover_id">Rover ID: </string>
     <string name="rover_name">Rover Name: </string>
     <string name="rover_status">Rover Status</string>
+    <string name="report_fragment_title">Report</string>
+    <string name="assume_rovers_finished">assume rovers finished</string>
+    <string name="report_mock_text">nothing to report :(</string>
 </resources>
