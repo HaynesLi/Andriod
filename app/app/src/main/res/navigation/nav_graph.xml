@@ -26,6 +26,23 @@
         android:id="@+id/scanResultsFragment"
         android:name="com.paltech.dronesncars.ScanResultsFragment"
         android:label="fragment_scan_results"
-        tools:layout="@layout/fragment_scan_results" />
+        tools:layout="@layout/fragment_scan_results" >
+        <action
+            android:id="@+id/action_scanResultsFragment_to_createRoverRoutineFragment"
+            app:destination="@id/createRoverRoutineFragment" />
+        <action
+            android:id="@+id/action_scanResultsFragment_to_roverStatusFragment"
+            app:destination="@id/roverStatusFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createRoverRoutineFragment"
+        android:name="com.paltech.dronesncars.CreateRoverRoutineFragment"
+        android:label="fragment_create_rover_routine"
+        tools:layout="@layout/fragment_create_rover_routine" />
+    <fragment
+        android:id="@+id/roverStatusFragment"
+        android:name="com.paltech.dronesncars.RoverStatusFragment"
+        android:label="fragment_rover_status"
+        tools:layout="@layout/fragment_rover_status" />
 
 </navigation>

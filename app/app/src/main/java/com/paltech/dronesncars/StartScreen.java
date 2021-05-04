@@ -37,13 +37,16 @@ public class StartScreen extends Fragment {
 
     private void setListeners() {
         view_binding.importKMLButton.setOnClickListener(v -> {
-            NavDirections actionStartScreenToDroneScreen = StartScreenDirections.actionStartScreenToDroneScreen();
-            NavHostFragment.findNavController(this).navigate(actionStartScreenToDroneScreen);
+            changeToDroneScreen();
         });
 
         view_binding.manualMapButton.setOnClickListener(v -> {
-            NavDirections actionStartScreenToDroneScreen = StartScreenDirections.actionStartScreenToDroneScreen();
-            NavHostFragment.findNavController(this).navigate(actionStartScreenToDroneScreen);
+            changeToDroneScreen();
         });
+    }
+
+    private void changeToDroneScreen() {
+        NavDirections actionStartScreenToDroneScreen = StartScreenDirections.actionStartScreenToDroneScreen();
+        NavHostFragment.findNavController(this).navigate(actionStartScreenToDroneScreen);
     }
 }

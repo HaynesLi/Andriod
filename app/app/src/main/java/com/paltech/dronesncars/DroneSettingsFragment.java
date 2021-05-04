@@ -51,9 +51,6 @@ public class DroneSettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
-
-
         return inflater.inflate(R.layout.fragment_drone_settings, container, false);
     }
 
@@ -68,10 +65,9 @@ public class DroneSettingsFragment extends Fragment {
 
     private void setListeners() {
         view_binding.buttonStartFlight.setOnClickListener(v -> {
-            NavDirections actionDroneScreenToScanResultsFragment = DroneScreenDirections.actionDroneScreenToScanResultsFragment();
+            NavDirections action = DroneScreenDirections.actionDroneScreenToScanResultsFragment();
             DroneScreen parentFragment = (DroneScreen) getParentFragment();
-            NavHostFragment.findNavController(parentFragment).navigate(actionDroneScreenToScanResultsFragment);
-
+            NavHostFragment.findNavController(parentFragment).navigate(action);
         });
     }
 }

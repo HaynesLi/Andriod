@@ -2,11 +2,19 @@ package com.paltech.dronesncars;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.paltech.dronesncars.databinding.FragmentRoverStatusBinding;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -15,14 +23,7 @@ import android.view.ViewGroup;
  */
 public class RoverStatusFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    FragmentRoverStatusBinding view_binding;
 
     public RoverStatusFragment() {
         // Required empty public constructor
@@ -32,16 +33,11 @@ public class RoverStatusFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment RoverStatusFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static RoverStatusFragment newInstance(String param1, String param2) {
         RoverStatusFragment fragment = new RoverStatusFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -49,16 +45,45 @@ public class RoverStatusFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.fragment_rover_status, container, false);
     }
+
+    private void init_rover_status_recycler_view() {
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        view_binding.roverStatusRecyclerView.setLayoutManager(mLayoutManager);
+        view_binding.roverStatusRecyclerView.scrollToPosition(0);
+
+        List<Rover> dataset = getMockRoverDataset();
+        view_binding.roverStatusRecyclerView.setAdapter(new RoverStatusRecyclerAdapter(dataset));
+    }
+
+    private List<Rover> getMockRoverDataset(){
+        List<Rover> rover_mock_dataset = new ArrayList<>();
+
+        Rover rover = new Rover();
+        rover.rid = 0;
+        rover.roverName = "I am only a mock :(";
+
+        rover_mock_dataset.add(rover);
+
+        return rover_mock_dataset;
+    }
+
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        view_binding = FragmentRoverStatusBinding.bind(view);
+        init_rover_status_recycler_view();
+
+        setListeners();
+    }
+
+    private void setListeners(){}
 }
