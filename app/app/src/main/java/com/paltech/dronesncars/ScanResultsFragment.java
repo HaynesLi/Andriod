@@ -61,8 +61,7 @@ public class ScanResultsFragment extends Fragment {
 
     private void setListeners() {
         view_binding.buttonConfigureRovers.setOnClickListener(v -> {
-            //NavDirections action = ScanResultsFragmentDirections.actionScanResultsFragmentToCreateRoverRoutineFragment();
-            NavDirections action = ScanResultsFragmentDirections.actionScanResultsFragmentToRoverStatusFragment();
+            NavDirections action = ScanResultsFragmentDirections.actionScanResultsFragmentToRoverRouteFragment();
             NavHostFragment.findNavController(this).navigate(action);
         });
     }

@@ -30,4 +30,8 @@
     <string name="report_fragment_title">Report</string>
     <string name="assume_rovers_finished">assume rovers finished</string>
     <string name="report_mock_text">nothing to report :(</string>
+    <string name="rover_routine_fragment_title">Rover Routine</string>
+    <string name="settings">Settings</string>
+    <string name="compute_routine_button">compute routine</string>
+    <string name="accept_rover_routine_button">Accept Routine</string>
 </resources>
