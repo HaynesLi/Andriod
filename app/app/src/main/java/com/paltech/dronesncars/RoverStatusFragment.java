@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.paltech.dronesncars.databinding.FragmentRoverStatusBinding;
+import com.paltech.dronesncars.model.Rover;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +71,7 @@ public class RoverStatusFragment extends Fragment {
         List<Rover> rover_mock_dataset = new ArrayList<>();
 
         Rover rover = new Rover();
-        rover.rid = 0;
+        rover.rover_id = 0;
         rover.roverName = "I am only a mock :(";
 
         rover_mock_dataset.add(rover);
