@@ -15,6 +15,7 @@ public class Map {
     @ColumnInfo(name = "polygon")
     // TODO: add a type converter! --> depends on the actual implementation of osmdroid.Polygon...
     //  maybe to json?
+    //  maybe use the to-json-and-back function of whatever library we already use to parse the kml?
     public Polygon polygon;
 
     // TODO add typeconverter for List

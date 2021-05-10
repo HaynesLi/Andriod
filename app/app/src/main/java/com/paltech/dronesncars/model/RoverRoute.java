@@ -2,11 +2,15 @@ package com.paltech.dronesncars.model;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 import java.util.List;
 
-@Entity
+import static androidx.room.ForeignKey.CASCADE;
+
+@Entity(foreignKeys = @ForeignKey(entity = RoverRoute.class, parentColumns = "rover_routine_id",
+        childColumns = "routine_id", onDelete = CASCADE))
 public class RoverRoute {
 
     @PrimaryKey
@@ -25,5 +29,7 @@ public class RoverRoute {
     @ColumnInfo(name = "route")
     public List<GeoPoint> route;
 
+    @ColumnInfo(name = "routine_id")
+    public int routine_id;
 
 }

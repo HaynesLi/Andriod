@@ -5,7 +5,8 @@ import android.content.Context;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@androidx.room.Database(entities = {Rover.class, DroneSetting.class}, version = 1)
+@androidx.room.Database(entities = {Rover.class, DroneSetting.class, RoverRoutine.class,
+        RoverRoute.class, Map.class, Result.class}, version = 1)
 public abstract class DNR_Database extends RoomDatabase {
 
     private static final String DB_NAME = "dnrDatabase.db";
@@ -22,5 +23,9 @@ public abstract class DNR_Database extends RoomDatabase {
     public abstract RoverDAO getRoverDAO();
 
     public abstract DroneSettingDAO getDroneSettingDAO();
+
+    public abstract RoverRouteDAO getRoverRouteDAO();
+
+    public abstract RoverRoutineDAO getRoverRoutineDAO();
 }
 

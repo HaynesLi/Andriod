@@ -15,9 +15,4 @@ public class RoverRoutine {
 
     @ColumnInfo(name = "num_of_rovers")
     public int num_of_rovers;
-
-    // TODO add Foreign Key annotation and combined object and so on...
-    // TODO add typeconverter for List
-    @ColumnInfo(name = "route_ids")
-    public List<Integer> route_ids;
 }
