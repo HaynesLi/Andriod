@@ -5,11 +5,13 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
+import org.osmdroid.util.GeoPoint;
+
 import java.util.List;
 
 import static androidx.room.ForeignKey.CASCADE;
 
-@Entity(foreignKeys = @ForeignKey(entity = RoverRoute.class, parentColumns = "rover_routine_id",
+@Entity(foreignKeys = @ForeignKey(entity = RoverRoutine.class, parentColumns = "rover_routine_id",
         childColumns = "routine_id", onDelete = CASCADE))
 public class RoverRoute {
 
@@ -17,15 +19,9 @@ public class RoverRoute {
     @ColumnInfo(name = "rover_route_id")
     public int rover_route_id;
 
-    // TODO: add ForeignKey annotation and combined object and so on...
-    @ColumnInfo(name = "rover_route_id")
+    @ColumnInfo(name = "rover_id")
     public int rover_id;
 
-    private class GeoPoint {
-        // TODO: this is just here to prevent syntax erros, as long as I haven't imported osmdroid
-    }
-
-    // TODO: add typeconverter for list and GeoPoint
     @ColumnInfo(name = "route")
     public List<GeoPoint> route;
 

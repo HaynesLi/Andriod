@@ -6,7 +6,7 @@
     app:startDestination="@id/startScreen">
     <fragment
         android:id="@+id/startScreen"
-        android:name="com.paltech.dronesncars.StartScreen"
+        android:name="com.paltech.dronesncars.ui.StartScreen"
         android:label="fragment_start_screen"
         tools:layout="@layout/fragment_start_screen" >
         <action
@@ -15,7 +15,7 @@
     </fragment>
     <fragment
         android:id="@+id/droneScreen"
-        android:name="com.paltech.dronesncars.DroneScreen"
+        android:name="com.paltech.dronesncars.ui.DroneScreen"
         android:label="fragment_drone_screen"
         tools:layout="@layout/fragment_drone_screen" >
         <action
@@ -24,7 +24,7 @@
     </fragment>
     <fragment
         android:id="@+id/scanResultsFragment"
-        android:name="com.paltech.dronesncars.ScanResultsFragment"
+        android:name="com.paltech.dronesncars.ui.ScanResultsFragment"
         android:label="fragment_scan_results"
         tools:layout="@layout/fragment_scan_results" >
         <action
@@ -33,7 +33,7 @@
     </fragment>
     <fragment
         android:id="@+id/roverStatusFragment"
-        android:name="com.paltech.dronesncars.RoverStatusFragment"
+        android:name="com.paltech.dronesncars.ui.RoverStatusFragment"
         android:label="fragment_rover_status"
         tools:layout="@layout/fragment_rover_status" >
         <action
@@ -42,12 +42,12 @@
     </fragment>
     <fragment
         android:id="@+id/reportFragment"
-        android:name="com.paltech.dronesncars.ReportFragment"
+        android:name="com.paltech.dronesncars.ui.ReportFragment"
         android:label="fragment_report"
         tools:layout="@layout/fragment_report" />
     <fragment
         android:id="@+id/roverRouteFragment"
-        android:name="com.paltech.dronesncars.RoverRouteFragment"
+        android:name="com.paltech.dronesncars.ui.RoverRouteFragment"
         android:label="fragment_rover_route"
         tools:layout="@layout/fragment_rover_route" >
         <action

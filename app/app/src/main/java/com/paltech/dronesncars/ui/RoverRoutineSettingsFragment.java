@@ -1,17 +1,16 @@
-package com.paltech.dronesncars;
+package com.paltech.dronesncars.ui;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.paltech.dronesncars.databinding.FragmentRoverRouteBinding;
+import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentRoverRoutineSettingsBinding;
 
 /**
@@ -66,7 +65,9 @@ public class RoverRoutineSettingsFragment extends Fragment {
         view_binding.acceptRoverRoutineButton.setOnClickListener(v -> {
             NavDirections action = RoverRouteFragmentDirections.actionRoverRouteFragmentToRoverStatusFragment();
             RoverRouteFragment parentFragment = (RoverRouteFragment) getParentFragment();
-            NavHostFragment.findNavController(parentFragment).navigate(action);
+            if (parentFragment != null) {
+                NavHostFragment.findNavController(parentFragment).navigate(action);
+            }
         });
     }
 }

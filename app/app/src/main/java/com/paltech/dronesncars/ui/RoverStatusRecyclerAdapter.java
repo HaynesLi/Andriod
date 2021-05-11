@@ -1,4 +1,4 @@
-package com.paltech.dronesncars;
+package com.paltech.dronesncars.ui;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.RoverStatusRowItemBinding;
 import com.paltech.dronesncars.model.Rover;
 
@@ -15,7 +16,7 @@ import java.util.List;
 
 public class RoverStatusRecyclerAdapter extends RecyclerView.Adapter<RoverStatusRecyclerAdapter.RoverStatusViewHolder> {
 
-    private List<Rover> localRoverSet;
+    private final List<Rover> localRoverSet;
 
     public RoverStatusRecyclerAdapter(List<Rover> rover_set) {
         localRoverSet = rover_set;
@@ -48,7 +49,7 @@ public class RoverStatusRecyclerAdapter extends RecyclerView.Adapter<RoverStatus
     @Override
     public void onBindViewHolder(@NonNull RoverStatusRecyclerAdapter.RoverStatusViewHolder holder, int position) {
         Rover rover = localRoverSet.get(position);
-        holder.getRoverIDText().setText(Integer.toString(rover.rover_id));
+        holder.getRoverIDText().setText(String.format("%d", rover.rover_id));
         holder.getRoverNameText().setText(rover.roverName);
     }
 

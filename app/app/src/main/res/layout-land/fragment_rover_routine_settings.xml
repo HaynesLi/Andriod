@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RoverRoutineSettingsFragment">
+    tools:context=".ui.RoverRoutineSettingsFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -36,7 +36,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/number_of_rovers"
-                android:textAppearance="@style/input_label" />
+                android:textAppearance="@style/input_label"
+                android:labelFor="@+id/num_of_rovers_input"/>
 
             <EditText
                 android:id="@+id/num_of_rovers_input"
@@ -44,8 +45,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:hint="@string/num_of_rovers_hint_1"
-                android:inputType="number" />
+                android:inputType="number"
+                android:autofillHints="@string/num_of_rovers_hint_1"
+                />
 
         </LinearLayout>
 

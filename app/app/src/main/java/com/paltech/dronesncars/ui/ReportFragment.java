@@ -1,4 +1,4 @@
-package com.paltech.dronesncars;
+package com.paltech.dronesncars.ui;
 
 import android.os.Bundle;
 
@@ -9,18 +9,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.paltech.dronesncars.databinding.FragmentRoverRouteBinding;
+import com.paltech.dronesncars.R;
+import com.paltech.dronesncars.databinding.FragmentReportBinding;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link RoverRouteFragment#newInstance} factory method to
+ * Use the {@link ReportFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RoverRouteFragment extends Fragment {
+public class ReportFragment extends Fragment {
 
-    private FragmentRoverRouteBinding view_binding;
+    private FragmentReportBinding view_binding;
 
-    public RoverRouteFragment() {
+    public ReportFragment() {
         // Required empty public constructor
     }
 
@@ -28,10 +29,10 @@ public class RoverRouteFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment RoverRouteFragment.
+     * @return A new instance of fragment ReportFragment.
      */
-    public static RoverRouteFragment newInstance(String param1, String param2) {
-        RoverRouteFragment fragment = new RoverRouteFragment();
+    public static ReportFragment newInstance() {
+        ReportFragment fragment = new ReportFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -46,13 +47,17 @@ public class RoverRouteFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_rover_route, container, false);
+        return inflater.inflate(R.layout.fragment_report, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        view_binding = FragmentRoverRouteBinding.bind(view);
+        view_binding = FragmentReportBinding.bind(view);
+
+        setListeners();
     }
+
+    private void setListeners(){}
 }

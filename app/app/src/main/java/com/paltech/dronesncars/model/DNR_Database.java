@@ -5,8 +5,11 @@ import android.content.Context;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-/*@androidx.room.Database(entities = {Rover.class, DroneSetting.class, RoverRoutine.class,
-        RoverRoute.class, Map.class, Result.class}, version = 1)*/
+import androidx.room.TypeConverters;
+
+@androidx.room.Database(entities = {Rover.class, DroneSetting.class, RoverRoutine.class,
+        RoverRoute.class, Map.class, Result.class}, version = 1)
+@TypeConverters({com.paltech.dronesncars.model.TypeConverters.class})
 public abstract class DNR_Database extends RoomDatabase {
 
     private static final String DB_NAME = "dnrDatabase.db";

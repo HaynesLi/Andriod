@@ -29,11 +29,11 @@ public interface RoverRouteDAO {
 
     @Transaction
     @Query("SELECT * FROM Rover")
-    public List<RoverAndRoute> getRoversAndRoutes();
+    List<RoverAndRoute> getRoversAndRoutes();
 
 
     // TODO does this work like this?
     @Transaction
     @Query("SELECT * FROM Rover, RoverRoute where rover_route_id =(:rover_route_id)")
-    public Rover getRoverForRoute(int rover_route_id);
+    Rover getRoverForRoute(int rover_route_id);
 }

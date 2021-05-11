@@ -1,4 +1,4 @@
-package com.paltech.dronesncars;
+package com.paltech.dronesncars.ui;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentMapBinding;
 
 import org.osmdroid.api.IMapController;

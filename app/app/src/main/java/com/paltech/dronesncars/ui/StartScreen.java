@@ -1,4 +1,4 @@
-package com.paltech.dronesncars;
+package com.paltech.dronesncars.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,11 +7,10 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentStartScreenBinding;
 
 public class StartScreen extends Fragment {
@@ -36,13 +35,9 @@ public class StartScreen extends Fragment {
     }
 
     private void setListeners() {
-        view_binding.importKMLButton.setOnClickListener(v -> {
-            changeToDroneScreen();
-        });
+        view_binding.importKMLButton.setOnClickListener(v -> changeToDroneScreen());
 
-        view_binding.manualMapButton.setOnClickListener(v -> {
-            changeToDroneScreen();
-        });
+        view_binding.manualMapButton.setOnClickListener(v -> changeToDroneScreen());
     }
 
     private void changeToDroneScreen() {

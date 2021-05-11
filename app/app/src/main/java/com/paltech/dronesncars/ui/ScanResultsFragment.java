@@ -1,4 +1,4 @@
-package com.paltech.dronesncars;
+package com.paltech.dronesncars.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentScanResultsBinding;
 
 /**

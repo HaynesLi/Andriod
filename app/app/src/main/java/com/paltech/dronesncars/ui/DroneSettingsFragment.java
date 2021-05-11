@@ -1,18 +1,16 @@
-package com.paltech.dronesncars;
+package com.paltech.dronesncars.ui;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.NavDirections;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavDirections;
+import androidx.navigation.fragment.NavHostFragment;
+
+import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentDroneSettingsBinding;
 
 /**
@@ -32,12 +30,10 @@ public class DroneSettingsFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment DroneSettingsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static DroneSettingsFragment newInstance(String param1, String param2) {
+    public static DroneSettingsFragment newInstance() {
         DroneSettingsFragment fragment = new DroneSettingsFragment();
         return fragment;
     }
@@ -67,7 +63,9 @@ public class DroneSettingsFragment extends Fragment {
         view_binding.buttonStartFlight.setOnClickListener(v -> {
             NavDirections action = DroneScreenDirections.actionDroneScreenToScanResultsFragment();
             DroneScreen parentFragment = (DroneScreen) getParentFragment();
-            NavHostFragment.findNavController(parentFragment).navigate(action);
+            if (parentFragment != null) {
+                NavHostFragment.findNavController(parentFragment).navigate(action);
+            }
         });
     }
 }

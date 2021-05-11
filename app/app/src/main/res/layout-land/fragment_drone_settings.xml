@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DroneSettingsFragment">
+    tools:context=".ui.DroneSettingsFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -33,6 +33,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/height_descriptor"
+                    android:labelFor="@+id/editTextNumberDecimal"
                     android:textAppearance="@style/input_label"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -52,20 +53,24 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                style="?android:attr/buttonBarButtonStyle">
 
                 <Button
                     android:id="@+id/button_compute_route"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/compute_flight_route" />
+                    android:text="@string/compute_flight_route"
+                    style = "?android:attr/buttonBarButtonStyle"/>
 
                 <Button
                     android:id="@+id/button_start_flight"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/start_flight" />
+                    android:text="@string/start_flight"
+                    style = "?android:attr/buttonBarButtonStyle"
+                    />
             </LinearLayout>
 
         </LinearLayout>
