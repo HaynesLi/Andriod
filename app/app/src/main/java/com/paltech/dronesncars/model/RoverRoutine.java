@@ -15,4 +15,9 @@ public class RoverRoutine {
 
     @ColumnInfo(name = "num_of_rovers")
     public int num_of_rovers;
+
+    public RoverRoutine(int rover_routine_id, int num_of_rovers) {
+        this.rover_routine_id = rover_routine_id;
+        this.num_of_rovers = num_of_rovers;
+    }
 }

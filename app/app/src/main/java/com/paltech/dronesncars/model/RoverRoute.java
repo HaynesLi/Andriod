@@ -28,4 +28,10 @@ public class RoverRoute {
     @ColumnInfo(name = "routine_id")
     public int routine_id;
 
+    public RoverRoute(int rover_route_id, int rover_id, List<GeoPoint> route, int routine_id) {
+        this.rover_route_id = rover_route_id;
+        this.rover_id = rover_id;
+        this.route = route;
+        this.routine_id = routine_id;
+    }
 }

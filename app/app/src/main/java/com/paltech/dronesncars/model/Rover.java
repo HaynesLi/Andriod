@@ -4,6 +4,8 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.Objects;
+
 @Entity
 public class Rover {
     @PrimaryKey
@@ -15,4 +17,23 @@ public class Rover {
 
     @ColumnInfo(name = "battery")
     public double battery;
+
+    public Rover(int rover_id, String roverName, double battery) {
+        this.rover_id = rover_id;
+        this.roverName = roverName;
+        this.battery = battery;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Rover rover = (Rover) o;
+        return rover_id == rover.rover_id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(rover_id);
+    }
 }

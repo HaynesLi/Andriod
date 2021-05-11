@@ -14,4 +14,8 @@ public class Result {
     @ColumnInfo(name = "certainty")
     public double certainty;
 
+    public Result(int result_id, double certainty) {
+        this.result_id = result_id;
+        this.certainty = certainty;
+    }
 }

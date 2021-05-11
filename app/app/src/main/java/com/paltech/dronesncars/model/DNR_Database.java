@@ -30,5 +30,7 @@ public abstract class DNR_Database extends RoomDatabase {
     public abstract RoverRouteDAO getRoverRouteDAO();
 
     public abstract RoverRoutineDAO getRoverRoutineDAO();
+
+    public abstract MapDAO getMapDAO();
 }
 

@@ -70,9 +70,7 @@ public class RoverStatusFragment extends Fragment {
     private List<Rover> getMockRoverDataset(){
         List<Rover> rover_mock_dataset = new ArrayList<>();
 
-        Rover rover = new Rover();
-        rover.rover_id = 0;
-        rover.roverName = "I am only a mock :(";
+        Rover rover = new Rover(0, "I am only a mock :(", 0.7);
 
         rover_mock_dataset.add(rover);
 

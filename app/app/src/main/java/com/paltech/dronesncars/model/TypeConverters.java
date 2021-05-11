@@ -28,7 +28,9 @@ public class TypeConverters {
         GsonBuilder gsonBuilder = new GsonBuilder();
 
         JsonSerializer<Polygon> serializer = new PolygonJsonGenerator();
+        JsonSerializer<GeoPoint> geoPointJsonSerializer = new GeoPointJsonGenerator();
         gsonBuilder.registerTypeAdapter(Polygon.class, serializer);
+        gsonBuilder.registerTypeAdapter(GeoPoint.class, geoPointJsonSerializer);
 
         return gsonBuilder.create().toJson(value);
     }
@@ -38,7 +40,9 @@ public class TypeConverters {
         GsonBuilder gsonBuilder = new GsonBuilder();
 
         JsonDeserializer<Polygon> deserializer = new PolygonJsonGenerator();
+        JsonDeserializer<GeoPoint> geoPointJsonDeserializer = new GeoPointJsonGenerator();
         gsonBuilder.registerTypeAdapter(Polygon.class, deserializer);
+        gsonBuilder.registerTypeAdapter(GeoPoint.class, geoPointJsonDeserializer);
 
         return gsonBuilder.create().fromJson(value, Polygon.class);
     }
@@ -110,8 +114,12 @@ public class TypeConverters {
             JsonObject polygon_json = json.getAsJsonObject();
             Polygon polygon = new Polygon();
 
-            polygon.setHoles(context.deserialize(polygon_json.get("points").getAsJsonObject(),
-                    GEOPOINT_LIST_TYPE));
+            List<GeoPoint> geoPoints = context.deserialize(polygon_json.get("points").getAsJsonArray(),
+                    GEOPOINT_LIST_TYPE);
+
+            for (GeoPoint geoPoint : geoPoints) {
+                polygon.addPoint(geoPoint);
+            }
 
             return polygon;
         }
