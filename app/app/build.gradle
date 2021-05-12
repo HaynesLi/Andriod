@@ -36,6 +36,9 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     def room_version= "2.3.0"
     def osm_droid_version = "6.1.10"
+    def activity_version = "1.2.3"
+    def fragment_version = "1.3.3"
+    def junit_version = "4.13.2"
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.3.0'
@@ -44,7 +47,8 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.3.5'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
-    testImplementation 'junit:junit:4.+'
+
+    testImplementation "junit:junit:$junit_version"
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
@@ -54,6 +58,15 @@ dependencies {
 
     // OSM Droid
     implementation "org.osmdroid:osmdroid-android:$osm_droid_version"
+
+    // activity (for activity result) & fragment (for the same reason)
+    implementation "androidx.activity:activity:$activity_version"
+    implementation "androidx.fragment:fragment:$fragment_version"
+
+
+
+
+
 }
 
 apply plugin: "androidx.navigation.safeargs"

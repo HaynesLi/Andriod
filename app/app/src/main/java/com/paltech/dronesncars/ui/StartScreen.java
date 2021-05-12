@@ -1,10 +1,16 @@
 package com.paltech.dronesncars.ui;
 
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavDirections;
@@ -16,6 +22,17 @@ import com.paltech.dronesncars.databinding.FragmentStartScreenBinding;
 public class StartScreen extends Fragment {
 
     private FragmentStartScreenBinding view_binding;
+
+    private ActivityResultLauncher<String> getKML = registerForActivityResult(new ActivityResultContracts.GetContent(),
+            new ActivityResultCallback<Uri>() {
+                @Override
+                public void onActivityResult(Uri result) {
+                    Toast.makeText(getContext(),
+                            String.format("Got Uri: %s", result.toString()),
+                            Toast.LENGTH_SHORT).show();
+                    changeToDroneScreen();
+                }
+            });
 
     @Override
     public View onCreateView(
@@ -35,7 +52,7 @@ public class StartScreen extends Fragment {
     }
 
     private void setListeners() {
-        view_binding.importKMLButton.setOnClickListener(v -> changeToDroneScreen());
+        view_binding.importKMLButton.setOnClickListener(v -> getKML.launch("application/vnd.google-earth.kml+xml"));
 
         view_binding.manualMapButton.setOnClickListener(v -> changeToDroneScreen());
     }
