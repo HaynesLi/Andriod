@@ -23,4 +23,7 @@ public interface RoverDAO {
     void delete(Rover rover);
 
     // TODO: add Transaction to get all routes for one rover
+    @Transaction
+    @Query("SELECT * FROM RoverRoute, Rover WHERE rover_id = (:rover_id) and corresponding_rover_id = rover_id")
+    List<RoverRoute> getRoutesForRover(int rover_id);
 }

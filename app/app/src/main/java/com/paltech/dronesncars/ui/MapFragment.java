@@ -1,6 +1,7 @@
 package com.paltech.dronesncars.ui;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -17,6 +18,10 @@ import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.overlay.Polygon;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -78,7 +83,25 @@ public class MapFragment extends Fragment {
         IMapController mapController = view_binding.map.getController();
         mapController.setZoom(9.5);
         GeoPoint startPoint = new GeoPoint(48.17808437657652, 11.795518397832884);
+
         mapController.setCenter(startPoint);
+
+        setPolygon(new Polygon());
+    }
+
+    // TODO: still a mock. replace it with something proper
+    private void setPolygon(Polygon polygon) {
+        Polygon mock_polygon = new Polygon();
+        List<GeoPoint> geoPointList = new ArrayList<>();
+        geoPointList.add(new GeoPoint(48.29574258901285, 11.896900532799023));
+        geoPointList.add(new GeoPoint(48.30841764645962, 11.917242405117028));
+        geoPointList.add(new GeoPoint(48.312927380430466, 11.894068121549093));
+        mock_polygon.getFillPaint().setColor(Color.parseColor("#1EFFE70E"));
+        mock_polygon.setPoints(geoPointList);
+        mock_polygon.setTitle("I am a mock polygon");
+
+        view_binding.map.getOverlayManager().add(mock_polygon);
+
     }
 
     @Override

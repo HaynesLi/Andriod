@@ -5,6 +5,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class RoverRoutine {
@@ -19,5 +20,18 @@ public class RoverRoutine {
     public RoverRoutine(int rover_routine_id, int num_of_rovers) {
         this.rover_routine_id = rover_routine_id;
         this.num_of_rovers = num_of_rovers;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RoverRoutine that = (RoverRoutine) o;
+        return rover_routine_id == that.rover_routine_id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(rover_routine_id);
     }
 }

@@ -13,7 +13,7 @@ import java.util.List;
 public interface RoverRouteDAO {
 
     @Insert
-    void insert(RoverRoute rover_route);
+    void insertMultiple(RoverRoute... rover_route);
 
     @Update
     void update(RoverRoute... rover_routes);
@@ -34,6 +34,6 @@ public interface RoverRouteDAO {
 
     // TODO does this work like this?
     @Transaction
-    @Query("SELECT * FROM Rover, RoverRoute where rover_id = (:rover_id) AND corresponding_rover_id = (:rover_id)")
-    Rover getRoverForRoute(int rover_id);
+    @Query("SELECT * FROM Rover, RoverRoute where rover_id = corresponding_rover_id AND rover_route_id = (:rover_route_id)")
+    Rover getRoverForRoute(int rover_route_id);
 }

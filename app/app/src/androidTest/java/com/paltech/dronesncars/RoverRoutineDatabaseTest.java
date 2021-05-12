@@ -1,6 +1,7 @@
 package com.paltech.dronesncars;
 
 import android.content.Context;
+import android.util.ArraySet;
 
 import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
@@ -22,11 +23,12 @@ import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
-public class RouteDatabaseTest {
+public class RoverRoutineDatabaseTest {
     private RoverRouteDAO roverRouteDAO;
     private DNR_Database database;
     private RoverDAO roverDAO;
@@ -48,63 +50,55 @@ public class RouteDatabaseTest {
     }
 
     @Test
-    public void routeDatabaseTest() {
+    public void roverRoutineDatabaseTest() {
         Rover rover = new Rover(1, "Bismarck", 1.0);
-        RoverRoutine roverRoutine = new RoverRoutine(3, 1);
+        RoverRoutine expected_roverRoutine = new RoverRoutine(3, 1);
 
         List<GeoPoint> route = new ArrayList<>();
         route.add(new GeoPoint(48.29574258901285, 11.896900532799023));
         route.add(new GeoPoint(48.30841764645962, 11.917242405117028));
         route.add(new GeoPoint(48.312927380430466, 11.894068121549093));
 
-        RoverRoute expected_roverRoute = new RoverRoute(rover.rover_id, 1, route,
-                roverRoutine.rover_routine_id);
+        RoverRoute roverRoute_1 = new RoverRoute(1, rover.rover_id, route,
+                expected_roverRoutine.rover_routine_id);
+        RoverRoute roverRoute_2 = new RoverRoute(2, rover.rover_id, route,
+                expected_roverRoutine.rover_routine_id);
 
         roverDAO.insertMultipleRovers(rover);
-        roverRoutineDAO.insert(roverRoutine);
+        roverRoutineDAO.insert(expected_roverRoutine);
+        roverRouteDAO.insertMultiple(roverRoute_1, roverRoute_2);
 
-        roverRouteDAO.insertMultiple(expected_roverRoute);
-        List<RoverRoute> actual_roverRoutes = roverRouteDAO.getAllRoverRoutes();
 
-        assertEquals(actual_roverRoutes.size(), 1);
-
-        RoverRoute actual_roverRoute = actual_roverRoutes.get(0);
-
-        assertEquals(actual_roverRoute, expected_roverRoute);
-        assertEquals(actual_roverRoute.routine_id, expected_roverRoute.routine_id);
-        assertEquals(actual_roverRoute.corresponding_rover_id, expected_roverRoute.corresponding_rover_id);
-        assertEquals(actual_roverRoute.route, expected_roverRoute.route);
+        RoverRoutine actual_roverRoutine = roverRoutineDAO.getRoverRoutineByID(expected_roverRoutine.rover_routine_id);
+        assertEquals(actual_roverRoutine, expected_roverRoutine);
+        assertEquals(actual_roverRoutine.num_of_rovers, expected_roverRoutine.num_of_rovers);
     }
 
     @Test
-    public void routeRoverRelationshipDatabaseTest() {
-        Rover rover_1 = new Rover(1, "Bismarck", 1.0);
-        Rover rover_2 = new Rover(32, "Titanic", 1.0);
-        RoverRoutine roverRoutine = new RoverRoutine(3, 1);
+    public void roverRoutineRouteRelationshipDatabaseTest() {
+        Rover rover = new Rover(1, "Bismarck", 1.0);
+        RoverRoutine expected_roverRoutine = new RoverRoutine(3, 1);
 
         List<GeoPoint> route = new ArrayList<>();
         route.add(new GeoPoint(48.29574258901285, 11.896900532799023));
         route.add(new GeoPoint(48.30841764645962, 11.917242405117028));
         route.add(new GeoPoint(48.312927380430466, 11.894068121549093));
 
-        RoverRoute expected_roverRoute = new RoverRoute(1, rover_1.rover_id, route,
-                roverRoutine.rover_routine_id);
+        RoverRoute roverRoute_1 = new RoverRoute(1, rover.rover_id, route,
+                expected_roverRoutine.rover_routine_id);
+        RoverRoute roverRoute_2 = new RoverRoute(2, rover.rover_id, route,
+                expected_roverRoutine.rover_routine_id);
+        Set<RoverRoute> expected_routes = new ArraySet<>();
+        expected_routes.add(roverRoute_1);
+        expected_routes.add(roverRoute_2);
 
-        roverDAO.insertMultipleRovers(rover_1, rover_2);
-        roverRoutineDAO.insert(roverRoutine);
-        roverRouteDAO.insertMultiple(expected_roverRoute);
+        roverDAO.insertMultipleRovers(rover);
+        roverRoutineDAO.insert(expected_roverRoutine);
+        roverRouteDAO.insertMultiple(roverRoute_1, roverRoute_2);
 
-        Rover expected_rover = roverRouteDAO.getRoverForRoute(expected_roverRoute.rover_route_id);
-        assertEquals(expected_rover, rover_1);
 
-        List<RoverRoute> expected_routes = roverDAO.getRoutesForRover(rover_1.rover_id);
-        assertEquals(expected_routes.size(), 1);
-        assertEquals(expected_routes.get(0), expected_roverRoute);
-
-        List<RoverRoute> expected_empty_routes = roverDAO.getRoutesForRover(rover_2.rover_id);
-        assert(expected_empty_routes.isEmpty());
+        List<RoverRoute> actual_routes = roverRouteDAO.findRoverRoutesForRoutine(expected_roverRoutine.rover_routine_id);
+        assertEquals(actual_routes.size(), 2);
+        assertEquals(new ArraySet<RoverRoute>(actual_routes), expected_routes);
     }
-
-
-
 }
