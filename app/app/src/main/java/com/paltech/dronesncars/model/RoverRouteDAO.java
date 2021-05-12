@@ -34,6 +34,6 @@ public interface RoverRouteDAO {
 
     // TODO does this work like this?
     @Transaction
-    @Query("SELECT * FROM Rover, RoverRoute where rover_route_id =(:rover_route_id)")
-    Rover getRoverForRoute(int rover_route_id);
+    @Query("SELECT * FROM Rover, RoverRoute where rover_id = (:rover_id) AND corresponding_rover_id = (:rover_id)")
+    Rover getRoverForRoute(int rover_id);
 }

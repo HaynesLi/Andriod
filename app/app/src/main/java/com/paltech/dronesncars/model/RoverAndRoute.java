@@ -9,7 +9,7 @@ public class RoverAndRoute {
     @Embedded public Rover rover;
     @Relation(
             parentColumn = "rover_id",
-            entityColumn = "rover_id"
+            entityColumn = "corresponding_rover_id"
     )
-    public List<RoverRoute> route;
+    public List<RoverRoute> routes;
 }

@@ -34,6 +34,7 @@ public class DroneSettingDatabaseTest {
 
     @After
     public void closeDb() throws IOException {
+        database.clearAllTables();
         database.close();
     }
 

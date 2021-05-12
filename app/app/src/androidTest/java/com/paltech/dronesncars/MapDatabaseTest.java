@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polygon;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +38,8 @@ public class MapDatabaseTest {
     }
 
     @After
-    public void closeDatabase(){
+    public void closeDatabase() throws IOException {
+        database.clearAllTables();
         database.close();
     }
 
