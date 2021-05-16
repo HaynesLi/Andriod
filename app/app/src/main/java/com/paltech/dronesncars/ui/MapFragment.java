@@ -2,11 +2,13 @@ package com.paltech.dronesncars.ui;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -67,7 +69,21 @@ public class MapFragment extends Fragment {
 
         view_binding = FragmentMapBinding.bind(view);
 
+        getArgsFromParent();
         configureMap();
+    }
+
+    private void getArgsFromParent(){
+        Fragment parentFragment = getParentFragment();
+        if (parentFragment != null && parentFragment.getClass() == DroneScreen.class) {
+            DroneScreen parentDroneScreen = (DroneScreen) parentFragment;
+            Uri kml_file_uri = parentDroneScreen.getKml_file_uri();
+            if (kml_file_uri != null) {
+                Toast.makeText(getContext(),
+                        String.format("Got Uri: %s", kml_file_uri.toString()),
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void configureMap() {

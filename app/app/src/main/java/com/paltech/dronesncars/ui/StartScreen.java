@@ -27,10 +27,7 @@ public class StartScreen extends Fragment {
             new ActivityResultCallback<Uri>() {
                 @Override
                 public void onActivityResult(Uri result) {
-                    Toast.makeText(getContext(),
-                            String.format("Got Uri: %s", result.toString()),
-                            Toast.LENGTH_SHORT).show();
-                    changeToDroneScreen();
+                    changeToDroneScreen(result);
                 }
             });
 
@@ -54,11 +51,15 @@ public class StartScreen extends Fragment {
     private void setListeners() {
         view_binding.importKMLButton.setOnClickListener(v -> getKML.launch("application/vnd.google-earth.kml+xml"));
 
-        view_binding.manualMapButton.setOnClickListener(v -> changeToDroneScreen());
+        view_binding.manualMapButton.setOnClickListener(v -> changeToDroneScreen(null));
     }
 
-    private void changeToDroneScreen() {
-        NavDirections actionStartScreenToDroneScreen = StartScreenDirections.actionStartScreenToDroneScreen();
-        NavHostFragment.findNavController(this).navigate(actionStartScreenToDroneScreen);
+    private void changeToDroneScreen(Uri kml_file_uri) {
+        String uri_string = null;
+        if (kml_file_uri != null) {
+            uri_string = kml_file_uri.toString();
+        }
+        NavDirections action = StartScreenDirections.actionStartScreenToDroneScreen(uri_string);
+        NavHostFragment.findNavController(this).navigate(action);
     }
 }

@@ -1,5 +1,6 @@
 package com.paltech.dronesncars.ui;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,17 +15,31 @@ import com.paltech.dronesncars.R;
 
 public class DroneScreen extends Fragment {
 
+    public Uri getKml_file_uri() {
+        return kml_file_uri;
+    }
+
+    private Uri kml_file_uri;
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
         // Inflate the layout for this fragment
+
+        kml_file_uri = null;
+        String uri_string = DroneScreenArgs.fromBundle(getArguments()).getKmlFileUri();
+        if (uri_string != null) {
+            kml_file_uri = Uri.parse(uri_string);
+        }
+
         return inflater.inflate(R.layout.fragment_drone_screen, container, false);
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
     }
 
 }

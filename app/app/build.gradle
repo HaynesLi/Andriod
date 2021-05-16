@@ -63,10 +63,7 @@ dependencies {
     implementation "androidx.activity:activity:$activity_version"
     implementation "androidx.fragment:fragment:$fragment_version"
 
-
-
-
+    apply plugin: "androidx.navigation.safeargs"
 
 }
 
-apply plugin: "androidx.navigation.safeargs"
