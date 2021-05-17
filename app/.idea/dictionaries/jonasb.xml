@@ -2,6 +2,8 @@
   <dictionary name="jonasb">
     <words>
       <w>geopoint</w>
+      <w>placemark</w>
+      <w>placemarks</w>
     </words>
   </dictionary>
 </component>
