@@ -67,7 +67,14 @@ dependencies {
     // OSM Droid bonus-pack
     implementation "com.github.MKergall:osmbonuspack:$osm_droid_bonus_version"
 
+    // Hilt Dependency Injection
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    annotationProcessor "com.google.dagger:hilt-compiler:$hilt_version"
+
+
     apply plugin: "androidx.navigation.safeargs"
+    apply plugin: 'dagger.hilt.android.plugin'
+
 
 }
 

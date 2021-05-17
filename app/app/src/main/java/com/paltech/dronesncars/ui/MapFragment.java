@@ -1,6 +1,8 @@
 package com.paltech.dronesncars.ui;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,10 +14,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentMapBinding;
+import com.paltech.dronesncars.model.KMLParser;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.kml.KmlDocument;
@@ -31,15 +35,22 @@ import org.osmdroid.views.overlay.Polygon;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.concurrent.Executor;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link MapFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 public class MapFragment extends Fragment {
 
     private FragmentMapBinding view_binding;
@@ -81,23 +92,27 @@ public class MapFragment extends Fragment {
         view_binding = FragmentMapBinding.bind(view);
         view_model = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
 
+
+        setLiveDataSources();
         getArgsFromParent();
         configureMap();
     }
 
-    /**
-     *
-     * @param context - the applications context
-     * @param uri - the Uri (Android) to open an input stream to
-     * @return - an InputStream to the given Uri
-     */
-    private static InputStream getInputStreamByUri(Context context, Uri uri) {
-        try {
-            return context.getContentResolver().openInputStream(uri);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    private void setLiveDataSources() {
+        view_model.choosePolygonFromKML.observe(getViewLifecycleOwner(), stringPolygonDictionary -> {
+            if (!stringPolygonDictionary.isEmpty()) {
+                String[] selectableNames = new String[stringPolygonDictionary.size()];
+                selectableNames = Collections.list(stringPolygonDictionary.keys()).toArray(selectableNames);
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+                dialogBuilder.setTitle("Pick a Polygon");
+                String[] finalSelectableNames = selectableNames;
+                dialogBuilder.setItems(selectableNames, (dialog, which) -> {
+                    String clickedFID= finalSelectableNames[which];
+                    setPolygon(stringPolygonDictionary.get(clickedFID), clickedFID);
+                });
+                dialogBuilder.show();
+            }
+        });
     }
 
     private void getArgsFromParent(){
@@ -115,33 +130,10 @@ public class MapFragment extends Fragment {
     }
 
     private void parseKMLFile(Uri kml_file_uri) {
-        KmlDocument kmlDocument = new KmlDocument();
-        kmlDocument.parseKMLStream(getInputStreamByUri(getContext(), kml_file_uri), null);
-
-        List<KmlFeature> placemarks = ((KmlFolder) kmlDocument.mKmlRoot.mItems.get(0)).mItems;
-        Dictionary<String, Polygon> polygonDictionary = new Hashtable<>();
-        for (KmlFeature placemark: placemarks) {
-            if (placemark instanceof KmlPlacemark) {
-                KmlPlacemark placemark_casted = (KmlPlacemark) placemark;
-                if (placemark_casted.hasGeometry(KmlPolygon.class)) {
-                    KmlPolygon kml_polygon = (KmlPolygon) placemark_casted.mGeometry;
-                    String polygon_FID = placemark_casted.getExtendedData("FID");
-
-                    Polygon polygon = new Polygon();
-                    for (GeoPoint geoPoint : kml_polygon.mCoordinates) {
-                        polygon.addPoint(geoPoint);
-                    }
-                    if (kml_polygon.mHoles != null && kml_polygon.mHoles.size() > 0) {
-                        polygon.setHoles(kml_polygon.mHoles);
-                    }
-
-                    polygonDictionary.put(polygon_FID, polygon);
-                }
-            }
-        }
-
-        String x = "0" + kml_file_uri.toString();
+        view_model.parseKMLFile(kml_file_uri);
     }
+
+
 
     private void configureMap() {
         Context ctx = requireContext();
@@ -158,23 +150,14 @@ public class MapFragment extends Fragment {
         GeoPoint startPoint = new GeoPoint(48.17808437657652, 11.795518397832884);
 
         mapController.setCenter(startPoint);
-
-        setPolygon(new Polygon());
     }
 
-    // TODO: still a mock. replace it with something proper
-    private void setPolygon(Polygon polygon) {
-        Polygon mock_polygon = new Polygon();
-        List<GeoPoint> geoPointList = new ArrayList<>();
-        geoPointList.add(new GeoPoint(48.29574258901285, 11.896900532799023));
-        geoPointList.add(new GeoPoint(48.30841764645962, 11.917242405117028));
-        geoPointList.add(new GeoPoint(48.312927380430466, 11.894068121549093));
-        mock_polygon.getFillPaint().setColor(Color.parseColor("#1EFFE70E"));
-        mock_polygon.setPoints(geoPointList);
-        mock_polygon.setTitle("I am a mock polygon");
+    private void setPolygon(Polygon polygon, String title) {
 
-        view_binding.map.getOverlayManager().add(mock_polygon);
+        polygon.getFillPaint().setColor(Color.parseColor("#1EFFE70E"));
+        polygon.setTitle(title);
 
+        view_binding.map.getOverlayManager().add(polygon);
     }
 
     @Override

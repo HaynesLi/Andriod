@@ -19,17 +19,15 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentStartScreenBinding;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class StartScreen extends Fragment {
 
     private FragmentStartScreenBinding view_binding;
 
     private ActivityResultLauncher<String> getKML = registerForActivityResult(new ActivityResultContracts.GetContent(),
-            new ActivityResultCallback<Uri>() {
-                @Override
-                public void onActivityResult(Uri result) {
-                    changeToDroneScreen(result);
-                }
-            });
+            result -> changeToDroneScreen(result));
 
     @Override
     public View onCreateView(
