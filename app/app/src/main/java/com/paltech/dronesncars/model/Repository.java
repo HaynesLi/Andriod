@@ -82,8 +82,9 @@ public class Repository {
         });
     }
 
-    public void clearSelectablePolygons() {
-        polygonsToChoose = null;
+    public void clearSelectablePolygons(ViewModelCallback<Dictionary<String, Polygon>> mapViewModelCallback) {
+        polygonsToChoose = new Hashtable<>();
+        mapViewModelCallback.onComplete(polygonsToChoose);
     }
 
     public Dictionary<String, Polygon> getPolygonsToChoose() {

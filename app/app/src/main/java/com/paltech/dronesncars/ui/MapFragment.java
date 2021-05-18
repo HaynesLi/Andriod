@@ -67,7 +67,7 @@ public class MapFragment extends Fragment {
      *
      * @return A new instance of fragment MapFragment.
      */
-    public static MapFragment newInstance(String param1, String param2) {
+    public static MapFragment newInstance() {
         MapFragment fragment = new MapFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);

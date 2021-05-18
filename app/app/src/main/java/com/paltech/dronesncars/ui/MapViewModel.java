@@ -34,7 +34,7 @@ public class MapViewModel extends ViewModel {
     }
 
     public void clearSelectablePolygons() {
-        repository.clearSelectablePolygons();
+        repository.clearSelectablePolygons(_choosePolygonFromKML::setValue);
     }
 
     @Inject
