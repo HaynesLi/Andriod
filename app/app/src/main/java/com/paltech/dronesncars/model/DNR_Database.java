@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
 @androidx.room.Database(entities = {Rover.class, DroneSetting.class, RoverRoutine.class,
-        RoverRoute.class, Map.class, Result.class}, version = 1)
+        RoverRoute.class, Map.class, Result.class, PolygonModel.class}, version = 1)
 @TypeConverters({com.paltech.dronesncars.model.TypeConverters.class})
 public abstract class DNR_Database extends RoomDatabase {
 
@@ -34,5 +34,7 @@ public abstract class DNR_Database extends RoomDatabase {
     public abstract MapDAO getMapDAO();
 
     public abstract ResultDAO getResultDAO();
+
+    public abstract PolygonModelDAO getPolygonModelDAO();
 }
 
