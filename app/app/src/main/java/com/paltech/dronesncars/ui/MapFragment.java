@@ -31,6 +31,7 @@ import org.osmdroid.bonuspack.kml.KmlPolygon;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.overlay.OverlayManager;
 import org.osmdroid.views.overlay.Polygon;
 
 import java.io.InputStream;
@@ -93,9 +94,9 @@ public class MapFragment extends Fragment {
         view_model = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
 
 
+        configureMap();
         setLiveDataSources();
         getArgsFromParent();
-        configureMap();
     }
 
     private void setLiveDataSources() {
@@ -145,6 +146,12 @@ public class MapFragment extends Fragment {
 
         view_binding.map.setMultiTouchControls(true);
 
+        OverlayManager overlayManager = view_binding.map.getOverlayManager();
+
+        overlayManager.removeAll(overlayManager.overlays());
+
+        view_model.clearSelectablePolygons();
+
         IMapController mapController = view_binding.map.getController();
         mapController.setZoom(9.5);
         GeoPoint startPoint = new GeoPoint(48.17808437657652, 11.795518397832884);
@@ -158,6 +165,11 @@ public class MapFragment extends Fragment {
         polygon.setTitle(title);
 
         view_binding.map.getOverlayManager().add(polygon);
+        if(polygon.getActualPoints() != null && polygon.getActualPoints().size() > 0) {
+            IMapController mapController = view_binding.map.getController();
+            mapController.setCenter(polygon.getActualPoints().get(0));
+            mapController.setZoom(16.0);
+        }
     }
 
     @Override

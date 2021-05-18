@@ -19,20 +19,22 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 
 @HiltViewModel
 public class MapViewModel extends ViewModel {
-    public int map_Id;
+    public final int map_Id = 1;
 
-    private Repository repository;
+    private final Repository repository;
 
-    public MutableLiveData<Map> getMap() {
-        return map;
-    }
+    private final MutableLiveData<Map> _map = new MutableLiveData<>();
+    public LiveData<Map> map = _map;
 
-    private MutableLiveData<Map> map = new MutableLiveData<>();
-    private MutableLiveData<Dictionary<String, Polygon>> _choosePolygonFromKML = new MutableLiveData<>();
+    private final MutableLiveData<Dictionary<String, Polygon>> _choosePolygonFromKML = new MutableLiveData<>();
     public LiveData<Dictionary<String, Polygon>> choosePolygonFromKML = _choosePolygonFromKML;
 
     public void parseKMLFile(Uri kml_file_uri) {
-        repository.parseKMLFile(kml_file_uri, result -> _choosePolygonFromKML.postValue(result));
+        repository.parseKMLFile(kml_file_uri, _choosePolygonFromKML::postValue);
+    }
+
+    public void clearSelectablePolygons() {
+        repository.clearSelectablePolygons();
     }
 
     @Inject

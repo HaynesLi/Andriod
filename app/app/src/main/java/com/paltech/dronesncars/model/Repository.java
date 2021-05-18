@@ -82,6 +82,10 @@ public class Repository {
         });
     }
 
+    public void clearSelectablePolygons() {
+        polygonsToChoose = null;
+    }
+
     public Dictionary<String, Polygon> getPolygonsToChoose() {
         if (polygonsToChoose == null) {
             polygonsToChoose = new Hashtable<>();
