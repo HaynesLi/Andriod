@@ -3,6 +3,7 @@ package com.paltech.dronesncars.model;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -11,7 +12,7 @@ public interface PolygonModelDAO {
     @Query("SELECT * FROM PolygonModel WHERE polygon_id = (:polygon_id)")
     PolygonModel getPolygonModelByID(int polygon_id);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertPolygonModel(PolygonModel polygonModel);
 
     @Update

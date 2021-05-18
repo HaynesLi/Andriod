@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
@@ -83,6 +84,7 @@ public class MapFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
 
@@ -93,25 +95,39 @@ public class MapFragment extends Fragment {
         view_binding = FragmentMapBinding.bind(view);
         view_model = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
 
-
         configureMap();
-        setLiveDataSources();
         getArgsFromParent();
+        setLiveDataSources();
+
     }
 
     private void setLiveDataSources() {
+
+        // watch dictionary of String (FID) and osmdroid.(...).Polygon in order to, if necessary,
+        // display an AlertDialog to make the user chose one of the available polygons
         view_model.choosePolygonFromKML.observe(getViewLifecycleOwner(), stringPolygonDictionary -> {
             if (!stringPolygonDictionary.isEmpty()) {
                 String[] selectableNames = new String[stringPolygonDictionary.size()];
                 selectableNames = Collections.list(stringPolygonDictionary.keys()).toArray(selectableNames);
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
-                dialogBuilder.setTitle("Pick a Polygon");
-                String[] finalSelectableNames = selectableNames;
-                dialogBuilder.setItems(selectableNames, (dialog, which) -> {
-                    String clickedFID= finalSelectableNames[which];
-                    setPolygon(stringPolygonDictionary.get(clickedFID), clickedFID);
-                });
-                dialogBuilder.show();
+                if (stringPolygonDictionary.size() > 1) {
+                    AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+                    dialogBuilder.setTitle("Pick a Polygon");
+                    String[] finalSelectableNames = selectableNames;
+                    dialogBuilder.setItems(selectableNames, (dialog, which) -> {
+                        String clickedFID = finalSelectableNames[which];
+                        view_model.setPolygon(stringPolygonDictionary.get(clickedFID));
+                    });
+                    dialogBuilder.show();
+                } else {
+                    view_model.setPolygon(stringPolygonDictionary.get(selectableNames[0]));
+                }
+            }
+        });
+
+        // draw the "new" polygon if it changed in the database
+        view_model.polygon.observe(getViewLifecycleOwner(), polygon -> {
+            if (polygon != null) {
+                setPolygon(polygon);
             }
         });
     }
@@ -142,15 +158,17 @@ public class MapFragment extends Fragment {
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
         //TODO what is this? use offline instead
+        OverlayManager overlayManager = view_binding.map.getOverlayManager();
+        overlayManager.removeAll(overlayManager.overlays());
+        view_binding.map.invalidate();
+
         view_binding.map.setTileSource(TileSourceFactory.MAPNIK);
 
         view_binding.map.setMultiTouchControls(true);
 
-        OverlayManager overlayManager = view_binding.map.getOverlayManager();
-
-        overlayManager.removeAll(overlayManager.overlays());
-
+        view_model.clearPolygon();
         view_model.clearSelectablePolygons();
+
 
         IMapController mapController = view_binding.map.getController();
         mapController.setZoom(9.5);
@@ -159,16 +177,20 @@ public class MapFragment extends Fragment {
         mapController.setCenter(startPoint);
     }
 
-    private void setPolygon(Polygon polygon, String title) {
+    private void setPolygon(Polygon polygon) {
 
         polygon.getFillPaint().setColor(Color.parseColor("#1EFFE70E"));
-        polygon.setTitle(title);
 
-        view_binding.map.getOverlayManager().add(polygon);
-        if(polygon.getActualPoints() != null && polygon.getActualPoints().size() > 0) {
-            IMapController mapController = view_binding.map.getController();
-            mapController.setCenter(polygon.getActualPoints().get(0));
-            mapController.setZoom(16.0);
+        try {
+            if (polygon.getActualPoints() != null && polygon.getActualPoints().size() > 0) {
+                view_binding.map.getOverlayManager().add(polygon);
+                view_binding.map.invalidate();
+                IMapController mapController = view_binding.map.getController();
+                mapController.setCenter(polygon.getActualPoints().get(0));
+                mapController.setZoom(16.0);
+
+            }
+        } catch (NullPointerException ignored) {
         }
     }
 

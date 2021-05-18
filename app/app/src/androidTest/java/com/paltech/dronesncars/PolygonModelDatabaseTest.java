@@ -68,6 +68,17 @@ public class PolygonModelDatabaseTest {
         polygonModelDAO.deletePolygonModel(expectedPolygonModel);
     }
 
+    @Test
+    public void NullPolygonDatabaseTest() {
+        PolygonModel expectedPolygonModel = new PolygonModel(1, null);
+
+        polygonModelDAO.insertPolygonModel(expectedPolygonModel);
+        PolygonModel actualPolygonModel = polygonModelDAO.getPolygonModelByID(expectedPolygonModel.polygon_id);
+
+        assertEquals(actualPolygonModel, expectedPolygonModel);
+        assert(polygonEquals(actualPolygonModel.polygon, expectedPolygonModel.polygon));
+    }
+
     private boolean polygonEquals(Polygon polygon_1, Polygon polygon_2) {
         if (polygon_1 == polygon_2) return true;
         if (polygon_1 == null || Polygon.class != polygon_1.getClass()) return false;

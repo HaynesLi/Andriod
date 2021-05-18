@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.paltech.dronesncars.model.Map;
+import com.paltech.dronesncars.model.PolygonModel;
 import com.paltech.dronesncars.model.Repository;
 
 import org.osmdroid.views.overlay.Polygon;
@@ -23,8 +24,8 @@ public class MapViewModel extends ViewModel {
 
     private final Repository repository;
 
-    private final MutableLiveData<Map> _map = new MutableLiveData<>();
-    public LiveData<Map> map = _map;
+    private final MutableLiveData<Polygon> _polygon = new MutableLiveData<>();
+    public LiveData<Polygon> polygon = _polygon;
 
     private final MutableLiveData<Dictionary<String, Polygon>> _choosePolygonFromKML = new MutableLiveData<>();
     public LiveData<Dictionary<String, Polygon>> choosePolygonFromKML = _choosePolygonFromKML;
@@ -37,10 +38,25 @@ public class MapViewModel extends ViewModel {
         repository.clearSelectablePolygons(_choosePolygonFromKML::setValue);
     }
 
+    public void setPolygon(Polygon polygon) {
+        if (polygon != null) {
+            repository.setPolygon(polygon, _polygon::postValue);
+        }
+    }
+
+    public void getPolygon() {
+        repository.getPolygon(_polygon::postValue);
+    }
+
+    public void clearPolygon() {
+        repository.clearPolygon(_polygon::postValue);
+    }
+
     @Inject
     public MapViewModel(Repository repository) {
-        _choosePolygonFromKML.setValue(repository.getPolygonsToChoose());
         this.repository = repository;
+        _choosePolygonFromKML.setValue(this.repository.getPolygonsToChoose());
+        getPolygon();
     }
 
 }

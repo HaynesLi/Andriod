@@ -3,9 +3,6 @@ package com.paltech.dronesncars.model;
 import android.content.Context;
 import android.net.Uri;
 
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
-
 import com.paltech.dronesncars.ui.ViewModelCallback;
 
 import org.osmdroid.views.overlay.Polygon;
@@ -29,25 +26,29 @@ public class Repository {
 
     private Dictionary<String, Polygon> polygonsToChoose;
 
-    private final DNR_Database database;
     private final RoverDAO roverDAO;
     private final ResultDAO resultDAO;
     private final DroneSettingDAO droneSettingDAO;
     private final MapDAO mapDAO;
     private final RoverRouteDAO roverRouteDAO;
     private final RoverRoutineDAO roverRoutineDAO;
-    private int current_routine_id = -1;
+    private final PolygonModelDAO polygonModelDAO;
+
+
+    private final int POLYGON_ID = 1;
+    private int ROUTINE_ID = 1;
 
 
     @Inject
     public Repository(@ApplicationContext Context context, Executor executor) {
-        database = DNR_Database.getInstance(context);
+        DNR_Database database = DNR_Database.getInstance(context);
         resultDAO = database.getResultDAO();
         roverDAO = database.getRoverDAO();
         droneSettingDAO = database.getDroneSettingDAO();
         mapDAO = database.getMapDAO();
         roverRouteDAO = database.getRoverRouteDAO();
         roverRoutineDAO = database.getRoverRoutineDAO();
+        polygonModelDAO = database.getPolygonModelDAO();
         this.context = context;
         this.executor = executor;
     }
@@ -69,10 +70,10 @@ public class Repository {
     }
 
     public RoverRoutine getCurrentRoutine() {
-        if (current_routine_id == -1) {
+        if (ROUTINE_ID == -1) {
             return null;
         }
-        return roverRoutineDAO.getRoverRoutineByID(current_routine_id);
+        return roverRoutineDAO.getRoverRoutineByID(ROUTINE_ID);
     }
 
     public void parseKMLFile(Uri kml_file_uri, ViewModelCallback<Dictionary<String, Polygon>> mapViewModelCallback) {
@@ -94,5 +95,29 @@ public class Repository {
         return polygonsToChoose;
     }
 
-    // TODO add more stuff here...
+    public void setPolygon(Polygon polygon, ViewModelCallback<Polygon> mapViewModelCallback) {
+        executor.execute(() -> {
+            polygonModelDAO.insertPolygonModel(new PolygonModel(POLYGON_ID, polygon));
+            mapViewModelCallback.onComplete(polygon);
+        });
+    }
+
+    public void getPolygon(ViewModelCallback<Polygon> mapViewModelCallback) {
+        executor.execute(() -> {
+            PolygonModel polygonModel = polygonModelDAO.getPolygonModelByID(POLYGON_ID);
+            if (polygonModel == null) {
+                mapViewModelCallback.onComplete(null);
+            } else {
+                mapViewModelCallback.onComplete(polygonModel.polygon);
+            }
+        });
+    }
+
+    public void clearPolygon(ViewModelCallback<Polygon> mapViewModelCallback) {
+        executor.execute(() -> {
+            PolygonModel comparable = new PolygonModel(POLYGON_ID, null);
+            polygonModelDAO.deletePolygonModel(comparable);
+            mapViewModelCallback.onComplete(null);
+        });
+    }
 }
