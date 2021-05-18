@@ -7,7 +7,7 @@
     tools:context=".ui.DroneScreen">
 
     <fragment
-        android:id="@+id/map_fragment"
+        android:id="@+id/map_fragment_container"
         android:name="com.paltech.dronesncars.ui.MapFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -18,7 +18,7 @@
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <fragment
-        android:id="@+id/drone_settings_fragment"
+        android:id="@+id/drone_settings_fragment_container"
         android:name="com.paltech.dronesncars.ui.DroneSettingsFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
