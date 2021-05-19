@@ -2,7 +2,6 @@ package com.paltech.dronesncars.ui;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,36 +13,19 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentMapBinding;
-import com.paltech.dronesncars.model.KMLParser;
 
 import org.osmdroid.api.IMapController;
-import org.osmdroid.bonuspack.kml.KmlDocument;
-import org.osmdroid.bonuspack.kml.KmlFeature;
-import org.osmdroid.bonuspack.kml.KmlFolder;
-import org.osmdroid.bonuspack.kml.KmlGeometry;
-import org.osmdroid.bonuspack.kml.KmlPlacemark;
-import org.osmdroid.bonuspack.kml.KmlPolygon;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.OverlayManager;
 import org.osmdroid.views.overlay.Polygon;
 
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.Executor;
-
-import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -96,9 +78,8 @@ public class MapFragment extends Fragment {
         view_model = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
 
         configureMap();
-        getArgsFromParent();
         setLiveDataSources();
-
+        getArgsFromParent();
     }
 
     private void setLiveDataSources() {
@@ -128,11 +109,14 @@ public class MapFragment extends Fragment {
         view_model.polygon.observe(getViewLifecycleOwner(), polygon -> {
             if (polygon != null) {
                 setPolygon(polygon);
+            } else {
+                OverlayManager overlayManager = view_binding.map.getOverlayManager();
+                overlayManager.removeAll(overlayManager.overlays());
             }
         });
     }
 
-    private void getArgsFromParent(){
+    private void getArgsFromParent() {
         Fragment parentFragment = getParentFragment();
         if (parentFragment != null && parentFragment.getClass() == DroneScreen.class) {
             DroneScreen parentDroneScreen = (DroneScreen) parentFragment;
@@ -149,7 +133,6 @@ public class MapFragment extends Fragment {
     private void parseKMLFile(Uri kml_file_uri) {
         view_model.parseKMLFile(kml_file_uri);
     }
-
 
 
     private void configureMap() {
@@ -181,16 +164,13 @@ public class MapFragment extends Fragment {
 
         polygon.getFillPaint().setColor(Color.parseColor("#1EFFE70E"));
 
-        try {
-            if (polygon.getActualPoints() != null && polygon.getActualPoints().size() > 0) {
-                view_binding.map.getOverlayManager().add(polygon);
-                view_binding.map.invalidate();
-                IMapController mapController = view_binding.map.getController();
-                mapController.setCenter(polygon.getActualPoints().get(0));
-                mapController.setZoom(16.0);
 
-            }
-        } catch (NullPointerException ignored) {
+        if (polygon.getActualPoints() != null && polygon.getActualPoints().size() > 0) {
+            view_binding.map.getOverlayManager().add(polygon);
+            view_binding.map.invalidate();
+            IMapController mapController = view_binding.map.getController();
+            mapController.setCenter(polygon.getActualPoints().get(0));
+            mapController.setZoom(16.0);
         }
     }
 
@@ -198,12 +178,14 @@ public class MapFragment extends Fragment {
     public void onResume() {
         super.onResume();
         view_binding.map.onResume();
+        String x = "x";
     }
 
     @Override
     public void onPause() {
         super.onPause();
         view_binding.map.onPause();
+        String x = "x";
     }
 
 

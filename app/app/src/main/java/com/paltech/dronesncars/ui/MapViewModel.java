@@ -6,8 +6,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.paltech.dronesncars.model.Map;
-import com.paltech.dronesncars.model.PolygonModel;
 import com.paltech.dronesncars.model.Repository;
 
 import org.osmdroid.views.overlay.Polygon;
@@ -49,6 +47,7 @@ public class MapViewModel extends ViewModel {
     }
 
     public void clearPolygon() {
+        _polygon.setValue(null);
         repository.clearPolygon(_polygon::postValue);
     }
 
