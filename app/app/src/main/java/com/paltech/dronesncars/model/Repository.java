@@ -18,11 +18,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 
 public class Repository {
 
-    private Context context;
-    private Executor executor;
+    private final Context context;
+    private final Executor executor;
 
-
-    private KMLParser kmlParser;
 
     private Dictionary<String, Polygon> polygonsToChoose;
 
@@ -37,6 +35,7 @@ public class Repository {
 
     private final int POLYGON_ID = 1;
     private int ROUTINE_ID = 1;
+    private final int DRONE_SETTING_ID = 1;
 
 
     @Inject
@@ -118,6 +117,31 @@ public class Repository {
             PolygonModel comparable = new PolygonModel(POLYGON_ID, null);
             polygonModelDAO.deletePolygonModel(comparable);
             mapViewModelCallback.onComplete(null);
+        });
+    }
+
+    public void setFlightAltitude(int altitude, ViewModelCallback<Integer> droneSettingCallback) {
+        executor.execute(() -> {
+            DroneSetting currentSetting = droneSettingDAO.getDroneSettingByID(DRONE_SETTING_ID);
+            if (currentSetting != null) {
+                currentSetting.flight_altitude = altitude;
+                droneSettingDAO.updateSetting(currentSetting);
+            } else {
+                currentSetting = new DroneSetting(DRONE_SETTING_ID, altitude);
+                droneSettingDAO.insertSetting(currentSetting);
+            }
+            droneSettingCallback.onComplete(altitude);
+        });
+    }
+
+    public void getFlightAltitude(ViewModelCallback<Integer> droneSettingCallback) {
+        executor.execute(() -> {
+            DroneSetting currentSetting = droneSettingDAO.getDroneSettingByID(DRONE_SETTING_ID);
+            if(currentSetting == null) {
+                droneSettingCallback.onComplete(0);
+            } else {
+                droneSettingCallback.onComplete(currentSetting.flight_altitude);
+            }
         });
     }
 }

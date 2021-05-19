@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -21,6 +22,7 @@ import com.paltech.dronesncars.databinding.FragmentDroneSettingsBinding;
 public class DroneSettingsFragment extends Fragment {
 
     private FragmentDroneSettingsBinding view_binding;
+    private DroneSettingsViewModel view_model;
 
     public DroneSettingsFragment() {
         // Required empty public constructor
@@ -55,8 +57,23 @@ public class DroneSettingsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         view_binding = FragmentDroneSettingsBinding.bind(view);
+        view_model = new ViewModelProvider(requireActivity()).get(DroneSettingsViewModel.class);
 
+        setLiveDataSources();
         setListeners();
+    }
+
+    private void setLiveDataSources() {
+        view_model.flight_altitude.observe(getViewLifecycleOwner(), altitude -> {
+            if (altitude != 0) {
+                String current_altitude = String.valueOf(view_binding.editTextFlightAltitude.getText());
+                if (!current_altitude.equals("") && altitude != Integer.parseInt(current_altitude)) {
+                    view_binding.editTextFlightAltitude.setText(altitude.toString());
+                } else if(current_altitude.equals("")) {
+                    view_binding.editTextFlightAltitude.setText(altitude.toString());
+                }
+            }
+        });
     }
 
     private void setListeners() {
@@ -67,5 +84,8 @@ public class DroneSettingsFragment extends Fragment {
                 NavHostFragment.findNavController(parentFragment).navigate(action);
             }
         });
+        view_binding.buttonComputeRoute.setOnClickListener(v ->
+                view_model.setFlightAltitude(Integer.parseInt(
+                        String.valueOf(view_binding.editTextFlightAltitude.getText()))));
     }
 }

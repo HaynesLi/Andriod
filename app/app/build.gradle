@@ -40,6 +40,8 @@ dependencies {
     def fragment_version = "1.3.3"
     def junit_version = "4.13.2"
     def osm_droid_bonus_version = "6.7.0"
+    def lifecycle_version = "2.3.1"
+
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.3.0'
@@ -70,6 +72,9 @@ dependencies {
     // Hilt Dependency Injection
     implementation "com.google.dagger:hilt-android:$hilt_version"
     annotationProcessor "com.google.dagger:hilt-compiler:$hilt_version"
+
+    // ViewModel with SavedStateHandle
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
 
 
     apply plugin: "androidx.navigation.safeargs"

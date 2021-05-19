@@ -15,7 +15,7 @@
     <string name="todo_this_still_is_a_mock">TODO: This still is a mock</string>
     <string name="drone_settings_header">Drone Settings</string>
     <string name="height_descriptor">Height: </string>
-    <string name="compute_flight_route">compute flight route</string>
+    <string name="compute_flight_route">compute flight route &amp; save settings</string>
     <string name="start_flight">Start Flight</string>
     <string name="map">Map</string>
     <string name="scan_results">Scan Results</string>
