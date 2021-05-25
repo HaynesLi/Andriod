@@ -16,15 +16,22 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.paltech.dronesncars.R;
+import com.paltech.dronesncars.computing.TestPointInPolygon;
 import com.paltech.dronesncars.databinding.FragmentMapBinding;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
+import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.OverlayManager;
 import org.osmdroid.views.overlay.Polygon;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -167,7 +174,66 @@ public class MapFragment extends Fragment {
 
         if (polygon.getActualPoints() != null && polygon.getActualPoints().size() > 0) {
             view_binding.map.getOverlayManager().add(polygon);
+
+            // Test code to test the point generation for the flight route
+            // TODO clean code & put the computation in the background
+            /*TestPointInPolygon test = new TestPointInPolygon();
+            GeoPoint[][] somepoints = test.checkPoints(polygon, 0.01);
+
+            ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
+            items.add(new OverlayItem("", "", somepoints[0][0]));
+            items.add(new OverlayItem("", "", somepoints[0][somepoints[0].length-1]));
+            items.add(new OverlayItem("", "", somepoints[somepoints.length-1][0]));
+            items.add(new OverlayItem("", "", somepoints[somepoints.length-1][somepoints[0].length-1]));
+
+            for (GeoPoint[] pp : somepoints) {
+                for (GeoPoint p : pp) {
+                    if(p != null) {
+                        items.add(new OverlayItem("", "", p));
+                    }
+                }
+        }
+
+            BoundingBox boundingBox = polygon.getBounds();
+            GeoPoint north_east = new GeoPoint(boundingBox.getLatNorth(), boundingBox.getLonEast());
+            GeoPoint north_west = new GeoPoint(boundingBox.getLatNorth(), boundingBox.getLonWest());
+            GeoPoint south_east = new GeoPoint(boundingBox.getLatSouth(), boundingBox.getLonEast());
+            GeoPoint south_west = new GeoPoint(boundingBox.getLatSouth(), boundingBox.getLonWest());
+
+            items.add(new OverlayItem("north-east", "", north_east));
+            items.add(new OverlayItem("north-west", "", north_west));
+            items.add(new OverlayItem("south-east", "", south_east));
+            items.add(new OverlayItem("south_west", "", south_west));
+
+
+            ItemizedIconOverlay mOverlay = new ItemizedIconOverlay<OverlayItem>(getContext(), items,
+                    new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
+                        @Override
+                        public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
+                            //do something
+                            return true;
+                        }
+                        @Override
+                        public boolean onItemLongPress(final int index, final OverlayItem item) {
+                            return false;
+                        }
+                    });
+
+
+
+            view_binding.map.getOverlayManager().add(mOverlay);
+
+
+
+
+            Marker startMarker = new Marker(view_binding.map);
+            startMarker.setPosition(somepoints[0][0]);
+            startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
+            view_binding.map.getOverlays().add(startMarker);*/
+
             view_binding.map.invalidate();
+
+
             IMapController mapController = view_binding.map.getController();
             mapController.setCenter(polygon.getActualPoints().get(0));
             mapController.setZoom(16.0);
