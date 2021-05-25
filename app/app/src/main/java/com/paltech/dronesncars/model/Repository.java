@@ -144,4 +144,29 @@ public class Repository {
             }
         });
     }
+
+    public void setNumOfRovers(int numOfRovers, ViewModelCallback<Integer> roverSettingCallback) {
+        executor.execute(() -> {
+            RoverRoutine roverRoutine = roverRoutineDAO.getRoverRoutineByID(ROUTINE_ID);
+            if (roverRoutine != null) {
+                roverRoutine.num_of_rovers = numOfRovers;
+                roverRoutineDAO.update(roverRoutine);
+            } else {
+                roverRoutine = new RoverRoutine(ROUTINE_ID, numOfRovers);
+                roverRoutineDAO.insert(roverRoutine);
+            }
+            roverSettingCallback.onComplete(numOfRovers);
+        });
+    }
+
+    public void getNumOfRovers(ViewModelCallback<Integer> roverSettingCallback) {
+        executor.execute(() -> {
+            RoverRoutine roverRoutine = roverRoutineDAO.getRoverRoutineByID(ROUTINE_ID);
+            if (roverRoutine == null) {
+                roverSettingCallback.onComplete(0);
+            } else {
+                roverSettingCallback.onComplete(roverRoutine.num_of_rovers);
+            }
+        });
+    }
 }

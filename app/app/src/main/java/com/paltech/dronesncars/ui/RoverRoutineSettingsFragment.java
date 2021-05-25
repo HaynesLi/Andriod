@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -21,6 +22,7 @@ import com.paltech.dronesncars.databinding.FragmentRoverRoutineSettingsBinding;
 public class RoverRoutineSettingsFragment extends Fragment {
 
     private FragmentRoverRoutineSettingsBinding view_binding;
+    private RoverRoutineSettingsViewModel view_model;
 
     public RoverRoutineSettingsFragment() {
         // Required empty public constructor
@@ -57,8 +59,23 @@ public class RoverRoutineSettingsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         view_binding = FragmentRoverRoutineSettingsBinding.bind(view);
+        view_model = new ViewModelProvider(requireActivity()).get(RoverRoutineSettingsViewModel.class);
 
+        setLiveDataSources();
         setListeners();
+    }
+
+    private void setLiveDataSources() {
+        view_model.num_of_rovers.observe(getViewLifecycleOwner(), num_of_rovers -> {
+            if (num_of_rovers != 0) {
+                String current_num_of_rovers = String.valueOf(view_binding.numOfRoversInput.getText());
+                if (!current_num_of_rovers.equals("") && num_of_rovers != Integer.parseInt(current_num_of_rovers)) {
+                    view_binding.numOfRoversInput.setText(current_num_of_rovers);
+                } else if(current_num_of_rovers.equals("")) {
+                    view_binding.numOfRoversInput.setText(num_of_rovers.toString());
+                }
+            }
+        });
     }
 
     private void setListeners() {
