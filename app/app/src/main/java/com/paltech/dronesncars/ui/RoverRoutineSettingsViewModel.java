@@ -5,6 +5,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.paltech.dronesncars.model.Repository;
+import com.paltech.dronesncars.model.Rover;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -24,6 +27,15 @@ public class RoverRoutineSettingsViewModel extends ViewModel {
 
     private void getNumOfRovers() {
         repository.getNumOfRovers(_num_of_rovers::postValue);
+    }
+
+    public void add_rovers(int num_of_rovers) {
+        ArrayList<Rover> rovers = new ArrayList<>();
+        for (int i = 0; i < num_of_rovers; i++) {
+            rovers.add(new Rover(i, "Hubert_"+i, -1.0));
+        }
+
+        repository.setCurrentRovers(rovers);
     }
 
     @Inject

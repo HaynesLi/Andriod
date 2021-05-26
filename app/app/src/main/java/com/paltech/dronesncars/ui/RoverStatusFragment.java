@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -27,6 +28,9 @@ import java.util.List;
 public class RoverStatusFragment extends Fragment {
 
     FragmentRoverStatusBinding view_binding;
+    RoverStatusViewModel view_model;
+
+    private RoverStatusRecyclerAdapter roverStatusAdapter;
 
     public RoverStatusFragment() {
         // Required empty public constructor
@@ -58,32 +62,31 @@ public class RoverStatusFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_rover_status, container, false);
     }
 
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        view_binding = FragmentRoverStatusBinding.bind(view);
+        view_model = new ViewModelProvider(requireActivity()).get(RoverStatusViewModel.class);
+
+        init_rover_status_recycler_view();
+        setLiveDataSources();
+        setListeners();
+    }
+
     private void init_rover_status_recycler_view() {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         view_binding.roverStatusRecyclerView.setLayoutManager(mLayoutManager);
         view_binding.roverStatusRecyclerView.scrollToPosition(0);
 
-        List<Rover> dataset = getMockRoverDataset();
-        view_binding.roverStatusRecyclerView.setAdapter(new RoverStatusRecyclerAdapter(dataset));
+        roverStatusAdapter = new RoverStatusRecyclerAdapter(new ArrayList<>());
+        view_binding.roverStatusRecyclerView.setAdapter(roverStatusAdapter);
     }
 
-    private List<Rover> getMockRoverDataset(){
-        List<Rover> rover_mock_dataset = new ArrayList<>();
 
-        Rover rover = new Rover(0, "I am only a mock :(", 0.7);
-
-        rover_mock_dataset.add(rover);
-
-        return rover_mock_dataset;
-    }
-
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        view_binding = FragmentRoverStatusBinding.bind(view);
-        init_rover_status_recycler_view();
-
-        setListeners();
+    private void setLiveDataSources() {
+        view_model.getAllRovers().observe(getViewLifecycleOwner(), rovers -> {
+            roverStatusAdapter.setLocalRoverSet(rovers);
+        });
     }
 
     private void setListeners(){

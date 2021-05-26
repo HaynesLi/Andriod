@@ -3,6 +3,8 @@ package com.paltech.dronesncars.model;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.lifecycle.LiveData;
+
 import com.paltech.dronesncars.ui.ViewModelCallback;
 
 import org.osmdroid.views.overlay.Polygon;
@@ -167,6 +169,19 @@ public class Repository {
             } else {
                 roverSettingCallback.onComplete(roverRoutine.num_of_rovers);
             }
+        });
+    }
+
+    public LiveData<List<Rover>> getCurrentRovers() {
+        return roverDAO.getAllLiveData();
+    }
+
+    public void setCurrentRovers(List<Rover> currentRovers) {
+        executor.execute(() -> {
+            roverDAO.deleteAllRovers();
+            Rover[] current_rovers_as_array = new Rover[currentRovers.size()];
+            current_rovers_as_array = currentRovers.toArray(current_rovers_as_array);
+            roverDAO.insertMultipleRovers(current_rovers_as_array);
         });
     }
 }

@@ -16,10 +16,10 @@ import java.util.List;
 
 public class RoverStatusRecyclerAdapter extends RecyclerView.Adapter<RoverStatusRecyclerAdapter.RoverStatusViewHolder> {
 
-    private final List<Rover> localRoverSet;
+    private List<Rover> localRoverSet;
 
     public RoverStatusRecyclerAdapter(List<Rover> rover_set) {
-        localRoverSet = rover_set;
+        this.localRoverSet = rover_set;
     }
 
     public static class RoverStatusViewHolder extends RecyclerView.ViewHolder {
@@ -37,6 +37,8 @@ public class RoverStatusRecyclerAdapter extends RecyclerView.Adapter<RoverStatus
         public TextView getRoverNameText() {
             return view_binding.roverName;
         }
+
+        public TextView getStatus() { return view_binding.roverStatus; }
     }
 
     @NonNull
@@ -51,10 +53,16 @@ public class RoverStatusRecyclerAdapter extends RecyclerView.Adapter<RoverStatus
         Rover rover = localRoverSet.get(position);
         holder.getRoverIDText().setText(String.format("%d", rover.rover_id));
         holder.getRoverNameText().setText(rover.roverName);
+        holder.getStatus().setText(rover.status.toString());
     }
 
     @Override
     public int getItemCount() {
         return localRoverSet.size();
+    }
+
+    public void setLocalRoverSet(List<Rover> roverSet) {
+        this.localRoverSet = roverSet;
+        notifyDataSetChanged();
     }
 }

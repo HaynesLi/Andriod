@@ -18,10 +18,14 @@ public class Rover {
     @ColumnInfo(name = "battery")
     public double battery;
 
+    @ColumnInfo(name = "Status")
+    public RoverStatus status;
+
     public Rover(int rover_id, String roverName, double battery) {
         this.rover_id = rover_id;
         this.roverName = roverName;
         this.battery = battery;
+        this.status = RoverStatus.DISCONNECTED;
     }
 
     @Override

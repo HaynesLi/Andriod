@@ -68,17 +68,17 @@ public class RoverRoutineSettingsFragment extends Fragment {
     private void setLiveDataSources() {
         view_model.num_of_rovers.observe(getViewLifecycleOwner(), num_of_rovers -> {
             if (num_of_rovers != 0) {
-                String current_num_of_rovers = String.valueOf(view_binding.numOfRoversInput.getText());
-                if (!current_num_of_rovers.equals("") && num_of_rovers != Integer.parseInt(current_num_of_rovers)) {
-                    view_binding.numOfRoversInput.setText(current_num_of_rovers);
-                } else if(current_num_of_rovers.equals("")) {
-                    view_binding.numOfRoversInput.setText(num_of_rovers.toString());
-                }
+                view_binding.numOfRoversInput.setText(num_of_rovers.toString());
+                view_model.add_rovers(num_of_rovers);
             }
         });
     }
 
     private void setListeners() {
+        view_binding.computeRoutineButton.setOnClickListener(v -> {
+            view_model.set_num_of_rovers(Integer.parseInt(view_binding.numOfRoversInput.getText().toString()));
+        });
+
         view_binding.acceptRoverRoutineButton.setOnClickListener(v -> {
             NavDirections action = RoverRouteFragmentDirections.actionRoverRouteFragmentToRoverStatusFragment();
             RoverRouteFragment parentFragment = (RoverRouteFragment) getParentFragment();

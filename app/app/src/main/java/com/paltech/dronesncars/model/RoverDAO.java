@@ -1,5 +1,6 @@
 package com.paltech.dronesncars.model;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -13,6 +14,9 @@ public interface RoverDAO {
     @Query("SELECT * FROM rover")
     List<Rover> getAll();
 
+    @Query("SELECT * FROM rover")
+    LiveData<List<Rover>> getAllLiveData();
+
     @Query("SELECT * FROM rover WHERE rover_id = (:rid)")
     Rover getRoverByID(int rid);
 
@@ -21,6 +25,9 @@ public interface RoverDAO {
 
     @Delete
     void delete(Rover rover);
+
+    @Query("DELETE FROM rover")
+    void deleteAllRovers();
 
     // TODO: add Transaction to get all routes for one rover
     @Transaction
