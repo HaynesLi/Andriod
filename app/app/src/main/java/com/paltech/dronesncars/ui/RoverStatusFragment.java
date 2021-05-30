@@ -94,5 +94,8 @@ public class RoverStatusFragment extends Fragment {
             NavDirections action = RoverStatusFragmentDirections.actionRoverStatusFragmentToReportFragment();
             NavHostFragment.findNavController(this).navigate(action);
         });
+        view_binding.buttonMockProgressUpdate.setOnClickListener(v -> {
+            view_model.mock_progress_update();
+        });
     }
 }

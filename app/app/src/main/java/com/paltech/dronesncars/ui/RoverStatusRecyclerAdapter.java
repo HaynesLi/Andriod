@@ -39,6 +39,8 @@ public class RoverStatusRecyclerAdapter extends RecyclerView.Adapter<RoverStatus
         }
 
         public TextView getStatus() { return view_binding.roverStatus; }
+
+        public TextView getProgress() { return view_binding.roverProgress; }
     }
 
     @NonNull
@@ -54,6 +56,7 @@ public class RoverStatusRecyclerAdapter extends RecyclerView.Adapter<RoverStatus
         holder.getRoverIDText().setText(String.format("%d", rover.rover_id));
         holder.getRoverNameText().setText(rover.roverName);
         holder.getStatus().setText(rover.status.toString());
+        holder.getProgress().setText(String.format("%d%%", (int) Math.round(rover.progress * 100)));
     }
 
     @Override

@@ -26,4 +26,7 @@ public class RoverStatusViewModel extends ViewModel {
         this.repository = repository;
     }
 
+    public void mock_progress_update() {
+        repository.mock_progress_update();
+    }
 }

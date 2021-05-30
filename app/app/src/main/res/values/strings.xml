@@ -35,4 +35,6 @@
     <string name="compute_routine_button">compute routine</string>
     <string name="accept_rover_routine_button">Accept Routine</string>
     <string name="status">Status:</string>
+    <string name="progress">Progress:</string>
+    <string name="_0_percent_progress_default">0%</string>
 </resources>

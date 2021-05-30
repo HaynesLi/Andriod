@@ -46,5 +46,15 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.9" />
 
+        <Button
+            android:id="@+id/button_mock_progress_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mock progress"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_guideline_recycler_view"
+            app:layout_constraintEnd_toStartOf="@+id/rover_status_recycler_view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rover_status_title" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

@@ -184,4 +184,24 @@ public class Repository {
             roverDAO.insertMultipleRovers(current_rovers_as_array);
         });
     }
+
+    public void save_rover_progress(Rover rover, double progress) {
+        double add_progress = progress;
+        if (rover.progress+add_progress > 1.0) {
+            add_progress = 1 - rover.progress;
+        }
+        if (add_progress > 0) {
+            rover.progress += add_progress;
+            executor.execute(() -> roverDAO.update(rover));
+        }
+    }
+
+    public void mock_progress_update() {
+        executor.execute(() -> {
+            List<Rover> current_rovers = roverDAO.getAll();
+            if (current_rovers.size() > 0) {
+                save_rover_progress(current_rovers.get(0), 0.1);
+            }
+        });
+    }
 }
