@@ -13,7 +13,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.paltech.dronesncars.R;
 
-public class DroneScreen extends Fragment {
+public class DroneScreen extends LandscapeFragment {
 
     public Uri getKml_file_uri() {
         return kml_file_uri;

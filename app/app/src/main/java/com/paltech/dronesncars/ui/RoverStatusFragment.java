@@ -25,7 +25,7 @@ import java.util.List;
  * Use the {@link RoverStatusFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RoverStatusFragment extends Fragment {
+public class RoverStatusFragment extends LandscapeFragment {
 
     FragmentRoverStatusBinding view_binding;
     RoverStatusViewModel view_model;

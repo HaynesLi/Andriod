@@ -9,26 +9,21 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.paltech.dronesncars.R;
-import com.paltech.dronesncars.computing.TestPointInPolygon;
 import com.paltech.dronesncars.databinding.FragmentMapBinding;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
-import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
-import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Overlay;
-import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.OverlayManager;
 import org.osmdroid.views.overlay.Polygon;
 import org.osmdroid.views.overlay.Polyline;
@@ -45,12 +40,15 @@ import dagger.hilt.android.AndroidEntryPoint;
  * create an instance of this fragment.
  */
 @AndroidEntryPoint
-public class MapFragment extends Fragment {
+public class MapFragment extends LandscapeFragment {
 
     private FragmentMapBinding view_binding;
     private MapViewModel view_model;
+    private List<Marker> edit_route_markers;
 
     private boolean is_flight_map;
+
+    private boolean in_edit_state;
 
     public MapFragment() {
         // Required empty public constructor
@@ -89,21 +87,24 @@ public class MapFragment extends Fragment {
         view_binding = FragmentMapBinding.bind(view);
         view_model = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
         is_flight_map = get_is_flight_map();
+        in_edit_state = false;
+
+        view_binding.buttonTriggerEditState.setText("Edit Route");
 
         configureMap();
         setLiveDataSources();
         getArgsFromParent();
+        setClickListeners();
     }
 
     private boolean get_is_flight_map() {
         Fragment parentFragment = getParentFragment();
         if (parentFragment != null && parentFragment.getClass() == DroneScreen.class) {
             return true;
-        } else if (parentFragment.getClass() == RoverRouteFragment.class) {
+        } else if (parentFragment != null && parentFragment.getClass() == RoverRouteFragment.class) {
             return false;
         }
         return false;
-
     }
 
     private void setLiveDataSources() {
@@ -143,6 +144,10 @@ public class MapFragment extends Fragment {
             view_model.getRoute().observe(getViewLifecycleOwner(), flight_route -> {
                 if (flight_route != null) {
                     List<GeoPoint> route = flight_route.route;
+                    if (edit_route_markers != null && edit_route_markers.size() != 0) {
+                        view_binding.map.getOverlayManager().removeAll(edit_route_markers);
+                        edit_route_markers = null;
+                    }
                     if (route != null && route.size() > 1) {
 
                         // remove the old route drawing (if there was one)
@@ -154,9 +159,20 @@ public class MapFragment extends Fragment {
                             }
                         }
 
+                        for (GeoPoint point: route) {
+                            Marker tmp_marker = new Marker(view_binding.map, requireContext());
+                            tmp_marker.setPosition(point);
+                            tmp_marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                            if (edit_route_markers == null) {
+                                edit_route_markers = new ArrayList<>();
+                            }
+                            edit_route_markers.add(tmp_marker);
+                        }
+
                         // add the new one
                         Polyline route_drawable_overlay = new Polyline();
                         route_drawable_overlay.setPoints(route);
+
                         view_binding.map.getOverlayManager().add(route_drawable_overlay);
                         view_binding.map.invalidate();
                     }
@@ -213,6 +229,7 @@ public class MapFragment extends Fragment {
         polygon.getFillPaint().setColor(Color.parseColor("#1EFFE70E"));
 
         if (polygon.getActualPoints() != null && polygon.getActualPoints().size() > 0) {
+            view_binding.map.getOverlayManager().removeAll(view_binding.map.getOverlays());
             view_binding.map.getOverlayManager().add(polygon);
             view_binding.map.invalidate();
 
@@ -234,6 +251,20 @@ public class MapFragment extends Fragment {
         super.onPause();
         view_binding.map.onPause();
         String x = "x";
+    }
+
+    private void setClickListeners() {
+        view_binding.buttonTriggerEditState.setOnClickListener(v -> {
+            if (!in_edit_state) {
+                view_binding.map.getOverlayManager().addAll(edit_route_markers);
+                view_binding.buttonTriggerEditState.setText("Stop Edit");
+            } else {
+                view_binding.map.getOverlayManager().removeAll(edit_route_markers);
+                view_binding.buttonTriggerEditState.setText("Edit Route");
+            }
+            view_binding.map.invalidate();
+            in_edit_state = !in_edit_state;
+        });
     }
 
 

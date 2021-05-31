@@ -19,7 +19,7 @@ import com.paltech.dronesncars.databinding.FragmentDroneSettingsBinding;
  * Use the {@link DroneSettingsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DroneSettingsFragment extends Fragment {
+public class DroneSettingsFragment extends LandscapeFragment {
 
     private FragmentDroneSettingsBinding view_binding;
     private DroneSettingsViewModel view_model;

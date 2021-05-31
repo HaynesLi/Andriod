@@ -19,7 +19,7 @@ import com.paltech.dronesncars.databinding.FragmentRoverRoutineSettingsBinding;
  * Use the {@link RoverRoutineSettingsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RoverRoutineSettingsFragment extends Fragment {
+public class RoverRoutineSettingsFragment extends LandscapeFragment {
 
     private FragmentRoverRoutineSettingsBinding view_binding;
     private RoverRoutineSettingsViewModel view_model;

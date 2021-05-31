@@ -22,7 +22,7 @@ import com.paltech.dronesncars.databinding.FragmentStartScreenBinding;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class StartScreen extends Fragment {
+public class StartScreen extends LandscapeFragment {
 
     private FragmentStartScreenBinding view_binding;
 

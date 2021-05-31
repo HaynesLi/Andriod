@@ -18,7 +18,7 @@ import com.paltech.dronesncars.databinding.FragmentScanResultsBinding;
  * Use the {@link ScanResultsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ScanResultsFragment extends Fragment {
+public class ScanResultsFragment extends LandscapeFragment {
 
     private FragmentScanResultsBinding view_binding;
 

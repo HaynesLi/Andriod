@@ -17,7 +17,7 @@ import com.paltech.dronesncars.databinding.FragmentReportBinding;
  * Use the {@link ReportFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ReportFragment extends Fragment {
+public class ReportFragment extends LandscapeFragment {
 
     private FragmentReportBinding view_binding;
 
