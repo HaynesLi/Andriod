@@ -9,9 +9,11 @@ import androidx.lifecycle.ViewModel;
 import com.paltech.dronesncars.model.FlightRoute;
 import com.paltech.dronesncars.model.Repository;
 
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polygon;
 
 import java.util.Dictionary;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -54,6 +56,10 @@ public class MapViewModel extends ViewModel {
     public void clearPolygon() {
         _polygon.setValue(null);
         repository.clearPolygon(_polygon::postValue);
+    }
+
+    public void set_flight_route(List<GeoPoint> route) {
+        repository.set_flight_route(route);
     }
 
     @Inject

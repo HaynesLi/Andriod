@@ -222,19 +222,26 @@ public class Repository {
                 List<GeoPoint> route =
                         FlightRouteGenerator.compute_flight_route(polygon_model.polygon, 10);
 
-                FlightRoute current_flightroute =
-                        flightRouteDAO.get_flightroute_from_id(FLIGHT_ROUTE_ID);
-
-                if (current_flightroute == null) {
-                    current_flightroute = new FlightRoute();
-                    current_flightroute.flight_route_id = FLIGHT_ROUTE_ID;
-                    current_flightroute.route = route;
-                    flightRouteDAO.insertFlightRoute(current_flightroute);
-                } else {
-                    current_flightroute.route = route;
-                    flightRouteDAO.updateFlightRoute(current_flightroute);
-                }
+                set_flight_route(route);
             }
         });
+    }
+
+    public void set_flight_route(List<GeoPoint> route) {
+        executor.execute(() -> {
+            FlightRoute current_flightroute =
+                    flightRouteDAO.get_flightroute_from_id(FLIGHT_ROUTE_ID);
+
+            if (current_flightroute == null) {
+                current_flightroute = new FlightRoute();
+                current_flightroute.flight_route_id = FLIGHT_ROUTE_ID;
+                current_flightroute.route = route;
+                flightRouteDAO.insertFlightRoute(current_flightroute);
+            } else {
+                current_flightroute.route = route;
+                flightRouteDAO.updateFlightRoute(current_flightroute);
+            }
+        });
+
     }
 }

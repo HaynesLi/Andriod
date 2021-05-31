@@ -21,7 +21,6 @@ import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.OverlayManager;
@@ -47,8 +46,8 @@ public class MapFragment extends LandscapeFragment {
     private List<Marker> edit_route_markers;
 
     private boolean is_flight_map;
-
     private boolean in_edit_state;
+    private boolean changed_during_edit;
 
     public MapFragment() {
         // Required empty public constructor
@@ -88,6 +87,7 @@ public class MapFragment extends LandscapeFragment {
         view_model = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
         is_flight_map = get_is_flight_map();
         in_edit_state = false;
+        changed_during_edit = false;
 
         view_binding.buttonTriggerEditState.setText("Edit Route");
 
@@ -151,18 +151,35 @@ public class MapFragment extends LandscapeFragment {
                     if (route != null && route.size() > 1) {
 
                         // remove the old route drawing (if there was one)
-                        List<Overlay> overlays = view_binding.map.getOverlayManager().overlays();
-                        for (Overlay overlay : overlays) {
-                            if (overlay.getClass() == Polyline.class) {
-                                view_binding.map.getOverlayManager().remove(overlay);
-                                break;
-                            }
-                        }
+                        find_and_delete_polyline_route();
 
                         for (GeoPoint point: route) {
                             Marker tmp_marker = new Marker(view_binding.map, requireContext());
                             tmp_marker.setPosition(point);
                             tmp_marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                            tmp_marker.setOnMarkerClickListener((marker, mapView) -> {
+                                if (!marker.isDraggable()) {
+                                    marker.setDraggable(true);
+                                    view_binding.map.getController().setCenter(marker.getPosition());
+                                } else {
+                                    marker.setDraggable(false);
+                                }
+                                return true;
+                            });
+                            tmp_marker.setOnMarkerDragListener(new Marker.OnMarkerDragListener() {
+                                @Override
+                                public void onMarkerDrag(Marker marker) {
+                                }
+
+                                @Override
+                                public void onMarkerDragEnd(Marker marker) {
+                                    changed_during_edit = true;
+                                }
+
+                                @Override
+                                public void onMarkerDragStart(Marker marker) {
+                                }
+                            });
                             if (edit_route_markers == null) {
                                 edit_route_markers = new ArrayList<>();
                             }
@@ -172,6 +189,7 @@ public class MapFragment extends LandscapeFragment {
                         // add the new one
                         Polyline route_drawable_overlay = new Polyline();
                         route_drawable_overlay.setPoints(route);
+                        route_drawable_overlay.getOutlinePaint().setStrokeWidth(1);
 
                         view_binding.map.getOverlayManager().add(route_drawable_overlay);
                         view_binding.map.invalidate();
@@ -253,6 +271,16 @@ public class MapFragment extends LandscapeFragment {
         String x = "x";
     }
 
+    private void find_and_delete_polyline_route() {
+        List<Overlay> overlays = view_binding.map.getOverlayManager().overlays();
+        for (Overlay overlay : overlays) {
+            if (overlay.getClass() == Polyline.class) {
+                view_binding.map.getOverlayManager().remove(overlay);
+                break;
+            }
+        }
+    }
+
     private void setClickListeners() {
         view_binding.buttonTriggerEditState.setOnClickListener(v -> {
             if (!in_edit_state) {
@@ -261,6 +289,15 @@ public class MapFragment extends LandscapeFragment {
             } else {
                 view_binding.map.getOverlayManager().removeAll(edit_route_markers);
                 view_binding.buttonTriggerEditState.setText("Edit Route");
+                if (changed_during_edit) {
+                    changed_during_edit = false;
+                    List<GeoPoint> new_route = new ArrayList<>();
+                    for (Marker marker: edit_route_markers){
+                        new_route.add(marker.getPosition());
+                    }
+
+                    view_model.set_flight_route(new_route);
+                }
             }
             view_binding.map.invalidate();
             in_edit_state = !in_edit_state;
