@@ -5,8 +5,10 @@ import android.net.Uri;
 
 import androidx.lifecycle.LiveData;
 
+import com.paltech.dronesncars.computing.FlightRouteGenerator;
 import com.paltech.dronesncars.ui.ViewModelCallback;
 
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polygon;
 
 import java.util.Dictionary;
@@ -29,7 +31,7 @@ public class Repository {
     private final RoverDAO roverDAO;
     private final ResultDAO resultDAO;
     private final DroneSettingDAO droneSettingDAO;
-    private final MapDAO mapDAO;
+    private final FlightRouteDAO flightRouteDAO;
     private final RoverRouteDAO roverRouteDAO;
     private final RoverRoutineDAO roverRoutineDAO;
     private final PolygonModelDAO polygonModelDAO;
@@ -38,6 +40,7 @@ public class Repository {
     private final int POLYGON_ID = 1;
     private int ROUTINE_ID = 1;
     private final int DRONE_SETTING_ID = 1;
+    private final int FLIGHT_ROUTE_ID = 1;
 
 
     @Inject
@@ -46,7 +49,7 @@ public class Repository {
         resultDAO = database.getResultDAO();
         roverDAO = database.getRoverDAO();
         droneSettingDAO = database.getDroneSettingDAO();
-        mapDAO = database.getMapDAO();
+        flightRouteDAO = database.getFlightRouteDAO();
         roverRouteDAO = database.getRoverRouteDAO();
         roverRoutineDAO = database.getRoverRoutineDAO();
         polygonModelDAO = database.getPolygonModelDAO();
@@ -139,7 +142,7 @@ public class Repository {
     public void getFlightAltitude(ViewModelCallback<Integer> droneSettingCallback) {
         executor.execute(() -> {
             DroneSetting currentSetting = droneSettingDAO.getDroneSettingByID(DRONE_SETTING_ID);
-            if(currentSetting == null) {
+            if (currentSetting == null) {
                 droneSettingCallback.onComplete(0);
             } else {
                 droneSettingCallback.onComplete(currentSetting.flight_altitude);
@@ -187,7 +190,7 @@ public class Repository {
 
     public void save_rover_progress(Rover rover, double progress) {
         double add_progress = progress;
-        if (rover.progress+add_progress > 1.0) {
+        if (rover.progress + add_progress > 1.0) {
             add_progress = 1 - rover.progress;
         }
         if (add_progress > 0) {
@@ -201,6 +204,36 @@ public class Repository {
             List<Rover> current_rovers = roverDAO.getAll();
             if (current_rovers.size() > 0) {
                 save_rover_progress(current_rovers.get(0), 0.1);
+            }
+        });
+    }
+
+    public LiveData<FlightRoute> get_current_flightroute() {
+        return flightRouteDAO.get_flightroute_from_id_livedata(FLIGHT_ROUTE_ID);
+    }
+
+    public void computeRoute() {
+        executor.execute(() -> {
+            PolygonModel polygon_model = polygonModelDAO.getPolygonModelByID(POLYGON_ID);
+            // TODO: add distance (in meters) between photos as setting
+            DroneSetting currentSetting = droneSettingDAO.getDroneSettingByID(DRONE_SETTING_ID);
+
+            if (polygon_model != null && polygon_model.polygon != null && currentSetting != null) {
+                List<GeoPoint> route =
+                        FlightRouteGenerator.compute_flight_route(polygon_model.polygon, 10);
+
+                FlightRoute current_flightroute =
+                        flightRouteDAO.get_flightroute_from_id(FLIGHT_ROUTE_ID);
+
+                if (current_flightroute == null) {
+                    current_flightroute = new FlightRoute();
+                    current_flightroute.flight_route_id = FLIGHT_ROUTE_ID;
+                    current_flightroute.route = route;
+                    flightRouteDAO.insertFlightRoute(current_flightroute);
+                } else {
+                    current_flightroute.route = route;
+                    flightRouteDAO.updateFlightRoute(current_flightroute);
+                }
             }
         });
     }

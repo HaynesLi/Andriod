@@ -84,8 +84,10 @@ public class DroneSettingsFragment extends Fragment {
                 NavHostFragment.findNavController(parentFragment).navigate(action);
             }
         });
-        view_binding.buttonComputeRoute.setOnClickListener(v ->
+        view_binding.buttonComputeRoute.setOnClickListener(v -> {
                 view_model.setFlightAltitude(Integer.parseInt(
-                        String.valueOf(view_binding.editTextFlightAltitude.getText()))));
+                        String.valueOf(view_binding.editTextFlightAltitude.getText())));
+                view_model.computeRoute();
+        });
     }
 }

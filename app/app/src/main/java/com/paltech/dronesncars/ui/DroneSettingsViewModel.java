@@ -15,7 +15,7 @@ public class DroneSettingsViewModel extends ViewModel {
 
     private final Repository repository;
 
-    private MutableLiveData<Integer> _flight_altitude = new MutableLiveData<>();
+    private final MutableLiveData<Integer> _flight_altitude = new MutableLiveData<>();
     public LiveData<Integer> flight_altitude = _flight_altitude;
 
     @Inject
@@ -30,5 +30,8 @@ public class DroneSettingsViewModel extends ViewModel {
 
     private void getFlightAltitude() {
         repository.getFlightAltitude(_flight_altitude::postValue);
+    }
+    public void computeRoute() {
+        repository.computeRoute();
     }
 }

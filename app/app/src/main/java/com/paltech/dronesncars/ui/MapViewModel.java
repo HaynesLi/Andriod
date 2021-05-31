@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.paltech.dronesncars.model.FlightRoute;
 import com.paltech.dronesncars.model.Repository;
 
 import org.osmdroid.views.overlay.Polygon;
@@ -24,6 +25,10 @@ public class MapViewModel extends ViewModel {
 
     private final MutableLiveData<Polygon> _polygon = new MutableLiveData<>();
     public LiveData<Polygon> polygon = _polygon;
+
+    public LiveData<FlightRoute> getRoute() {
+        return this.repository.get_current_flightroute();
+    }
 
     private final MutableLiveData<Dictionary<String, Polygon>> _choosePolygonFromKML = new MutableLiveData<>();
     public LiveData<Dictionary<String, Polygon>> choosePolygonFromKML = _choosePolygonFromKML;

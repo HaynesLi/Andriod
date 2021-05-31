@@ -27,12 +27,15 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.OverlayManager;
 import org.osmdroid.views.overlay.Polygon;
+import org.osmdroid.views.overlay.Polyline;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -46,6 +49,8 @@ public class MapFragment extends Fragment {
 
     private FragmentMapBinding view_binding;
     private MapViewModel view_model;
+
+    private boolean is_flight_map;
 
     public MapFragment() {
         // Required empty public constructor
@@ -83,10 +88,22 @@ public class MapFragment extends Fragment {
 
         view_binding = FragmentMapBinding.bind(view);
         view_model = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
+        is_flight_map = get_is_flight_map();
 
         configureMap();
         setLiveDataSources();
         getArgsFromParent();
+    }
+
+    private boolean get_is_flight_map() {
+        Fragment parentFragment = getParentFragment();
+        if (parentFragment != null && parentFragment.getClass() == DroneScreen.class) {
+            return true;
+        } else if (parentFragment.getClass() == RoverRouteFragment.class) {
+            return false;
+        }
+        return false;
+
     }
 
     private void setLiveDataSources() {
@@ -121,6 +138,31 @@ public class MapFragment extends Fragment {
                 overlayManager.removeAll(overlayManager.overlays());
             }
         });
+
+        if (is_flight_map) {
+            view_model.getRoute().observe(getViewLifecycleOwner(), flight_route -> {
+                if (flight_route != null) {
+                    List<GeoPoint> route = flight_route.route;
+                    if (route != null && route.size() > 1) {
+
+                        // remove the old route drawing (if there was one)
+                        List<Overlay> overlays = view_binding.map.getOverlayManager().overlays();
+                        for (Overlay overlay : overlays) {
+                            if (overlay.getClass() == Polyline.class) {
+                                view_binding.map.getOverlayManager().remove(overlay);
+                                break;
+                            }
+                        }
+
+                        // add the new one
+                        Polyline route_drawable_overlay = new Polyline();
+                        route_drawable_overlay.setPoints(route);
+                        view_binding.map.getOverlayManager().add(route_drawable_overlay);
+                        view_binding.map.invalidate();
+                    }
+                }
+            });
+        }
     }
 
     private void getArgsFromParent() {
@@ -129,9 +171,6 @@ public class MapFragment extends Fragment {
             DroneScreen parentDroneScreen = (DroneScreen) parentFragment;
             Uri kml_file_uri = parentDroneScreen.getKml_file_uri();
             if (kml_file_uri != null) {
-                Toast.makeText(getContext(),
-                        String.format("Got Uri: %s", kml_file_uri.toString()),
-                        Toast.LENGTH_SHORT).show();
                 parseKMLFile(kml_file_uri);
             }
         }
@@ -147,7 +186,9 @@ public class MapFragment extends Fragment {
         // ATTENTION: this configuration is NOT part of android, but of osmdroid!
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
-        //TODO what is this? use offline instead
+        // TODO what is this? use offline instead
+        // TODO remove previously drawn route if the polygon is a different one
+        // TODO check route for plausibility
         OverlayManager overlayManager = view_binding.map.getOverlayManager();
         overlayManager.removeAll(overlayManager.overlays());
         view_binding.map.invalidate();
@@ -171,68 +212,9 @@ public class MapFragment extends Fragment {
 
         polygon.getFillPaint().setColor(Color.parseColor("#1EFFE70E"));
 
-
         if (polygon.getActualPoints() != null && polygon.getActualPoints().size() > 0) {
             view_binding.map.getOverlayManager().add(polygon);
-
-            // Test code to test the point generation for the flight route
-            // TODO clean code & put the computation in the background
-            /*TestPointInPolygon test = new TestPointInPolygon();
-            GeoPoint[][] somepoints = test.checkPoints(polygon, 0.01);
-
-            ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
-            items.add(new OverlayItem("", "", somepoints[0][0]));
-            items.add(new OverlayItem("", "", somepoints[0][somepoints[0].length-1]));
-            items.add(new OverlayItem("", "", somepoints[somepoints.length-1][0]));
-            items.add(new OverlayItem("", "", somepoints[somepoints.length-1][somepoints[0].length-1]));
-
-            for (GeoPoint[] pp : somepoints) {
-                for (GeoPoint p : pp) {
-                    if(p != null) {
-                        items.add(new OverlayItem("", "", p));
-                    }
-                }
-        }
-
-            BoundingBox boundingBox = polygon.getBounds();
-            GeoPoint north_east = new GeoPoint(boundingBox.getLatNorth(), boundingBox.getLonEast());
-            GeoPoint north_west = new GeoPoint(boundingBox.getLatNorth(), boundingBox.getLonWest());
-            GeoPoint south_east = new GeoPoint(boundingBox.getLatSouth(), boundingBox.getLonEast());
-            GeoPoint south_west = new GeoPoint(boundingBox.getLatSouth(), boundingBox.getLonWest());
-
-            items.add(new OverlayItem("north-east", "", north_east));
-            items.add(new OverlayItem("north-west", "", north_west));
-            items.add(new OverlayItem("south-east", "", south_east));
-            items.add(new OverlayItem("south_west", "", south_west));
-
-
-            ItemizedIconOverlay mOverlay = new ItemizedIconOverlay<OverlayItem>(getContext(), items,
-                    new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
-                        @Override
-                        public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-                            //do something
-                            return true;
-                        }
-                        @Override
-                        public boolean onItemLongPress(final int index, final OverlayItem item) {
-                            return false;
-                        }
-                    });
-
-
-
-            view_binding.map.getOverlayManager().add(mOverlay);
-
-
-
-
-            Marker startMarker = new Marker(view_binding.map);
-            startMarker.setPosition(somepoints[0][0]);
-            startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
-            view_binding.map.getOverlays().add(startMarker);*/
-
             view_binding.map.invalidate();
-
 
             IMapController mapController = view_binding.map.getController();
             mapController.setCenter(polygon.getActualPoints().get(0));
