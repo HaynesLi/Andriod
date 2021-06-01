@@ -19,8 +19,10 @@ import com.paltech.dronesncars.databinding.FragmentMapBinding;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.OverlayManager;
@@ -44,9 +46,12 @@ public class MapFragment extends LandscapeFragment {
     private FragmentMapBinding view_binding;
     private MapViewModel view_model;
     private List<Marker> edit_route_markers;
+    private List<Marker> polygon_vertices;
+
+    private enum VIEW_STATE {NONE, EDIT_POLYGON, EDIT_ROUTE};
 
     private boolean is_flight_map;
-    private boolean in_edit_state;
+    private VIEW_STATE current_state;
     private boolean changed_during_edit;
 
     public MapFragment() {
@@ -86,15 +91,16 @@ public class MapFragment extends LandscapeFragment {
         view_binding = FragmentMapBinding.bind(view);
         view_model = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
         is_flight_map = get_is_flight_map();
-        in_edit_state = false;
+        current_state = VIEW_STATE.NONE;
         changed_during_edit = false;
+        edit_route_markers = null;
 
         view_binding.buttonTriggerEditState.setText("Edit Route");
 
         configureMap();
         setLiveDataSources();
         getArgsFromParent();
-        setClickListeners();
+        set_click_listeners();
     }
 
     private boolean get_is_flight_map() {
@@ -135,8 +141,7 @@ public class MapFragment extends LandscapeFragment {
             if (polygon != null) {
                 setPolygon(polygon);
             } else {
-                OverlayManager overlayManager = view_binding.map.getOverlayManager();
-                overlayManager.removeAll(overlayManager.overlays());
+                find_and_delete_overlay("both");
             }
         });
 
@@ -151,7 +156,7 @@ public class MapFragment extends LandscapeFragment {
                     if (route != null && route.size() > 1) {
 
                         // remove the old route drawing (if there was one)
-                        find_and_delete_polyline_route();
+                        find_and_delete_overlay("polyline");
 
                         for (GeoPoint point: route) {
                             Marker tmp_marker = new Marker(view_binding.map, requireContext());
@@ -206,8 +211,31 @@ public class MapFragment extends LandscapeFragment {
             Uri kml_file_uri = parentDroneScreen.getKml_file_uri();
             if (kml_file_uri != null) {
                 parseKMLFile(kml_file_uri);
+            } else {
+                start_polygon_edit();
             }
         }
+    }
+
+    private void start_polygon_edit() {
+        view_binding.buttonTriggerEditState.setEnabled(false);
+        view_binding.buttonTriggerEditState.setVisibility(View.INVISIBLE);
+        // TODO why can this produce a NullPointerException?
+        view_binding.buttonFinishPolygonEdit.setVisibility(View.VISIBLE);
+        view_binding.buttonFinishPolygonEdit.setEnabled(true);
+        view_binding.map.invalidate();
+        current_state = VIEW_STATE.EDIT_POLYGON;
+    }
+
+    private void stop_polygon_edit() {
+        view_binding.map.getOverlayManager().removeAll(polygon_vertices);
+        polygon_vertices = null;
+        view_binding.buttonFinishPolygonEdit.setEnabled(false);
+        view_binding.buttonFinishPolygonEdit.setVisibility(View.INVISIBLE);
+        view_binding.buttonTriggerEditState.setVisibility(View.VISIBLE);
+        view_binding.buttonTriggerEditState.setEnabled(true);
+        view_binding.map.invalidate();
+        current_state = VIEW_STATE.NONE;
     }
 
     private void parseKMLFile(Uri kml_file_uri) {
@@ -235,11 +263,40 @@ public class MapFragment extends LandscapeFragment {
         view_model.clearSelectablePolygons();
 
 
+
+        final MapEventsReceiver map_events_receiver = new MapEventsReceiver() {
+            @Override
+            public boolean singleTapConfirmedHelper(GeoPoint p) {
+                if (current_state == VIEW_STATE.EDIT_POLYGON) {
+                    Marker tmp_marker = new Marker(view_binding.map, requireContext());
+                    tmp_marker.setPosition(p);
+                    tmp_marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                    tmp_marker.setDraggable(true);
+                    if (polygon_vertices == null) {
+                        polygon_vertices = new ArrayList<>();
+                    }
+                    polygon_vertices.add(tmp_marker);
+                    view_binding.map.getOverlayManager().add(tmp_marker);
+                }
+
+                return current_state == VIEW_STATE.EDIT_POLYGON;
+            }
+
+            @Override
+            public boolean longPressHelper(GeoPoint p) {
+                return false;
+            }
+        };
+        view_binding.map.getOverlays().add(new MapEventsOverlay(map_events_receiver));
+        view_binding.map.invalidate();
+
         IMapController mapController = view_binding.map.getController();
         mapController.setZoom(9.5);
         GeoPoint startPoint = new GeoPoint(48.17808437657652, 11.795518397832884);
 
         mapController.setCenter(startPoint);
+
+
     }
 
     private void setPolygon(Polygon polygon) {
@@ -261,32 +318,43 @@ public class MapFragment extends LandscapeFragment {
     public void onResume() {
         super.onResume();
         view_binding.map.onResume();
-        String x = "x";
     }
 
     @Override
     public void onPause() {
         super.onPause();
         view_binding.map.onPause();
-        String x = "x";
     }
 
-    private void find_and_delete_polyline_route() {
+    private void find_and_delete_overlay(String type) {
         List<Overlay> overlays = view_binding.map.getOverlayManager().overlays();
         for (Overlay overlay : overlays) {
-            if (overlay.getClass() == Polyline.class) {
-                view_binding.map.getOverlayManager().remove(overlay);
-                break;
+            if (type.equals("polyline")) {
+                if (overlay.getClass() == Polyline.class) {
+                    view_binding.map.getOverlayManager().remove(overlay);
+                    break;
+                }
+            } else if (type.equals("polygon")) {
+                if (overlay.getClass() == Polygon.class) {
+                    view_binding.map.getOverlayManager().remove(overlay);
+                    break;
+                }
+            }
+            else if (type.equals("both")) {
+                if (overlay.getClass() == Polygon.class || overlay.getClass() == Polyline.class) {
+                    view_binding.map.getOverlayManager().remove(overlay);
+                }
             }
         }
     }
 
-    private void setClickListeners() {
+    private void set_click_listeners() {
         view_binding.buttonTriggerEditState.setOnClickListener(v -> {
-            if (!in_edit_state) {
+            if (current_state == VIEW_STATE.NONE) {
                 view_binding.map.getOverlayManager().addAll(edit_route_markers);
                 view_binding.buttonTriggerEditState.setText("Stop Edit");
-            } else {
+                current_state = VIEW_STATE.EDIT_ROUTE;
+            } else if (current_state == VIEW_STATE.EDIT_ROUTE){
                 view_binding.map.getOverlayManager().removeAll(edit_route_markers);
                 view_binding.buttonTriggerEditState.setText("Edit Route");
                 if (changed_during_edit) {
@@ -298,9 +366,21 @@ public class MapFragment extends LandscapeFragment {
 
                     view_model.set_flight_route(new_route);
                 }
+                current_state = VIEW_STATE.NONE;
             }
             view_binding.map.invalidate();
-            in_edit_state = !in_edit_state;
+        });
+
+        view_binding.buttonFinishPolygonEdit.setOnClickListener(v -> {
+            Polygon self_selected_polygon = new Polygon();
+            if (polygon_vertices != null) {
+                for (Marker self_set_marker : polygon_vertices) {
+                    self_selected_polygon.addPoint(self_set_marker.getPosition());
+                }
+            }
+            stop_polygon_edit();
+            view_model.setPolygon(self_selected_polygon);
+
         });
     }
 

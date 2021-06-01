@@ -57,5 +57,15 @@
             android:text=""
             app:layout_constraintStart_toStartOf="@+id/guideline_left_map"
             app:layout_constraintTop_toTopOf="@+id/guideline_bottom_map" />
+
+        <Button
+            android:id="@+id/button_finish_polygon_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/finish_polygon"
+            android:visibility="invisible"
+            android:enabled="false"
+            app:layout_constraintStart_toStartOf="@+id/guideline_left_map"
+            app:layout_constraintTop_toTopOf="@+id/guideline_bottom_map" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

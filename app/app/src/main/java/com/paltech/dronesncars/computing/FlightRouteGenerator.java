@@ -18,13 +18,15 @@ public class FlightRouteGenerator {
     private static final double STD_DIST_LONG = 71.5;
 
     /**
-     * ?
+     * Checks whether a ??? line from the point P intersects the line between the points A and B
+     * TODO where does the assumed line from point P go? vertical? horizontal?
+     * TODO is this the correct explanation for the RuntimeException?
      *
-     * @param A
-     * @param B
-     * @param P
-     * @return
-     * @throws RuntimeException
+     * @param A first point limiting the line
+     * @param B second point limiting the line
+     * @param P the origin of the line which is tested for "crossing" the line between A and B
+     * @return true: the P's line intersects A and B's line | false: it does not
+     * @throws RuntimeException if P lies on the shapes outline?
      */
     static boolean intersects(GeoPoint A, GeoPoint B, GeoPoint P) throws RuntimeException {
         if (A.getLongitude() > B.getLongitude())

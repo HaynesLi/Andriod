@@ -37,4 +37,5 @@
     <string name="status">Status:</string>
     <string name="progress">Progress:</string>
     <string name="_0_percent_progress_default">0%</string>
+    <string name="finish_polygon">Finish Polygon</string>
 </resources>
