@@ -24,7 +24,7 @@ public class FlightRouteGenerator {
      * @param B
      * @param P
      * @return
-     * @throws Exception
+     * @throws RuntimeException
      */
     static boolean intersects(GeoPoint A, GeoPoint B, GeoPoint P) throws RuntimeException {
         if (A.getLongitude() > B.getLongitude())
@@ -136,8 +136,8 @@ public class FlightRouteGenerator {
 
     public static List<GeoPoint> compute_flight_route(Polygon polygon, int distance) {
         GeoPoint[][] targets = get_targets_for_polygon(polygon, distance*0.001);
-        List<GeoPoint> route = compute_route_from_targets(targets);
-        return route;
+        List<GeoPoint> flightroute = compute_route_from_targets(targets);
+        return flightroute;
     }
 
 }

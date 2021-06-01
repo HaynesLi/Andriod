@@ -22,6 +22,7 @@ import java.util.List;
 public class TypeConverters {
 
     private static final Type GEOPOINT_LIST_TYPE = new TypeToken<ArrayList<GeoPoint>>() {}.getType();
+    private static final Type GEOPOINT_LIST_LIST_TYPE = new TypeToken<ArrayList<ArrayList<GeoPoint>>>() {}.getType();
 
     @TypeConverter
     public String fromPolygon(Polygon value) {
@@ -116,10 +117,11 @@ public class TypeConverters {
 
             List<GeoPoint> geoPoints = context.deserialize(polygon_json.get("points").getAsJsonArray(),
                     GEOPOINT_LIST_TYPE);
+            List<List<GeoPoint>> holes = context.deserialize(polygon_json.get("holes").getAsJsonArray(),
+                    GEOPOINT_LIST_LIST_TYPE);
 
-            for (GeoPoint geoPoint : geoPoints) {
-                polygon.addPoint(geoPoint);
-            }
+            polygon.setPoints(geoPoints);
+            polygon.setHoles(holes);
 
             return polygon;
         }
@@ -129,7 +131,7 @@ public class TypeConverters {
             JsonObject polygon_json = new JsonObject();
 
             polygon_json.add("points", context.serialize(src.getActualPoints()));
-            // TODO add holes into json generation
+            polygon_json.add("holes", context.serialize(src.getHoles()));
 
             return polygon_json;
         }
