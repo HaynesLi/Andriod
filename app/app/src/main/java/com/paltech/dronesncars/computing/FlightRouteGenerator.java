@@ -45,22 +45,24 @@ public class FlightRouteGenerator {
     }
 
     /**
-     * Method to test whether a GeoPoint is inside the given shape
-     * <p>
-     * TODO: the current shape does not contain holes!! (simple List of GeoPoints == Outline)
+     * Method to test whether a GeoPoint is inside the given shape, while considering holes in the
+     * polygon
      *
-     * @param shape List of GeoPoints corresponding to the outline of our polygon.
-     *              TODO should be an osmdroid.Polygon instead, to cope with holes
+     * @param shapes List of Lists of GeoPoints corresponding to the outline of our polygon.
+     *               For example first shape is the polygon's outline, second is a hole's outline
+     *               inside the polygon
      * @param pnt   the GeoPoint that is being tested
      * @return true: shape contains pnt | false: shape does not contain pnt
-     * @throws Exception
+     * @throws RuntimeException if the picked GeoPoint was on one of our outlines
      */
-    static boolean contains(List<GeoPoint> shape, GeoPoint pnt) throws RuntimeException {
+    static boolean contains(List<List<GeoPoint>> shapes, GeoPoint pnt) throws  RuntimeException {
         boolean inside = false;
-        int len = shape.size();
-        for (int i = 0; i < len; i++) {
-            if (intersects(shape.get(i), shape.get((i + 1) % len), pnt))
-                inside = !inside;
+        for (List<GeoPoint> shape: shapes) {
+            int len = shape.size();
+            for (int i = 0; i < len; i++) {
+                if (intersects(shape.get(i), shape.get((i + 1) % len), pnt))
+                    inside = !inside;
+            }
         }
         return inside;
     }
@@ -89,13 +91,16 @@ public class FlightRouteGenerator {
         double min_latitude = min(boundingBox.getLatNorth(), boundingBox.getLatSouth());
         double min_longitude = min(boundingBox.getLonEast(), boundingBox.getLonWest());
 
+        List<List<GeoPoint>> shapes = new ArrayList<>();
+        shapes.add(polygon.getActualPoints());
+        shapes.addAll(polygon.getHoles());
 
         for (int x = 0; x < ourPoints.length; x++) {
             for (int y = 0; y < ourPoints[0].length; y++) {
                 GeoPoint current_point = new GeoPoint(x * distance_latitude_m + min_latitude, y * distance_longitude_m + min_longitude);
                 ourPoints[x][y] = null;
                 try {
-                    if (contains(polygon.getActualPoints(), current_point)) {
+                    if (contains(shapes, current_point)) {
                         ourPoints[x][y] = current_point;
                     }
                 } catch (Exception e) {
