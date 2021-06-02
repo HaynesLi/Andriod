@@ -277,6 +277,7 @@ public class MapFragment extends LandscapeFragment {
                     }
                     polygon_vertices.add(tmp_marker);
                     view_binding.map.getOverlayManager().add(tmp_marker);
+                    view_binding.map.invalidate();
                 }
 
                 return current_state == VIEW_STATE.EDIT_POLYGON;
