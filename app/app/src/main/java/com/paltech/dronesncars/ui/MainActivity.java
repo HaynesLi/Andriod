@@ -20,7 +20,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final List<String> PERMISSIONS = Arrays.asList(
             "android.permission.ACCESS_FINE_LOCATION",
-            "android.permission.WRITE_EXTERNAL_STORAGE"
+            "android.permission.WRITE_EXTERNAL_STORAGE",
+            "android.permission.CHANGE_WIFI_STATE"
     );
 
     private static final int PERMISSION_REQUEST_CODE = 42069;

@@ -1,6 +1,12 @@
 package com.paltech.dronesncars.ui;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,11 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -27,7 +33,7 @@ public class StartScreen extends LandscapeFragment {
     private FragmentStartScreenBinding view_binding;
 
     private ActivityResultLauncher<String> getKML = registerForActivityResult(new ActivityResultContracts.GetContent(),
-            result -> changeToDroneScreen(result));
+            this::changeToDroneScreen);
 
     @Override
     public View onCreateView(
@@ -46,10 +52,53 @@ public class StartScreen extends LandscapeFragment {
         setListeners();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private class myCallback extends WifiManager.LocalOnlyHotspotCallback {
+        @Override
+        public void onStarted(WifiManager.LocalOnlyHotspotReservation reservation) {
+            WifiConfiguration softAPconfig = reservation.getWifiConfiguration();
+            Toast.makeText(requireContext(), softAPconfig.SSID + ": " + softAPconfig.preSharedKey , Toast.LENGTH_LONG).show();
+            Log.d("help_hotspot", softAPconfig.preSharedKey);
+        }
+
+        @Override
+        public void onStopped() {
+            Toast.makeText(requireContext(), "stopped", Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onFailed(int reason) {
+            Toast.makeText(requireContext(), "failed: " + reason, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void start_hotspot() {
+        WifiManager wifiManager = (WifiManager)
+                requireContext().getSystemService(Context.WIFI_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        wifiManager.startLocalOnlyHotspot(new myCallback(), null);
+
+
+    }
+
     private void setListeners() {
         view_binding.importKMLButton.setOnClickListener(v -> getKML.launch("application/vnd.google-earth.kml+xml"));
 
-        view_binding.manualMapButton.setOnClickListener(v -> changeToDroneScreen(null));
+        view_binding.manualMapButton.setOnClickListener(v -> {
+            //start_hotspot();
+            changeToDroneScreen(null);
+        });
     }
 
     private void changeToDroneScreen(Uri kml_file_uri) {
