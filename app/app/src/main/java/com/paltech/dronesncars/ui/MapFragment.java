@@ -3,6 +3,7 @@ package com.paltech.dronesncars.ui;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -382,6 +384,7 @@ public class MapFragment extends LandscapeFragment {
                 }
                 view_binding.buttonPolygonEdit.setEnabled(true);
                 current_state = VIEW_STATE.NONE;
+                set_marker_unselected(true);
             }
             view_binding.map.invalidate();
         });
@@ -406,6 +409,7 @@ public class MapFragment extends LandscapeFragment {
                 }
                 self_selected_polygon.setHoles(new_holes);
 
+                set_marker_unselected(true);
 
                 stop_polygon_edit();
                 view_binding.buttonAddMarker.setVisibility(View.INVISIBLE);
@@ -434,7 +438,7 @@ public class MapFragment extends LandscapeFragment {
                 if (current_state == VIEW_STATE.EDIT_ROUTE) {
                     edit_route_markers.remove(selected_marker);
                     view_binding.map.getOverlayManager().remove(selected_marker);
-                    selected_marker = null;
+                    set_marker_unselected(true);
                     // TODO do we really need this? seems overkill to me... Or if not, do we need it
                     //  for current_state == VIEW_STATE.EDIT_POLYGON, too?
                     changed_during_edit = true;
@@ -448,7 +452,7 @@ public class MapFragment extends LandscapeFragment {
                         }
                     }
                     view_binding.map.getOverlayManager().remove(selected_marker);
-                    selected_marker = null;
+                    set_marker_unselected(true);
                     view_binding.map.invalidate();
                 }
             }
@@ -487,6 +491,23 @@ public class MapFragment extends LandscapeFragment {
     private void set_marker_selected(Marker new_selected) {
         selected_marker = new_selected;
         new_selected.setDraggable(true);
+        Drawable selected_marker_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.marker_selected, null);
+        new_selected.setIcon(selected_marker_icon);
+        new_selected.setAnchor(0.35f, 0.68f);
+        view_binding.map.invalidate();
+    }
+
+    private void set_marker_unselected(boolean set_null) {
+        Drawable default_marker_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.marker_default, null);
+        if (selected_marker != null) {
+            selected_marker.setIcon(default_marker_icon);
+            selected_marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+            selected_marker.setDraggable(false);
+            view_binding.map.invalidate();
+            if (set_null) {
+                selected_marker = null;
+            }
+        }
     }
 
     private List<Marker> insert_marker_at_index(List<Marker> list, int index, Marker marker) {
@@ -510,8 +531,7 @@ public class MapFragment extends LandscapeFragment {
                     set_marker_selected(marker);
                     view_binding.map.getController().setCenter(marker.getPosition());
                 } else {
-                    selected_marker = null;
-                    marker.setDraggable(false);
+                    set_marker_unselected(true);
                 }
                 return true;
             });
