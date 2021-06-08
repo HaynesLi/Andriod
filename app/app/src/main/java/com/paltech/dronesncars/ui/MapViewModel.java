@@ -45,6 +45,7 @@ public class MapViewModel extends ViewModel {
 
     public void setPolygon(Polygon polygon) {
         if (polygon != null) {
+            if (polygon.getActualPoints() != null && !polygon.getActualPoints().isEmpty())
             repository.setPolygon(polygon, _polygon::postValue);
         }
     }
