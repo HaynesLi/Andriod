@@ -50,6 +50,7 @@ public class MapFragment extends LandscapeFragment {
     private MapViewModel view_model;
     private List<Marker> edit_route_markers;
     private List<Marker> polygon_vertices;
+    private List<List<Marker>> polygon_holes;
 
     private enum VIEW_STATE {NONE, EDIT_POLYGON, EDIT_ROUTE}
 
@@ -209,14 +210,20 @@ public class MapFragment extends LandscapeFragment {
     private void start_polygon_edit() {
         view_binding.buttonEditRoute.setEnabled(false);
         view_binding.buttonPolygonEdit.setEnabled(true);
-        view_binding.buttonPolygonEdit.setText("finish polygon edit");
+        view_binding.buttonPolygonEdit.setText("stop edit");
         view_binding.map.invalidate();
         current_state = VIEW_STATE.EDIT_POLYGON;
     }
 
     private void stop_polygon_edit() {
-        view_binding.map.getOverlayManager().removeAll(polygon_vertices);
+        if (polygon_vertices != null) {view_binding.map.getOverlayManager().removeAll(polygon_vertices);}
+        if (polygon_holes != null) {
+            for (List<Marker> hole: polygon_holes) {
+                view_binding.map.getOverlayManager().removeAll(hole);
+            }
+        }
         polygon_vertices = null;
+        polygon_holes = null;
         view_binding.buttonPolygonEdit.setText("edit polygon");
         view_binding.buttonPolygonEdit.setEnabled(false);
         view_binding.buttonEditRoute.setEnabled(true);
@@ -288,6 +295,20 @@ public class MapFragment extends LandscapeFragment {
         polygon.getFillPaint().setColor(Color.parseColor("#1EFFE70E"));
 
         if (polygon.getActualPoints() != null && polygon.getActualPoints().size() > 0) {
+            polygon_vertices = new ArrayList<>();
+            polygon_holes = new ArrayList<>();
+            for (GeoPoint polygon_vertex: polygon.getActualPoints()) {
+                polygon_vertices.add(build_edit_marker(polygon_vertex, true, false));
+            }
+            for (List<GeoPoint> hole: polygon.getHoles()) {
+                List<Marker> current_hole = new ArrayList<>();
+                for (GeoPoint hole_vertex: hole) {
+                    current_hole.add(build_edit_marker(hole_vertex, true, false));
+                }
+                polygon_holes.add(current_hole);
+            }
+
+
             view_binding.map.getOverlayManager().removeAll(view_binding.map.getOverlays());
             view_binding.map.getOverlayManager().add(polygon);
             view_binding.map.invalidate();
@@ -348,6 +369,8 @@ public class MapFragment extends LandscapeFragment {
             } else if (current_state == VIEW_STATE.EDIT_ROUTE){
                 view_binding.map.getOverlayManager().removeAll(edit_route_markers);
                 view_binding.buttonEditRoute.setText("Edit Route");
+                view_binding.buttonAddMarker.setVisibility(View.INVISIBLE);
+                view_binding.buttonDeleteMarker.setVisibility(View.INVISIBLE);
                 if (changed_during_edit) {
                     changed_during_edit = false;
                     List<GeoPoint> new_route = new ArrayList<>();
@@ -371,12 +394,38 @@ public class MapFragment extends LandscapeFragment {
                         self_selected_polygon.addPoint(self_set_marker.getPosition());
                     }
                 }
+                List<List<GeoPoint>> new_holes = new ArrayList<>();
+                if (polygon_holes != null) {
+                    for (List<Marker> hole: polygon_holes) {
+                        List<GeoPoint> current_hole = new ArrayList<>();
+                        for (Marker self_set_marker: hole) {
+                            current_hole.add(self_set_marker.getPosition());
+                        }
+                        new_holes.add(current_hole);
+                    }
+                }
+                self_selected_polygon.setHoles(new_holes);
+
+
                 stop_polygon_edit();
+                view_binding.buttonAddMarker.setVisibility(View.INVISIBLE);
+                view_binding.buttonDeleteMarker.setVisibility(View.INVISIBLE);
                 initial_polygon_edit = false;
                 view_model.setPolygon(self_selected_polygon);
-            } else if (current_state == VIEW_STATE.NONE) {
+            } else if (current_state == VIEW_STATE.NONE && polygon_vertices != null) {
                 view_binding.buttonAddMarker.setVisibility(View.VISIBLE);
                 view_binding.buttonDeleteMarker.setVisibility(View.VISIBLE);
+
+                start_polygon_edit();
+
+                view_binding.map.getOverlayManager().addAll(polygon_vertices);
+                if (polygon_holes != null) {
+                    for (List<Marker> hole : polygon_holes) {
+                        view_binding.map.getOverlayManager().addAll(hole);
+                    }
+                }
+
+                view_binding.map.invalidate();
             }
         });
 
@@ -386,7 +435,20 @@ public class MapFragment extends LandscapeFragment {
                     edit_route_markers.remove(selected_marker);
                     view_binding.map.getOverlayManager().remove(selected_marker);
                     selected_marker = null;
+                    // TODO do we really need this? seems overkill to me... Or if not, do we need it
+                    //  for current_state == VIEW_STATE.EDIT_POLYGON, too?
                     changed_during_edit = true;
+                    view_binding.map.invalidate();
+                } else if (current_state == VIEW_STATE.EDIT_POLYGON) {
+                    if (!polygon_vertices.remove(selected_marker)) {
+                        for (List<Marker> hole : polygon_holes) {
+                            if (hole.remove(selected_marker)) {
+                                break;
+                            }
+                        }
+                    }
+                    view_binding.map.getOverlayManager().remove(selected_marker);
+                    selected_marker = null;
                     view_binding.map.invalidate();
                 }
             }
@@ -396,18 +458,38 @@ public class MapFragment extends LandscapeFragment {
             if (selected_marker != null) {
                 if (current_state == VIEW_STATE.EDIT_ROUTE) {
                     Marker new_marker = build_edit_marker((GeoPoint) view_binding.map.getMapCenter(), true, false);
-                    edit_route_markers = insertMarkerAtIndex(edit_route_markers, edit_route_markers.indexOf(selected_marker), new_marker);
-                    selected_marker = new_marker;
-                    new_marker.setDraggable(true);
+                    edit_route_markers = insert_marker_at_index(edit_route_markers, edit_route_markers.indexOf(selected_marker), new_marker);
+                    set_marker_selected(new_marker);
                     view_binding.map.getOverlayManager().add(new_marker);
                     view_binding.map.invalidate();
                     changed_during_edit = true;
+                } else if (current_state == VIEW_STATE.EDIT_POLYGON) {
+                    Marker new_marker = build_edit_marker((GeoPoint) view_binding.map.getMapCenter(), true, false);
+                    if (polygon_vertices.contains(selected_marker)) {
+                        polygon_vertices = insert_marker_at_index(polygon_vertices, polygon_vertices.indexOf(selected_marker), new_marker);
+                    } else {
+                        for (int i = 0; i < polygon_holes.size(); i++) {
+                            List<Marker> hole = polygon_holes.get(i);
+                            if (hole.contains(selected_marker)) {
+                                polygon_holes.set(i, insert_marker_at_index(hole, hole.indexOf(selected_marker), new_marker));
+                                break;
+                            }
+                        }
+                    }
+                    set_marker_selected(new_marker);
+                    view_binding.map.getOverlayManager().add(new_marker);
+                    view_binding.map.invalidate();
                 }
             }
         });
     }
 
-    private List<Marker> insertMarkerAtIndex(List<Marker> list, int index, Marker marker) {
+    private void set_marker_selected(Marker new_selected) {
+        selected_marker = new_selected;
+        new_selected.setDraggable(true);
+    }
+
+    private List<Marker> insert_marker_at_index(List<Marker> list, int index, Marker marker) {
         if (index > 0 && index <= list.size()) {
             List<Marker> before = list.subList(0, index);
             List<Marker> after = list.subList(index, list.size());
@@ -425,8 +507,7 @@ public class MapFragment extends LandscapeFragment {
         if (!draggable_default) {
             new_marker.setOnMarkerClickListener((marker, mapView) -> {
                 if (!marker.equals(selected_marker)) {
-                    selected_marker = marker;
-                    marker.setDraggable(true);
+                    set_marker_selected(marker);
                     view_binding.map.getController().setCenter(marker.getPosition());
                 } else {
                     selected_marker = null;
