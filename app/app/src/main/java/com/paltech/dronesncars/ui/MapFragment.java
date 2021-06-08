@@ -1,9 +1,12 @@
 package com.paltech.dronesncars.ui;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -12,10 +15,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentMapBinding;
 
@@ -109,8 +117,33 @@ public class MapFragment extends LandscapeFragment {
 
         configureMap();
         setLiveDataSources();
-        getArgsFromParent();
         set_click_listeners();
+        getArgsFromParent();
+
+    }
+
+    private void set_center_to_last_location() {
+        FusedLocationProviderClient fusedLocationProviderClient =
+                LocationServices.getFusedLocationProviderClient(requireContext());
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
+        locationTask.addOnSuccessListener(location -> {
+            if (location != null) {
+                GeoPoint last_location = new GeoPoint(location.getLatitude(), location.getLongitude());
+                view_binding.map.getController().setCenter(last_location);
+                view_binding.map.getController().setZoom(16.0);
+            }
+        });
     }
 
     private boolean get_is_flight_map() {
@@ -206,6 +239,7 @@ public class MapFragment extends LandscapeFragment {
 
     private void initial_polygon_edit() {
         initial_polygon_edit = true;
+        set_center_to_last_location();
         start_polygon_edit();
     }
 
