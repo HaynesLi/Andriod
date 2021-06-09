@@ -93,5 +93,14 @@
             app:layout_constraintStart_toEndOf="@+id/button_add_marker"
             app:layout_constraintTop_toTopOf="@+id/guideline_bottom_map"
             app:layout_constraintVertical_chainStyle="spread" />
+
+        <Button
+            android:id="@+id/button_export_polygon_to_kml"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/export_polygon_to_kml"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="@+id/button_add_marker"
+            app:layout_constraintTop_toTopOf="@+id/guideline_bottom_map"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

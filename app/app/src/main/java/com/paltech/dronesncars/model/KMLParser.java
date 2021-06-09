@@ -8,11 +8,15 @@ import org.osmdroid.bonuspack.kml.KmlFeature;
 import org.osmdroid.bonuspack.kml.KmlFolder;
 import org.osmdroid.bonuspack.kml.KmlPlacemark;
 import org.osmdroid.bonuspack.kml.KmlPolygon;
+import org.osmdroid.bonuspack.kml.LineStyle;
+import org.osmdroid.bonuspack.kml.Style;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polygon;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -59,5 +63,54 @@ public class KMLParser {
         }
 
         return polygonDictionary;
+    }
+
+    public static KmlDocument polygon_to_kml(Polygon polygon) {
+        KmlDocument kmlDocument = new KmlDocument();
+        KmlFolder new_folder = new KmlFolder();
+        new_folder.mName = "Nutzung_0";
+
+        KmlPlacemark kmlPlacemark = new KmlPlacemark();
+        Style style = new Style();
+        style.mLineStyle = new LineStyle();
+        style.mLineStyle.mColor=0xff0000ff;
+        //style.mPolyStyle = new ColorStyle();
+        //style.mPolyStyle.mColorMode = 0; // TODO ist das hier fill = 0? => nein
+        kmlPlacemark.mStyle = style.toString();
+
+        HashMap<String, String> extended_data = new HashMap<>();
+        extended_data.put("Betriebsnr", "0");
+        extended_data.put("FID", "0");
+        extended_data.put("FSNr", "0");
+        extended_data.put("Schlag", "0");
+        extended_data.put("Flaeche", "0");
+        extended_data.put("Nutzung", "0");
+        extended_data.put("Einstufung", "DG");
+        extended_data.put("GPS", "nein");
+        extended_data.put("BJS", "nein");
+
+        kmlPlacemark.mExtendedData = extended_data;
+
+        KmlPolygon kmlPolygon = new KmlPolygon();
+
+        kmlPolygon.mCoordinates = new ArrayList<>(polygon.getActualPoints());
+        if (polygon.getHoles() != null && !polygon.getHoles().isEmpty()) {
+            ArrayList<ArrayList<GeoPoint>> holes = new ArrayList<>(); // TODO stream().map() might come in handy here in theory
+
+            for (List<GeoPoint> hole: polygon.getHoles()) {
+                holes.add(new ArrayList<>(hole));
+            }
+
+            kmlPolygon.mHoles = holes;
+        }
+
+        kmlPlacemark.mGeometry = kmlPolygon;
+
+        new_folder.add(kmlPlacemark);
+
+
+        kmlDocument.mKmlRoot.add(new_folder);
+
+        return kmlDocument;
     }
 }

@@ -2,15 +2,22 @@ package com.paltech.dronesncars.model;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
+import com.google.gson.GsonBuilder;
 import com.paltech.dronesncars.computing.FlightRouteGenerator;
 import com.paltech.dronesncars.ui.ViewModelCallback;
 
+import org.osmdroid.bonuspack.kml.KmlDocument;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polygon;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
@@ -36,6 +43,8 @@ public class Repository {
     private final RoverRoutineDAO roverRoutineDAO;
     private final PolygonModelDAO polygonModelDAO;
 
+    private final StorageManager storageManager;
+
 
     private final int POLYGON_ID = 1;
     private int ROUTINE_ID = 1;
@@ -44,7 +53,7 @@ public class Repository {
 
 
     @Inject
-    public Repository(@ApplicationContext Context context, Executor executor) {
+    public Repository(@ApplicationContext Context context, Executor executor, StorageManager storageManager) {
         DNR_Database database = DNR_Database.getInstance(context);
         resultDAO = database.getResultDAO();
         roverDAO = database.getRoverDAO();
@@ -55,6 +64,7 @@ public class Repository {
         polygonModelDAO = database.getPolygonModelDAO();
         this.context = context;
         this.executor = executor;
+        this.storageManager = storageManager;
     }
 
     public List<Rover> getRovers() {
@@ -242,6 +252,25 @@ public class Repository {
                 flightRouteDAO.updateFlightRoute(current_flightroute);
             }
         });
+    }
 
+    public void save_kml_doc_from_polygon(Polygon polygon) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            KmlDocument kmlDocument = KMLParser.polygon_to_kml(polygon);
+
+            StringWriter string_writer = new StringWriter();
+            kmlDocument.saveAsKML(string_writer);
+            String kml_string = string_writer.toString();
+
+            try {
+                string_writer.close();
+            } catch (IOException io_exception) {
+                io_exception.printStackTrace();
+                Log.d("DEV_ERROR", "Failed to close StringWriter while saving Polygon to KML");
+            }
+
+            storageManager.save_string_to_file("saved_polygon.kml", kml_string);
+
+        }
     }
 }

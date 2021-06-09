@@ -70,4 +70,10 @@ public class MapViewModel extends ViewModel {
         getPolygon();
     }
 
+    public void save_polygon_to_kml() {
+        if (polygon != null && polygon.getValue() != null) {
+            repository.save_kml_doc_from_polygon(polygon.getValue());
+        }
+    }
+
 }

@@ -22,7 +22,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentMapBinding;
@@ -244,9 +243,11 @@ public class MapFragment extends LandscapeFragment {
     }
 
     private void start_polygon_edit() {
+        view_binding.buttonExportPolygonToKml.setVisibility(View.INVISIBLE);
         view_binding.buttonEditRoute.setEnabled(false);
         view_binding.buttonPolygonEdit.setEnabled(true);
         view_binding.buttonPolygonEdit.setText("stop edit");
+
         view_binding.map.invalidate();
         current_state = VIEW_STATE.EDIT_POLYGON;
     }
@@ -263,6 +264,7 @@ public class MapFragment extends LandscapeFragment {
         view_binding.buttonPolygonEdit.setText("edit polygon");
         view_binding.buttonPolygonEdit.setEnabled(false);
         view_binding.buttonEditRoute.setEnabled(true);
+        view_binding.buttonExportPolygonToKml.setVisibility(View.VISIBLE);
         view_binding.map.invalidate();
         current_state = VIEW_STATE.NONE;
     }
@@ -398,6 +400,7 @@ public class MapFragment extends LandscapeFragment {
             if (current_state == VIEW_STATE.NONE) {
                 view_binding.map.getOverlayManager().addAll(edit_route_markers);
                 view_binding.buttonEditRoute.setText("Stop Edit");
+                view_binding.buttonExportPolygonToKml.setVisibility(View.INVISIBLE);
                 view_binding.buttonAddMarker.setVisibility(View.VISIBLE);
                 view_binding.buttonDeleteMarker.setVisibility(View.VISIBLE);
                 view_binding.buttonPolygonEdit.setEnabled(false);
@@ -407,6 +410,7 @@ public class MapFragment extends LandscapeFragment {
                 view_binding.buttonEditRoute.setText("Edit Route");
                 view_binding.buttonAddMarker.setVisibility(View.INVISIBLE);
                 view_binding.buttonDeleteMarker.setVisibility(View.INVISIBLE);
+                view_binding.buttonExportPolygonToKml.setVisibility(View.VISIBLE);
                 if (changed_during_edit) {
                     changed_during_edit = false;
                     List<GeoPoint> new_route = new ArrayList<>();
@@ -454,6 +458,7 @@ public class MapFragment extends LandscapeFragment {
                 view_binding.buttonAddMarker.setVisibility(View.VISIBLE);
                 view_binding.buttonDeleteMarker.setVisibility(View.VISIBLE);
 
+
                 start_polygon_edit();
 
                 view_binding.map.getOverlayManager().addAll(polygon_vertices);
@@ -493,33 +498,36 @@ public class MapFragment extends LandscapeFragment {
         });
 
         view_binding.buttonAddMarker.setOnClickListener(v -> {
-            if (selected_marker != null) {
-                if (current_state == VIEW_STATE.EDIT_ROUTE) {
-                    Marker new_marker = build_edit_marker((GeoPoint) view_binding.map.getMapCenter(), true, false);
-                    edit_route_markers = insert_marker_at_index(edit_route_markers, edit_route_markers.indexOf(selected_marker), new_marker);
-                    set_marker_selected(new_marker);
-                    view_binding.map.getOverlayManager().add(new_marker);
-                    view_binding.map.invalidate();
-                    changed_during_edit = true;
-                } else if (current_state == VIEW_STATE.EDIT_POLYGON) {
-                    Marker new_marker = build_edit_marker((GeoPoint) view_binding.map.getMapCenter(), true, false);
-                    if (polygon_vertices.contains(selected_marker)) {
-                        polygon_vertices = insert_marker_at_index(polygon_vertices, polygon_vertices.indexOf(selected_marker), new_marker);
-                    } else {
-                        for (int i = 0; i < polygon_holes.size(); i++) {
-                            List<Marker> hole = polygon_holes.get(i);
-                            if (hole.contains(selected_marker)) {
-                                polygon_holes.set(i, insert_marker_at_index(hole, hole.indexOf(selected_marker), new_marker));
-                                break;
+
+                if (selected_marker != null) {
+                    if (current_state == VIEW_STATE.EDIT_ROUTE) {
+                        Marker new_marker = build_edit_marker((GeoPoint) view_binding.map.getMapCenter(), true, false);
+                        edit_route_markers = insert_marker_at_index(edit_route_markers, edit_route_markers.indexOf(selected_marker), new_marker);
+                        set_marker_selected(new_marker);
+                        view_binding.map.getOverlayManager().add(new_marker);
+                        view_binding.map.invalidate();
+                        changed_during_edit = true;
+                    } else if (current_state == VIEW_STATE.EDIT_POLYGON) {
+                        Marker new_marker = build_edit_marker((GeoPoint) view_binding.map.getMapCenter(), true, false);
+                        if (polygon_vertices.contains(selected_marker)) {
+                            polygon_vertices = insert_marker_at_index(polygon_vertices, polygon_vertices.indexOf(selected_marker), new_marker);
+                        } else {
+                            for (int i = 0; i < polygon_holes.size(); i++) {
+                                List<Marker> hole = polygon_holes.get(i);
+                                if (hole.contains(selected_marker)) {
+                                    polygon_holes.set(i, insert_marker_at_index(hole, hole.indexOf(selected_marker), new_marker));
+                                    break;
+                                }
                             }
                         }
+                        set_marker_selected(new_marker);
+                        view_binding.map.getOverlayManager().add(new_marker);
+                        view_binding.map.invalidate();
                     }
-                    set_marker_selected(new_marker);
-                    view_binding.map.getOverlayManager().add(new_marker);
-                    view_binding.map.invalidate();
                 }
-            }
         });
+
+        view_binding.buttonExportPolygonToKml.setOnClickListener(v -> view_model.save_polygon_to_kml());
     }
 
     private void set_marker_selected(Marker new_selected) {
