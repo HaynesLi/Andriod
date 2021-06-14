@@ -9,9 +9,6 @@ import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.util.Log;
 
-import androidx.annotation.RequiresApi;
-
-import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -23,7 +20,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 @Singleton
 public class StorageManager {
 
-    private ContentResolver content_resolver;
+    private final ContentResolver content_resolver;
 
     @Inject
     public StorageManager(@ApplicationContext Context context) {

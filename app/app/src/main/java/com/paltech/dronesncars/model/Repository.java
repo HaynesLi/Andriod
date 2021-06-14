@@ -18,9 +18,12 @@ import org.osmdroid.views.overlay.Polygon;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
@@ -269,7 +272,12 @@ public class Repository {
                 Log.d("DEV_ERROR", "Failed to close StringWriter while saving Polygon to KML");
             }
 
-            storageManager.save_string_to_file("saved_polygon.kml", kml_string);
+            // TODO maybe use the actual time zone here?
+            SimpleDateFormat simple_date_format = new SimpleDateFormat("HH-mm_dd-MM-yyyy", Locale.GERMANY);
+            String now = simple_date_format.format(new Date());
+            String file_name = now + "_saved_polygon.kml";
+
+            storageManager.save_string_to_file(file_name, kml_string);
 
         }
     }
