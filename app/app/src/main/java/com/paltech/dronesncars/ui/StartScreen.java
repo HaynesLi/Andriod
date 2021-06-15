@@ -32,7 +32,7 @@ public class StartScreen extends LandscapeFragment {
 
     private FragmentStartScreenBinding view_binding;
 
-    private ActivityResultLauncher<String> getKML = registerForActivityResult(new ActivityResultContracts.GetContent(),
+    private final ActivityResultLauncher<String> getKML = registerForActivityResult(new ActivityResultContracts.GetContent(),
             this::changeToDroneScreen);
 
     @Override
@@ -56,9 +56,9 @@ public class StartScreen extends LandscapeFragment {
     private class myCallback extends WifiManager.LocalOnlyHotspotCallback {
         @Override
         public void onStarted(WifiManager.LocalOnlyHotspotReservation reservation) {
-            WifiConfiguration softAPconfig = reservation.getWifiConfiguration();
-            Toast.makeText(requireContext(), softAPconfig.SSID + ": " + softAPconfig.preSharedKey , Toast.LENGTH_LONG).show();
-            Log.d("help_hotspot", softAPconfig.preSharedKey);
+            WifiConfiguration soft_AP_config = reservation.getWifiConfiguration();
+            Toast.makeText(requireContext(), soft_AP_config.SSID + ": " + soft_AP_config.preSharedKey , Toast.LENGTH_LONG).show();
+            Log.d("help_hotspot", soft_AP_config.preSharedKey);
         }
 
         @Override

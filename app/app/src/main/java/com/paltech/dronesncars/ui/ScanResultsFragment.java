@@ -1,5 +1,6 @@
 package com.paltech.dronesncars.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -95,6 +96,13 @@ public class ScanResultsFragment extends LandscapeFragment {
         view_binding.buttonConfigureRovers.setOnClickListener(v -> {
             NavDirections action = ScanResultsFragmentDirections.actionScanResultsFragmentToRoverRouteFragment();
             NavHostFragment.findNavController(this).navigate(action);
+        });
+        view_binding.buttonOpenGallery.setOnClickListener(v -> {
+            Intent open_gallery_intent = new Intent();
+            open_gallery_intent.setAction(Intent.ACTION_VIEW);
+            open_gallery_intent.setType("image/*");
+            open_gallery_intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(open_gallery_intent);
         });
     }
 

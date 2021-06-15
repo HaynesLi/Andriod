@@ -46,4 +46,5 @@
     <string name="scan_result_id_label">Scan Result ID:</string>
     <string name="scan_result_certainty_label">Certainty:</string>
     <string name="content_result_certainty">%1$d%%</string>
+    <string name="button_open_gallery_label">Open Gallery</string>
 </resources>
