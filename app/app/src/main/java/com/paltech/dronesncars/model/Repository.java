@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -280,5 +281,26 @@ public class Repository {
             storageManager.save_string_to_file(file_name, kml_string);
 
         }
+    }
+
+    public LiveData<List<Result>> get_scan_results() {
+        return resultDAO.get_all_results_livedata();
+    }
+
+    public void mock_scan_results() {
+        List<Result> mock_results = new ArrayList<>();
+        mock_results.add(new Result(0, 0.33));
+        mock_results.add(new Result(1, 0.66));
+        mock_results.add(new Result(2, 1.0));
+        mock_results.add(new Result(3, 0.0));
+        mock_results.add(new Result(4, 0.25));
+        mock_results.add(new Result(5, 0.75));
+
+        executor.execute(() -> {
+            resultDAO.delete_all_results();
+            Result[] result_array = new Result[mock_results.size()];
+            resultDAO.insertMultipleResults(mock_results.toArray(result_array));
+        });
+
     }
 }

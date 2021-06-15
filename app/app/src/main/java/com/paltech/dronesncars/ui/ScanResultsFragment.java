@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,6 +29,7 @@ public class ScanResultsFragment extends LandscapeFragment {
 
     private FragmentScanResultsBinding view_binding;
     private ScanResultRecyclerAdapter result_recycler_adapter;
+    private ScanResultsViewModel view_model;
 
     public ScanResultsFragment() {
         // Required empty public constructor
@@ -63,9 +65,11 @@ public class ScanResultsFragment extends LandscapeFragment {
         super.onViewCreated(view, savedInstanceState);
 
         view_binding = FragmentScanResultsBinding.bind(view);
+        view_model = new ViewModelProvider(requireActivity()).get(ScanResultsViewModel.class);
 
         setListeners();
         init_result_recycler_view();
+        set_livedata_sources();
         mock_results();
     }
 
@@ -79,12 +83,12 @@ public class ScanResultsFragment extends LandscapeFragment {
     }
 
     private void mock_results() {
-        List<Result> mock_result_list = new ArrayList<>();
-        mock_result_list.add(new Result(0, 0.9));
-        mock_result_list.add(new Result(1, 0.3));
-        mock_result_list.add(new Result(2, 1.0));
-        mock_result_list.add(new Result(3, 0.0));
-        result_recycler_adapter.set_local_scan_results(mock_result_list);
+        view_model.mock_scan_results();
+    }
+
+    private void set_livedata_sources() {
+        view_model.get_scan_results().observe(getViewLifecycleOwner(),
+                results -> result_recycler_adapter.set_local_scan_results(results));
     }
 
     private void setListeners() {

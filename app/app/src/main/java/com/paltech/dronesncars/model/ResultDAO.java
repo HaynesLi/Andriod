@@ -1,5 +1,6 @@
 package com.paltech.dronesncars.model;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -12,15 +13,21 @@ import java.util.List;
 public interface ResultDAO {
 
     @Insert
-    public void insertMultipleResults(Result... result);
+    void insertMultipleResults(Result... result);
 
     @Update
-    public void updateResult(Result result);
+    void updateResult(Result result);
 
     @Delete
-    public void deleteResults(Result... result);
+    void deleteResults(Result... result);
+
+    @Query("DELETE FROM result")
+    void delete_all_results();
 
     @Query("SELECT * FROM result")
-    public List<Result> getAllResults();
+    List<Result> getAllResults();
+
+    @Query("SELECT * FROM result")
+    LiveData<List<Result>> get_all_results_livedata();
 
 }

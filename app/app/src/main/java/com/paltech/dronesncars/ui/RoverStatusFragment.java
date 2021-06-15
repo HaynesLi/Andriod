@@ -84,9 +84,8 @@ public class RoverStatusFragment extends LandscapeFragment {
 
 
     private void setLiveDataSources() {
-        view_model.getAllRovers().observe(getViewLifecycleOwner(), rovers -> {
-            roverStatusAdapter.setLocalRoverSet(rovers);
-        });
+        view_model.getAllRovers().observe(getViewLifecycleOwner(),
+                rovers -> roverStatusAdapter.setLocalRoverSet(rovers));
     }
 
     private void setListeners(){
@@ -94,8 +93,6 @@ public class RoverStatusFragment extends LandscapeFragment {
             NavDirections action = RoverStatusFragmentDirections.actionRoverStatusFragmentToReportFragment();
             NavHostFragment.findNavController(this).navigate(action);
         });
-        view_binding.buttonMockProgressUpdate.setOnClickListener(v -> {
-            view_model.mock_progress_update();
-        });
+        view_binding.buttonMockProgressUpdate.setOnClickListener(v -> view_model.mock_progress_update());
     }
 }
