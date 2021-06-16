@@ -19,7 +19,7 @@ import com.paltech.dronesncars.databinding.FragmentRoverRoutineSettingsBinding;
  * Use the {@link RoverRoutineSettingsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RoverRoutineSettingsFragment extends LandscapeFragment {
+public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRoverRoutineSettingsBinding, RoverRoutineSettingsViewModel> {
 
     private FragmentRoverRoutineSettingsBinding view_binding;
     private RoverRoutineSettingsViewModel view_model;
@@ -48,6 +48,16 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment {
     }
 
     @Override
+    FragmentRoverRoutineSettingsBinding get_view_binding(View view) {
+        return FragmentRoverRoutineSettingsBinding.bind(view);
+    }
+
+    @Override
+    RoverRoutineSettingsViewModel get_view_model() {
+        return new ViewModelProvider(requireActivity()).get(RoverRoutineSettingsViewModel.class);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -58,8 +68,8 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        view_binding = FragmentRoverRoutineSettingsBinding.bind(view);
-        view_model = new ViewModelProvider(requireActivity()).get(RoverRoutineSettingsViewModel.class);
+        view_binding = get_view_binding(view);
+        view_model = get_view_model();
 
         setLiveDataSources();
         setListeners();
@@ -75,9 +85,7 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment {
     }
 
     private void setListeners() {
-        view_binding.computeRoutineButton.setOnClickListener(v -> {
-            view_model.set_num_of_rovers(Integer.parseInt(view_binding.numOfRoversInput.getText().toString()));
-        });
+        view_binding.computeRoutineButton.setOnClickListener(v -> view_model.set_num_of_rovers(Integer.parseInt(view_binding.numOfRoversInput.getText().toString())));
 
         view_binding.acceptRoverRoutineButton.setOnClickListener(v -> {
             NavDirections action = RoverRouteFragmentDirections.actionRoverRouteFragmentToRoverStatusFragment();

@@ -2,17 +2,25 @@ package com.paltech.dronesncars.ui;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
+import androidx.viewbinding.ViewBinding;
 
-import java.util.Objects;
+public abstract class LandscapeFragment<View_Binding extends ViewBinding, View_Model extends ViewModel> extends Fragment {
 
-public abstract class LandscapeFragment extends Fragment {
+    protected View_Binding view_binding;
+    protected View_Model view_model;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
+
+    abstract View_Binding get_view_binding(View view);
+
+    abstract View_Model get_view_model();
 
 }

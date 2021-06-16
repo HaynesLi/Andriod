@@ -16,17 +16,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentScanResultsBinding;
-import com.paltech.dronesncars.model.Result;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ScanResultsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ScanResultsFragment extends LandscapeFragment {
+public class ScanResultsFragment extends LandscapeFragment<FragmentScanResultsBinding, ScanResultsViewModel> {
 
     private FragmentScanResultsBinding view_binding;
     private ScanResultRecyclerAdapter result_recycler_adapter;
@@ -55,6 +53,16 @@ public class ScanResultsFragment extends LandscapeFragment {
     }
 
     @Override
+    FragmentScanResultsBinding get_view_binding(View view) {
+        return FragmentScanResultsBinding.bind(view);
+    }
+
+    @Override
+    ScanResultsViewModel get_view_model() {
+        return new ViewModelProvider(requireActivity()).get(ScanResultsViewModel.class);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -65,8 +73,8 @@ public class ScanResultsFragment extends LandscapeFragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        view_binding = FragmentScanResultsBinding.bind(view);
-        view_model = new ViewModelProvider(requireActivity()).get(ScanResultsViewModel.class);
+        view_binding = get_view_binding(view);
+        view_model = get_view_model();
 
         setListeners();
         init_result_recycler_view();

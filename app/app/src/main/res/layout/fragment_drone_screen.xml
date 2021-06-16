@@ -8,7 +8,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map_fragment_container"
-        android:name="com.paltech.dronesncars.ui.MapFragment"
+        android:name="com.paltech.dronesncars.ui.FlightMapFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_weight="1"

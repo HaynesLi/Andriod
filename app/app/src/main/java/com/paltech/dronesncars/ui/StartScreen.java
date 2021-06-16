@@ -19,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModel;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -28,7 +29,7 @@ import com.paltech.dronesncars.databinding.FragmentStartScreenBinding;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class StartScreen extends LandscapeFragment {
+public class StartScreen extends LandscapeFragment<FragmentStartScreenBinding, ViewModel> {
 
     private FragmentStartScreenBinding view_binding;
 
@@ -47,9 +48,19 @@ public class StartScreen extends LandscapeFragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        view_binding = FragmentStartScreenBinding.bind(view);
+        view_binding = get_view_binding(view);
 
         setListeners();
+    }
+
+    @Override
+    FragmentStartScreenBinding get_view_binding(View view) {
+        return FragmentStartScreenBinding.bind(view);
+    }
+
+    @Override
+    ViewModel get_view_model() {
+        return null;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

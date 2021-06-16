@@ -7,13 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavDirections;
-import androidx.navigation.fragment.NavHostFragment;
+import androidx.lifecycle.ViewModel;
+import androidx.viewbinding.ViewBinding;
 
 import com.paltech.dronesncars.R;
 
-public class DroneScreen extends LandscapeFragment {
+public class DroneScreen extends LandscapeFragment<ViewBinding, ViewModel> {
 
     public Uri getKml_file_uri() {
         return kml_file_uri;
@@ -42,4 +41,15 @@ public class DroneScreen extends LandscapeFragment {
 
     }
 
+    // unused
+    @Override
+    ViewBinding get_view_binding(View view) {
+        return null;
+    }
+
+    // unused
+    @Override
+    ViewModel get_view_model() {
+        return null;
+    }
 }

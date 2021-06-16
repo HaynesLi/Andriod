@@ -19,7 +19,7 @@ import com.paltech.dronesncars.databinding.FragmentDroneSettingsBinding;
  * Use the {@link DroneSettingsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DroneSettingsFragment extends LandscapeFragment {
+public class DroneSettingsFragment extends LandscapeFragment<FragmentDroneSettingsBinding, DroneSettingsViewModel> {
 
     private FragmentDroneSettingsBinding view_binding;
     private DroneSettingsViewModel view_model;
@@ -46,6 +46,16 @@ public class DroneSettingsFragment extends LandscapeFragment {
     }
 
     @Override
+    FragmentDroneSettingsBinding get_view_binding(View view) {
+        return FragmentDroneSettingsBinding.bind(view);
+    }
+
+    @Override
+    DroneSettingsViewModel get_view_model() {
+        return new ViewModelProvider(requireActivity()).get(DroneSettingsViewModel.class);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -56,8 +66,8 @@ public class DroneSettingsFragment extends LandscapeFragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        view_binding = FragmentDroneSettingsBinding.bind(view);
-        view_model = new ViewModelProvider(requireActivity()).get(DroneSettingsViewModel.class);
+        view_binding = get_view_binding(view);
+        view_model = get_view_model();
 
         setLiveDataSources();
         setListeners();

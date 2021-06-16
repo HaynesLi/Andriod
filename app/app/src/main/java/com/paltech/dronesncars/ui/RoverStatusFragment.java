@@ -15,17 +15,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentRoverStatusBinding;
-import com.paltech.dronesncars.model.Rover;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link RoverStatusFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RoverStatusFragment extends LandscapeFragment {
+public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBinding, RoverStatusViewModel> {
 
     FragmentRoverStatusBinding view_binding;
     RoverStatusViewModel view_model;
@@ -55,6 +53,16 @@ public class RoverStatusFragment extends LandscapeFragment {
     }
 
     @Override
+    FragmentRoverStatusBinding get_view_binding(View view) {
+        return FragmentRoverStatusBinding.bind(view);
+    }
+
+    @Override
+    RoverStatusViewModel get_view_model() {
+        return new ViewModelProvider(requireActivity()).get(RoverStatusViewModel.class);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -65,8 +73,8 @@ public class RoverStatusFragment extends LandscapeFragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        view_binding = FragmentRoverStatusBinding.bind(view);
-        view_model = new ViewModelProvider(requireActivity()).get(RoverStatusViewModel.class);
+        view_binding = get_view_binding(view);
+        view_model = get_view_model();
 
         init_rover_status_recycler_view();
         setLiveDataSources();

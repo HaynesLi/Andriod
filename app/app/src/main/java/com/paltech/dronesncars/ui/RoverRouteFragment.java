@@ -1,13 +1,13 @@
 package com.paltech.dronesncars.ui;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
 
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentRoverRouteBinding;
@@ -17,7 +17,7 @@ import com.paltech.dronesncars.databinding.FragmentRoverRouteBinding;
  * Use the {@link RoverRouteFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RoverRouteFragment extends LandscapeFragment {
+public class RoverRouteFragment extends LandscapeFragment<FragmentRoverRouteBinding, ViewModel> {
 
     private FragmentRoverRouteBinding view_binding;
 
@@ -44,6 +44,16 @@ public class RoverRouteFragment extends LandscapeFragment {
     }
 
     @Override
+    FragmentRoverRouteBinding get_view_binding(View view) {
+        return FragmentRoverRouteBinding.bind(view);
+    }
+
+    @Override
+    ViewModel get_view_model() {
+        return null;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -54,6 +64,6 @@ public class RoverRouteFragment extends LandscapeFragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        view_binding = FragmentRoverRouteBinding.bind(view);
+        view_binding = get_view_binding(view);
     }
 }

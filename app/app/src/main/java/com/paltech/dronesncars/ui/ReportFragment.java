@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +18,7 @@ import com.paltech.dronesncars.databinding.FragmentReportBinding;
  * Use the {@link ReportFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ReportFragment extends LandscapeFragment {
+public class ReportFragment extends LandscapeFragment<FragmentReportBinding, ViewModel> {
 
     private FragmentReportBinding view_binding;
 
@@ -44,6 +45,16 @@ public class ReportFragment extends LandscapeFragment {
     }
 
     @Override
+    FragmentReportBinding get_view_binding(View view) {
+        return FragmentReportBinding.bind(view);
+    }
+
+    @Override
+    ViewModel get_view_model() {
+        return null;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -54,7 +65,7 @@ public class ReportFragment extends LandscapeFragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        view_binding = FragmentReportBinding.bind(view);
+        view_binding = get_view_binding(view);
 
         setListeners();
     }
