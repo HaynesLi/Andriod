@@ -22,6 +22,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.Task;
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentMapBinding;
+import com.paltech.dronesncars.model.RoverRoute;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -115,7 +116,7 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
                 setPolygon(polygon);
                 set_edit_buttons_enabled(true);
             } else {
-                find_and_delete_overlay("both");
+                find_and_delete_overlay("both", true);
             }
 
         });
@@ -168,7 +169,7 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
 
     protected void polygon_to_markers(Polygon polygon) {}
 
-    protected void find_and_delete_overlay(String type) {
+    protected void find_and_delete_overlay(String type, boolean multiple) {
         List<Overlay> overlays = view_binding.map.getOverlayManager().overlays();
         label:
         for (Overlay overlay : overlays) {
@@ -176,13 +177,13 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
                 case "polyline":
                     if (overlay.getClass() == Polyline.class) {
                         view_binding.map.getOverlayManager().remove(overlay);
-                        break label;
+                        if (!multiple) break label;
                     }
                     break;
                 case "polygon":
                     if (overlay.getClass() == Polygon.class) {
                         view_binding.map.getOverlayManager().remove(overlay);
-                        break label;
+                        if (!multiple) break label;
                     }
                     break;
                 case "both":
@@ -383,5 +384,25 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         view_binding.buttonPolygonEdit.setVisibility(View.INVISIBLE);
         view_binding.buttonExportPolygonToKml.setEnabled(false);
         view_binding.buttonExportPolygonToKml.setVisibility(View.INVISIBLE);
+    }
+
+    protected List<List<Marker>> draw_routes(List<List<GeoPoint>> routes) {
+        find_and_delete_overlay("polyline", true);
+        List<List<Marker>> multiple_routes_markers = new ArrayList<>();
+        for (List<GeoPoint> route: routes) {
+            List<Marker> route_markers = new ArrayList<>();
+            for (GeoPoint point: route) {
+                route_markers.add(build_edit_marker(point, true, false));
+            }
+            multiple_routes_markers.add(route_markers);
+
+            Polyline route_drawable_overlay = new Polyline();
+            route_drawable_overlay.setPoints(route);
+            route_drawable_overlay.getOutlinePaint().setStrokeWidth(1);
+
+            view_binding.map.getOverlayManager().add(route_drawable_overlay);
+        }
+        view_binding.map.invalidate();
+        return  multiple_routes_markers;
     }
 }

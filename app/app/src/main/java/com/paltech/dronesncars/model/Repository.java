@@ -51,7 +51,7 @@ public class Repository {
 
 
     private final int POLYGON_ID = 1;
-    private int ROUTINE_ID = 1;
+    private final int ROUTINE_ID = 1;
     private final int DRONE_SETTING_ID = 1;
     private final int FLIGHT_ROUTE_ID = 1;
 
@@ -302,5 +302,9 @@ public class Repository {
             resultDAO.insertMultipleResults(mock_results.toArray(result_array));
         });
 
+    }
+
+    public LiveData<List<RoverRoute>> get_rover_routes() {
+        return roverRouteDAO.get_all_rover_routes_livedata();
     }
 }

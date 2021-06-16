@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.paltech.dronesncars.model.FlightRoute;
 import com.paltech.dronesncars.model.Repository;
+import com.paltech.dronesncars.model.RoverRoute;
 
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polygon;
@@ -75,5 +76,7 @@ public class MapViewModel extends ViewModel {
             repository.save_kml_doc_from_polygon(polygon.getValue());
         }
     }
+
+    public LiveData<List<RoverRoute>> get_rover_routes() { return this.repository.get_rover_routes();}
 
 }

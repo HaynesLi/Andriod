@@ -23,6 +23,8 @@ import org.osmdroid.views.overlay.Polygon;
 import org.osmdroid.views.overlay.Polyline;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -287,22 +289,12 @@ public class FlightMapFragment extends MapFragment {
                 if (route != null && route.size() > 1) {
 
                     // remove the old route drawing (if there was one)
-                    find_and_delete_overlay("polyline");
+                    find_and_delete_overlay("polyline", false);
 
-                    for (GeoPoint point: route) {
-                        if (edit_route_markers == null) {
-                            edit_route_markers = new ArrayList<>();
-                        }
-                        edit_route_markers.add(build_edit_marker(point, true, false));
+                    List<List<Marker>> tmp = draw_routes(new ArrayList<>(Collections.singletonList(route)));
+                    if (tmp != null && tmp.size() >= 1) {
+                        edit_route_markers = tmp.get(0);
                     }
-
-                    // add the new one
-                    Polyline route_drawable_overlay = new Polyline();
-                    route_drawable_overlay.setPoints(route);
-                    route_drawable_overlay.getOutlinePaint().setStrokeWidth(1);
-
-                    view_binding.map.getOverlayManager().add(route_drawable_overlay);
-                    view_binding.map.invalidate();
                 }
             }
         });
