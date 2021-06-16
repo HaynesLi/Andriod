@@ -75,6 +75,7 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
 
         view_binding.buttonEditRoute.setText("Edit Route");
 
+        configure_buttons();
         configureMap();
         setLiveDataSources();
         set_click_listeners();
@@ -119,35 +120,7 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
 
         });
 
-        view_model.getRoute().observe(getViewLifecycleOwner(), flight_route -> {
-            if (flight_route != null) {
-                List<GeoPoint> route = flight_route.route;
-                if (edit_route_markers != null && edit_route_markers.size() != 0) {
-                    view_binding.map.getOverlayManager().removeAll(edit_route_markers);
-                    edit_route_markers = null;
-                }
-                if (route != null && route.size() > 1) {
 
-                    // remove the old route drawing (if there was one)
-                    find_and_delete_overlay("polyline");
-
-                    for (GeoPoint point: route) {
-                        if (edit_route_markers == null) {
-                            edit_route_markers = new ArrayList<>();
-                        }
-                        edit_route_markers.add(build_edit_marker(point, true, false));
-                    }
-
-                    // add the new one
-                    Polyline route_drawable_overlay = new Polyline();
-                    route_drawable_overlay.setPoints(route);
-                    route_drawable_overlay.getOutlinePaint().setStrokeWidth(1);
-
-                    view_binding.map.getOverlayManager().add(route_drawable_overlay);
-                    view_binding.map.invalidate();
-                }
-            }
-        });
     }
 
     //TODO as soon as there is an own fragment for this add own view_binding
@@ -280,34 +253,49 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         }
     }
 
+    protected void edit_route_button_activate() {
+        if(edit_route_markers != null) {
+            view_binding.map.getOverlayManager().addAll(edit_route_markers);
+        } else  {
+            return;
+        }
+        view_binding.buttonEditRoute.setText("Stop Edit");
+        view_binding.buttonExportPolygonToKml.setVisibility(View.INVISIBLE);
+        view_binding.buttonAddMarker.setVisibility(View.VISIBLE);
+        view_binding.buttonDeleteMarker.setVisibility(View.VISIBLE);
+        view_binding.buttonPolygonEdit.setEnabled(false);
+        current_state = VIEW_STATE.EDIT_ROUTE;
+    }
+
+    protected void edit_route_button_deactivate() {
+        if (edit_route_markers != null) {
+            view_binding.map.getOverlayManager().removeAll(edit_route_markers);
+        }
+        view_binding.buttonEditRoute.setText("Edit Route");
+        view_binding.buttonAddMarker.setVisibility(View.INVISIBLE);
+        view_binding.buttonDeleteMarker.setVisibility(View.INVISIBLE);
+
+        if (changed_during_edit) {
+            changed_during_edit = false;
+            List<GeoPoint> new_route = new ArrayList<>();
+            for (Marker marker: edit_route_markers){
+                new_route.add(marker.getPosition());
+            }
+
+            view_model.set_flight_route(new_route);
+        }
+
+        current_state = VIEW_STATE.NONE;
+        set_marker_unselected(true);
+    }
+
     protected void set_click_listeners() {
         view_binding.buttonEditRoute.setOnClickListener(v -> {
             if (current_state == VIEW_STATE.NONE) {
-                view_binding.map.getOverlayManager().addAll(edit_route_markers);
-                view_binding.buttonEditRoute.setText("Stop Edit");
-                view_binding.buttonExportPolygonToKml.setVisibility(View.INVISIBLE);
-                view_binding.buttonAddMarker.setVisibility(View.VISIBLE);
-                view_binding.buttonDeleteMarker.setVisibility(View.VISIBLE);
-                view_binding.buttonPolygonEdit.setEnabled(false);
-                current_state = VIEW_STATE.EDIT_ROUTE;
+                edit_route_button_activate();
             } else if (current_state == VIEW_STATE.EDIT_ROUTE){
-                view_binding.map.getOverlayManager().removeAll(edit_route_markers);
-                view_binding.buttonEditRoute.setText("Edit Route");
-                view_binding.buttonAddMarker.setVisibility(View.INVISIBLE);
-                view_binding.buttonDeleteMarker.setVisibility(View.INVISIBLE);
-                view_binding.buttonExportPolygonToKml.setVisibility(View.VISIBLE);
-                if (changed_during_edit) {
-                    changed_during_edit = false;
-                    List<GeoPoint> new_route = new ArrayList<>();
-                    for (Marker marker: edit_route_markers){
-                        new_route.add(marker.getPosition());
-                    }
+                edit_route_button_deactivate();
 
-                    view_model.set_flight_route(new_route);
-                }
-                view_binding.buttonPolygonEdit.setEnabled(true);
-                current_state = VIEW_STATE.NONE;
-                set_marker_unselected(true);
             }
             view_binding.map.invalidate();
         });
@@ -388,5 +376,12 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
                 view_binding.map.getController().setZoom(16.0);
             }
         });
+    }
+
+    protected void configure_buttons() {
+        view_binding.buttonPolygonEdit.setEnabled(false);
+        view_binding.buttonPolygonEdit.setVisibility(View.INVISIBLE);
+        view_binding.buttonExportPolygonToKml.setEnabled(false);
+        view_binding.buttonExportPolygonToKml.setVisibility(View.INVISIBLE);
     }
 }

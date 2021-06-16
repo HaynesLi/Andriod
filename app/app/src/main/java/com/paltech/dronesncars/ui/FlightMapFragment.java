@@ -20,6 +20,7 @@ import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.OverlayManager;
 import org.osmdroid.views.overlay.Polygon;
+import org.osmdroid.views.overlay.Polyline;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -275,6 +276,36 @@ public class FlightMapFragment extends MapFragment {
                 }
             }
         });
+
+        view_model.getRoute().observe(getViewLifecycleOwner(), flight_route -> {
+            if (flight_route != null) {
+                List<GeoPoint> route = flight_route.route;
+                if (edit_route_markers != null && edit_route_markers.size() != 0) {
+                    view_binding.map.getOverlayManager().removeAll(edit_route_markers);
+                    edit_route_markers = null;
+                }
+                if (route != null && route.size() > 1) {
+
+                    // remove the old route drawing (if there was one)
+                    find_and_delete_overlay("polyline");
+
+                    for (GeoPoint point: route) {
+                        if (edit_route_markers == null) {
+                            edit_route_markers = new ArrayList<>();
+                        }
+                        edit_route_markers.add(build_edit_marker(point, true, false));
+                    }
+
+                    // add the new one
+                    Polyline route_drawable_overlay = new Polyline();
+                    route_drawable_overlay.setPoints(route);
+                    route_drawable_overlay.getOutlinePaint().setStrokeWidth(1);
+
+                    view_binding.map.getOverlayManager().add(route_drawable_overlay);
+                    view_binding.map.invalidate();
+                }
+            }
+        });
     }
 
     @Override
@@ -328,6 +359,21 @@ public class FlightMapFragment extends MapFragment {
             }
             polygon_holes.add(current_hole);
         }
+    }
+
+    @Override
+    protected void configure_buttons() {}
+
+    @Override
+    protected void edit_route_button_activate() {
+        super.edit_route_button_activate();
+    }
+
+    @Override
+    protected void edit_route_button_deactivate() {
+        super.edit_route_button_deactivate();
+        view_binding.buttonExportPolygonToKml.setVisibility(View.VISIBLE);
+        view_binding.buttonPolygonEdit.setEnabled(true);
     }
 
 }
