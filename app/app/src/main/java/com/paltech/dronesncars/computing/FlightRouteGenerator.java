@@ -57,7 +57,7 @@ public class FlightRouteGenerator {
      * @return true: shape contains pnt | false: shape does not contain pnt
      * @throws RuntimeException if the picked GeoPoint was on one of our outlines
      */
-    static boolean contains(List<List<GeoPoint>> shapes, GeoPoint pnt) throws  RuntimeException {
+    public static boolean contains(List<List<GeoPoint>> shapes, GeoPoint pnt) throws  RuntimeException {
         boolean inside = false;
         for (List<GeoPoint> shape: shapes) {
             int len = shape.size();
@@ -67,6 +67,14 @@ public class FlightRouteGenerator {
             }
         }
         return inside;
+    }
+
+    public static double meter_to_latitude_distance(double meters) {
+        return meters*0.001/STD_DIST_LAT;
+    }
+
+    public static double meter_to_longitude_distance(double meters) {
+        return meters*0.001/STD_DIST_LONG;
     }
 
     /**
@@ -84,8 +92,8 @@ public class FlightRouteGenerator {
         double distance_longitude = Math.abs(boundingBox.getLonEast() - boundingBox.getLonWest());
 
 
-        double distance_latitude_m = distance / STD_DIST_LAT;
-        double distance_longitude_m = distance / STD_DIST_LONG;
+        double distance_latitude_m = meter_to_latitude_distance(distance);
+        double distance_longitude_m = meter_to_longitude_distance(distance);
 
         GeoPoint[][] ourPoints = new GeoPoint[(int) (distance_latitude / distance_latitude_m)]
                 [(int) (distance_longitude / distance_longitude_m)];
@@ -105,7 +113,7 @@ public class FlightRouteGenerator {
                     if (contains(shapes, current_point)) {
                         ourPoints[x][y] = current_point;
                     }
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                     Log.d("DEBUG_POINTS", "checkPoints: " + e.getMessage());
                 }
             }
@@ -137,7 +145,7 @@ public class FlightRouteGenerator {
     }
 
     public static List<GeoPoint> compute_flight_route(Polygon polygon, int distance) {
-        GeoPoint[][] targets = get_targets_for_polygon(polygon, distance*0.001);
+        GeoPoint[][] targets = get_targets_for_polygon(polygon, distance);
         List<GeoPoint> flightroute = compute_route_from_targets(targets);
         return flightroute;
     }

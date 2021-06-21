@@ -14,6 +14,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.osmdroid.util.GeoPoint;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,7 +27,7 @@ public class ResultDatabaseTest {
     private DNR_Database database;
 
     @Before
-    public void openDatabase() throws IOException {
+    public void openDatabase() {
         Context context = ApplicationProvider.getApplicationContext();
         database = Room.inMemoryDatabaseBuilder(context, DNR_Database.class).build();
         resultDAO = database.getResultDAO();
@@ -40,7 +41,7 @@ public class ResultDatabaseTest {
 
     @Test
     public void resultDatabaseTest() {
-        Result expected_result = new Result(1, 0.4);
+        Result expected_result = new Result(1, 0.4, new GeoPoint(0.0, 0.0));
 
         resultDAO.insertMultipleResults(expected_result);
 

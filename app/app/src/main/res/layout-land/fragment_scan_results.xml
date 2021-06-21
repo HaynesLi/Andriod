@@ -20,17 +20,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/button_configure_rovers"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:text="@string/configure_rovers"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_right_margin"
-            app:layout_constraintStart_toEndOf="@+id/button_open_gallery"
-            app:layout_constraintHorizontal_chainStyle="spread" />
-
         <ImageView
             android:id="@+id/imageView_stitched_image"
             android:layout_width="0dp"
@@ -104,6 +93,17 @@
             app:layout_constraintStart_toEndOf="@+id/guideline_vertical_left_margin" />
 
         <Button
+            android:id="@+id/button_configure_rovers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="@string/configure_rovers"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/button_mock_results"
+            app:layout_constraintStart_toEndOf="@+id/button_open_gallery"
+            app:layout_constraintHorizontal_chainStyle="spread" />
+
+        <Button
             android:id="@+id/button_open_gallery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -111,6 +111,16 @@
             app:layout_constraintEnd_toStartOf="@+id/button_configure_rovers"
             app:layout_constraintStart_toStartOf="@+id/guideline_vertical_left_margin"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_chainStyle="spread" />
+
+        <Button
+            android:id="@+id/button_mock_results"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_right_margin"
+            app:layout_constraintStart_toEndOf="@+id/button_configure_rovers"
+            android:text="@string/button_mock_results_label"
             app:layout_constraintHorizontal_chainStyle="spread" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

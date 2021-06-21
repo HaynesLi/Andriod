@@ -26,8 +26,8 @@ public class ScanResultsViewModel extends ViewModel {
         return this.repository.get_scan_results();
     }
 
-    public void mock_scan_results() {
-        this.repository.mock_scan_results();
+    public void mock_results() {
+        this.repository.mock_results();
     }
 
 }

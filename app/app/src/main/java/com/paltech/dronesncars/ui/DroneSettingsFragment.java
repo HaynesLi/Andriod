@@ -1,6 +1,7 @@
 package com.paltech.dronesncars.ui;
 
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,9 +96,12 @@ public class DroneSettingsFragment extends LandscapeFragment<FragmentDroneSettin
             }
         });
         view_binding.buttonComputeRoute.setOnClickListener(v -> {
+            String altitude_string = view_binding.editTextFlightAltitude.getText().toString();
+            if (!"".equals(altitude_string)) {
                 view_model.setFlightAltitude(Integer.parseInt(
-                        String.valueOf(view_binding.editTextFlightAltitude.getText())));
+                        altitude_string));
                 view_model.computeRoute();
+            }
         });
     }
 }

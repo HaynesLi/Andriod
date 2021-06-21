@@ -79,7 +79,6 @@ public class ScanResultsFragment extends LandscapeFragment<FragmentScanResultsBi
         setListeners();
         init_result_recycler_view();
         set_livedata_sources();
-        mock_results();
     }
 
     private void init_result_recycler_view() {
@@ -92,7 +91,7 @@ public class ScanResultsFragment extends LandscapeFragment<FragmentScanResultsBi
     }
 
     private void mock_results() {
-        view_model.mock_scan_results();
+        view_model.mock_results();
     }
 
     private void set_livedata_sources() {
@@ -112,6 +111,7 @@ public class ScanResultsFragment extends LandscapeFragment<FragmentScanResultsBi
             open_gallery_intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(open_gallery_intent);
         });
+        view_binding.buttonMockResults.setOnClickListener(v -> mock_results());
     }
 
 }

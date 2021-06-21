@@ -19,7 +19,7 @@ import dagger.hilt.components.SingletonComponent;
 @Module
 @InstallIn(SingletonComponent.class)
 public class DronesNCars extends Application {
-    ExecutorService executorService = Executors.newFixedThreadPool(4);
+    ExecutorService executorService = Executors.newFixedThreadPool(8);
 
     @Provides
     public Executor getExecutor(){

@@ -2,7 +2,10 @@ package com.paltech.dronesncars.model;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+
+import org.osmdroid.util.GeoPoint;
 
 import java.util.Objects;
 
@@ -16,10 +19,21 @@ public class Result {
     @ColumnInfo(name = "certainty")
     public double certainty;
 
+    @ColumnInfo(name = "location")
+    public GeoPoint location;
+
+    @Ignore
     public Result(int result_id, double certainty) {
         this.result_id = result_id;
         this.certainty = certainty;
     }
+
+    public Result(int result_id, double certainty, GeoPoint location) {
+        this.result_id = result_id;
+        this.certainty = certainty;
+        this.location = location;
+    }
+
 
     @Override
     public boolean equals(Object o) {

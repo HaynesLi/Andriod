@@ -9,6 +9,8 @@ import androidx.lifecycle.LiveData;
 
 import com.google.gson.GsonBuilder;
 import com.paltech.dronesncars.computing.FlightRouteGenerator;
+import com.paltech.dronesncars.computing.WeedDetectorInterface;
+import com.paltech.dronesncars.computing.WeedDetectorMock;
 import com.paltech.dronesncars.ui.ViewModelCallback;
 
 import org.osmdroid.bonuspack.kml.KmlDocument;
@@ -88,9 +90,6 @@ public class Repository {
     }
 
     public RoverRoutine getCurrentRoutine() {
-        if (ROUTINE_ID == -1) {
-            return null;
-        }
         return roverRoutineDAO.getRoverRoutineByID(ROUTINE_ID);
     }
 
@@ -287,24 +286,27 @@ public class Repository {
         return resultDAO.get_all_results_livedata();
     }
 
-    public void mock_scan_results() {
-        List<Result> mock_results = new ArrayList<>();
-        mock_results.add(new Result(0, 0.33));
-        mock_results.add(new Result(1, 0.66));
-        mock_results.add(new Result(2, 1.0));
-        mock_results.add(new Result(3, 0.0));
-        mock_results.add(new Result(4, 0.25));
-        mock_results.add(new Result(5, 0.75));
-
-        executor.execute(() -> {
-            resultDAO.delete_all_results();
-            Result[] result_array = new Result[mock_results.size()];
-            resultDAO.insertMultipleResults(mock_results.toArray(result_array));
-        });
-
-    }
-
     public LiveData<List<RoverRoute>> get_rover_routes() {
         return roverRouteDAO.get_all_rover_routes_livedata();
+    }
+
+    public void mock_results() {
+
+        executor.execute(() -> {
+            Polygon current_polygon = polygonModelDAO.getPolygonModelByID(POLYGON_ID).polygon;
+            if (current_polygon != null) {
+                WeedDetectorInterface weed_detector = new WeedDetectorMock(current_polygon);
+                List<Result> mock_results = weed_detector.get_results_from_pictures(
+                        new ArrayList<>(),
+                        new ArrayList<>()
+                );
+
+                if (!mock_results.isEmpty()) {
+                    resultDAO.delete_all_results();
+                    Result[] result_array = new Result[mock_results.size()];
+                    resultDAO.insertMultipleResults(mock_results.toArray(result_array));
+                }
+            }
+        });
     }
 }
