@@ -135,9 +135,22 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
                 return;
             }
 
+            List<List<GeoPoint>> drawable_routes = new ArrayList<>();
             for (RoverRoute rover_route: routes) {
                 List<GeoPoint> route = rover_route.route;
-                // TODO
+                clear_route_edit_markers();
+                edit_rover_route_markers = null;
+
+                if (route != null && route.size() > 1) {
+                    find_and_delete_overlay("polyline", true);
+
+                    drawable_routes.add(route);
+                }
+            }
+
+            List<List<Marker>> tmp = draw_routes(drawable_routes);
+            if (tmp != null && !tmp.isEmpty()) {
+                edit_rover_route_markers = tmp;
             }
         });
 
@@ -274,11 +287,22 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
     }
 
     protected boolean add_route_edit_markers() {
-        // TODO
-        return false;
+        if(edit_rover_route_markers != null) {
+            for (List<Marker> markers_current_route: edit_rover_route_markers) {
+                view_binding.map.getOverlayManager().addAll(markers_current_route);
+            }
+            return true;
+        } else  {
+            return false;
+        }
     }
 
     protected void clear_route_edit_markers() {
+        if (edit_rover_route_markers != null && !edit_rover_route_markers.isEmpty()) {
+            for (List<Marker> marker_route: edit_rover_route_markers) {
+                view_binding.map.getOverlayManager().removeAll(marker_route);
+            }
+        }
 
     }
 
@@ -411,6 +435,7 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
             route_drawable_overlay.getOutlinePaint().setStrokeWidth(1);
 
             view_binding.map.getOverlayManager().add(route_drawable_overlay);
+            view_binding.map.getController().setCenter(route_drawable_overlay.getActualPoints().get(0));
         }
         view_binding.map.invalidate();
         return  multiple_routes_markers;

@@ -36,7 +36,7 @@ public class VRP_Wrapper {
     public static List<List<GeoPoint>> get_routes_for_vehicles(int num_of_vehicles, List<GeoPoint> targets, int index_of_depot) {
         if (targets.size() <= 0 || num_of_vehicles <= 0) { return new ArrayList<>(); }
 
-        ProblemInstance problem_instance = get_instance_for_problem(num_of_vehicles, targets);
+        ProblemInstance problem_instance = get_instance_for_problem(num_of_vehicles, targets, index_of_depot);
 
         Solution solution = run_problem_instance(problem_instance);
 
@@ -103,16 +103,18 @@ public class VRP_Wrapper {
      * @return returns the resulting ProblemInstance, which is ready to be solved by
      *  run_problem_instance(...)
      */
-    private static ProblemInstance get_instance_for_problem(int num_of_vehicles, List<GeoPoint> targets) {
+    private static ProblemInstance get_instance_for_problem(int num_of_vehicles, List<GeoPoint> targets, int index_of_depot) {
         ProblemInstance problem_instance = new ProblemInstance(num_of_vehicles, targets.size());
         Node[] nodes = geo_points_to_nodes(targets);
         problem_instance.setLocations(nodes);
 
-        Node depot = nodes[0];
+        Node depot = nodes[index_of_depot];
         problem_instance.setDepot(depot);
 
         double[][] distances = get_distances_from_geopoints(targets);
         problem_instance.setDistances(distances);
+
+        problem_instance.setInfo(true);
 
         return problem_instance;
     }

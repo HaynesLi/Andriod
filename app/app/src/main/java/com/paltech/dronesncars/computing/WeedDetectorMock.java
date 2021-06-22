@@ -61,37 +61,43 @@ public class WeedDetectorMock implements WeedDetectorInterface {
 
                 //TODO this isn't exactly elegant code
 
-                if (!polygon_does_not_contain(current_point)) {
+                if (polygon_does_not_contain(current_point)) {
                     current_point = new GeoPoint(
                             random_geopoint.getLatitude() - latitude_offset,
                             random_geopoint.getLongitude() + longitude_offset
                         );
                 } else {
-                    results.add(new Result(i, random.nextDouble(), random_geopoint));
+                    results.add(new Result(i, random.nextDouble(), current_point));
                     used_points.add(random_geopoint);
                     continue;
                 }
-                if (!polygon_does_not_contain(current_point)) {
+                if (polygon_does_not_contain(current_point)) {
                     current_point = new GeoPoint(
                             random_geopoint.getLatitude() + latitude_offset,
                             random_geopoint.getLongitude() - longitude_offset
                     );
                 } else {
-                    results.add(new Result(i, random.nextDouble(), random_geopoint));
+                    results.add(new Result(i, random.nextDouble(), current_point));
                     used_points.add(random_geopoint);
                     continue;
                 }
-                if (!polygon_does_not_contain(current_point)) {
+                if (polygon_does_not_contain(current_point)) {
                     current_point = new GeoPoint(
                             random_geopoint.getLatitude() - latitude_offset,
                             random_geopoint.getLongitude() - longitude_offset
                     );
                 } else {
-                    results.add(new Result(i, random.nextDouble(), random_geopoint));
+                    results.add(new Result(i, random.nextDouble(), current_point));
+                    used_points.add(random_geopoint);
+                    continue;
+                }
+
+                if (!polygon_does_not_contain(current_point)) {
+                    results.add(new Result(i, random.nextDouble(), current_point));
                     used_points.add(random_geopoint);
                 }
 
-            } while (!polygon_does_not_contain(current_point));
+            } while (polygon_does_not_contain(current_point));
         }
 
         return results;

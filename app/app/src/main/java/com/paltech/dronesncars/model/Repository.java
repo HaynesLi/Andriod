@@ -336,6 +336,9 @@ public class Repository {
                 if (error_counter >= 4) {
                     return;
                 }
+                if (!routes.isEmpty()) {
+                    roverRouteDAO.delete_rover_routes_by_routine_id(ROUTINE_ID);
+                }
 
                 for (int rover_route_id = 0; rover_route_id < routes.size(); rover_route_id++) {
                     List<GeoPoint> current_route = routes.get(rover_route_id);

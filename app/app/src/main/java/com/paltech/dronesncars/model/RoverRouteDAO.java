@@ -40,4 +40,7 @@ public interface RoverRouteDAO {
     @Transaction
     @Query("SELECT * FROM Rover, RoverRoute where rover_id = corresponding_rover_id AND rover_route_id = (:rover_route_id)")
     Rover getRoverForRoute(int rover_route_id);
+
+    @Query("DELETE FROM RoverRoute WHERE routine_id == (:routine_id)")
+    void delete_rover_routes_by_routine_id(int routine_id);
 }

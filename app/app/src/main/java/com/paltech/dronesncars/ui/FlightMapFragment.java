@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentMapBinding;
 
+import org.jetbrains.annotations.NotNull;
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.MapEventsOverlay;
@@ -65,7 +66,7 @@ public class FlightMapFragment extends MapFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
@@ -96,7 +97,7 @@ public class FlightMapFragment extends MapFragment {
 
     @Override
     protected void clear_route_edit_markers() {
-        if (edit_route_markers != null) {
+        if (edit_route_markers != null && !edit_route_markers.isEmpty()) {
             view_binding.map.getOverlayManager().removeAll(edit_route_markers);
         }
     }
