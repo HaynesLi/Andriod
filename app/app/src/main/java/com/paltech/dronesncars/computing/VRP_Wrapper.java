@@ -13,7 +13,15 @@ import java.util.List;
 
 public class VRP_Wrapper {
 
-    public static List<List<GeoPoint>> get_routes_for_vehicles(int num_of_vehicles, List<GeoPoint> targets) {
+    /**
+     * compute the best routes for a certain number of vehicles to visit a number of GeoPoints
+     *
+     * @param num_of_vehicles the number of vehicles to use (e.g. drones, rovers)
+     * @param targets the locations to visit
+     * @param index_of_depot the index of the start location inside targets
+     * @return returns a list of routes (= lists of GeoPoints)
+     */
+    public static List<List<GeoPoint>> get_routes_for_vehicles(int num_of_vehicles, List<GeoPoint> targets, int index_of_depot) {
         if (targets.size() <= 0 || num_of_vehicles <= 0) { return new ArrayList<>(); }
 
         ProblemInstance problem_instance = get_instance_for_problem(num_of_vehicles, targets);
@@ -23,6 +31,12 @@ public class VRP_Wrapper {
         return get_routes_from_solution(solution, targets);
     }
 
+    /**
+     * Run a specified problem instance
+     *
+     * @param problem_instance the problem instance
+     * @return returns the Solution to the problem
+     */
     private static Solution run_problem_instance(ProblemInstance problem_instance) {
         Runner solver = new Runner();
         solver.setup(problem_instance);
@@ -42,6 +56,13 @@ public class VRP_Wrapper {
         return best_solution;
     }
 
+    /**
+     * Translate the solution to a problem instance into a list of routes (= lists of GeoPoints)
+     *
+     * @param solution the solution to translate
+     * @param targets the GeoPoints which are part of the solution = all GeoPoints to visit
+     * @return a list of routes (= lists of GeoPoints)
+     */
     private static List<List<GeoPoint>> get_routes_from_solution(Solution solution, List<GeoPoint> targets) {
         ArrayList<ArrayList<Integer>> routes_with_ids = solution.getRoutes();
 
@@ -61,6 +82,15 @@ public class VRP_Wrapper {
         return routes;
     }
 
+    /**
+     * build and prepare the problem instance for a vehicle routing problem with the given number
+     * of vehicles and the given targets
+     *
+     * @param num_of_vehicles the number of vehicles
+     * @param targets the GeoPoints to visit
+     * @return returns the resulting ProblemInstance, which is ready to be solved by
+     *  run_problem_instance(...)
+     */
     private static ProblemInstance get_instance_for_problem(int num_of_vehicles, List<GeoPoint> targets) {
         ProblemInstance problem_instance = new ProblemInstance(num_of_vehicles, targets.size());
         Node[] nodes = geo_points_to_nodes(targets);
@@ -75,6 +105,13 @@ public class VRP_Wrapper {
         return problem_instance;
     }
 
+    /**
+     * calculate the distances between a set of GeoPoints
+     *
+     * @param geo_points the geopoints to calculate the distances for
+     * @return returns a NxN matrix of distances, where N = geo_points.size() and
+     *  distances[i][j] is the distance between geo_points.get(i) and geo_points.get(j)
+     */
     private static double[][] get_distances_from_geopoints(List<GeoPoint> geo_points) {
         double[][] distances = new double[geo_points.size()][geo_points.size()];
 
@@ -90,6 +127,12 @@ public class VRP_Wrapper {
         return distances;
     }
 
+    /**
+     * create the corresponding Nodes for a set of GeoPoints
+     *
+     * @param geo_points the GeoPoints to create the Nodes for
+     * @return returns an array of the corresponding Nodes
+     */
     private static Node[] geo_points_to_nodes(List<GeoPoint> geo_points) {
         Node[] nodes = new Node[geo_points.size()];
 
