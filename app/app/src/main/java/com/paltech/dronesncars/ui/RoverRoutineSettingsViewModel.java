@@ -43,4 +43,8 @@ public class RoverRoutineSettingsViewModel extends ViewModel {
         this.repository = repository;
         getNumOfRovers();
     }
+
+    public void start_rover_routes_computation(int num_of_rovers) {
+        repository.start_rover_routes_computation(num_of_rovers);
+    }
 }

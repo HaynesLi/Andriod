@@ -14,6 +14,18 @@ import java.util.List;
 public class VRP_Wrapper {
 
     /**
+     * compute the best routes for a certain number of vehicles to visit a number of GeoPoints,
+     * assuming the first point in the list of targets is the starting point
+     *
+     * @param num_of_vehicles the number of vehicles to use (e.g. drones, rovers)
+     * @param targets the locations to visit
+     * @return returns a list of routes (= lists of GeoPoints)
+     */
+    public static List<List<GeoPoint>> get_routes_for_vehicles(int num_of_vehicles, List<GeoPoint> targets) {
+        return get_routes_for_vehicles(num_of_vehicles, targets, 0);
+    }
+
+    /**
      * compute the best routes for a certain number of vehicles to visit a number of GeoPoints
      *
      * @param num_of_vehicles the number of vehicles to use (e.g. drones, rovers)

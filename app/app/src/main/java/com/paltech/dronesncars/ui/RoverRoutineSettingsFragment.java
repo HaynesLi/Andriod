@@ -85,7 +85,12 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
     }
 
     private void setListeners() {
-        view_binding.computeRoutineButton.setOnClickListener(v -> view_model.set_num_of_rovers(Integer.parseInt(view_binding.numOfRoversInput.getText().toString())));
+        view_binding.computeRoutineButton.setOnClickListener(v -> {
+            int num_of_rovers = Integer.parseInt(view_binding.numOfRoversInput.getText().toString());
+            view_model.set_num_of_rovers(num_of_rovers);
+
+            view_model.start_rover_routes_computation(num_of_rovers);
+        });
 
         view_binding.acceptRoverRoutineButton.setOnClickListener(v -> {
             NavDirections action = RoverRouteFragmentDirections.actionRoverRouteFragmentToRoverStatusFragment();

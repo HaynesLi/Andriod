@@ -7,8 +7,8 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
-import com.google.gson.GsonBuilder;
 import com.paltech.dronesncars.computing.FlightRouteGenerator;
+import com.paltech.dronesncars.computing.VRP_Wrapper;
 import com.paltech.dronesncars.computing.WeedDetectorInterface;
 import com.paltech.dronesncars.computing.WeedDetectorMock;
 import com.paltech.dronesncars.ui.ViewModelCallback;
@@ -17,7 +17,6 @@ import org.osmdroid.bonuspack.kml.KmlDocument;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polygon;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
@@ -28,6 +27,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -305,6 +305,43 @@ public class Repository {
                     resultDAO.delete_all_results();
                     Result[] result_array = new Result[mock_results.size()];
                     resultDAO.insertMultipleResults(mock_results.toArray(result_array));
+                }
+            }
+        });
+    }
+
+    public void start_rover_routes_computation(int num_of_rovers) {
+        executor.execute(() -> {
+            List<Result> current_results = resultDAO.getAllResults();
+            List<GeoPoint> targets = current_results.stream().map(result -> result.location).collect(Collectors.toList());
+
+            if(!targets.isEmpty() && num_of_rovers > 0) {
+                List<List<GeoPoint>> routes = VRP_Wrapper.get_routes_for_vehicles(num_of_rovers, targets);
+
+                RoverRoutine rover_routine;
+                int error_counter = 0;
+                do {
+                    rover_routine = roverRoutineDAO.getRoverRoutineByID(ROUTINE_ID);
+                    if (rover_routine == null) {
+                        error_counter++;
+                        try {
+                            // TODO: does this work like this?
+                            wait(5000);
+                        } catch (InterruptedException e) {
+                            Log.e("ERROR_WAITING", "start_rover_routes_computation: interrupt while waiting - ", e);
+                        }
+                    }
+                } while(rover_routine == null && error_counter < 4);
+
+                if (error_counter >= 4) {
+                    return;
+                }
+
+                for (int rover_route_id = 0; rover_route_id < routes.size(); rover_route_id++) {
+                    List<GeoPoint> current_route = routes.get(rover_route_id);
+                    RoverRoute new_rover_route = new RoverRoute(rover_route_id, -1, current_route, ROUTINE_ID);
+
+                    roverRouteDAO.insertMultiple(new_rover_route);
                 }
             }
         });

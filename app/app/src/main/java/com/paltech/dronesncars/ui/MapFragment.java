@@ -24,6 +24,7 @@ import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentMapBinding;
 import com.paltech.dronesncars.model.RoverRoute;
 
+import org.jetbrains.annotations.NotNull;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -43,11 +44,12 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewModel> {
-    protected List<Marker> edit_route_markers;
+
     protected enum VIEW_STATE {NONE, EDIT_POLYGON, EDIT_ROUTE}
     protected VIEW_STATE current_state;
     protected boolean changed_during_edit;
     protected Marker selected_marker = null;
+    private List<List<Marker>> edit_rover_route_markers;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,7 +57,7 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view_binding = FragmentMapBinding.inflate(inflater, container, false);
@@ -72,15 +74,19 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         view_model = get_view_model();
         current_state = VIEW_STATE.NONE;
         changed_during_edit = false;
-        edit_route_markers = null;
 
         view_binding.buttonEditRoute.setText("Edit Route");
 
+        different_inits();
         configure_buttons();
         configureMap();
         setLiveDataSources();
         set_click_listeners();
         refresh_polygon();
+    }
+
+    protected void different_inits() {
+        edit_rover_route_markers = null;
     }
 
     protected void refresh_polygon() {
@@ -118,9 +124,22 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
             } else {
                 find_and_delete_overlay("both", true);
             }
-
         });
 
+        observe_rover_routes();
+    }
+
+    protected void observe_rover_routes() {
+        view_model.get_rover_routes().observe(getViewLifecycleOwner(), routes -> {
+            if (routes == null || routes.isEmpty()) {
+                return;
+            }
+
+            for (RoverRoute rover_route: routes) {
+                List<GeoPoint> route = rover_route.route;
+                // TODO
+            }
+        });
 
     }
 
@@ -254,12 +273,18 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         }
     }
 
+    protected boolean add_route_edit_markers() {
+        // TODO
+        return false;
+    }
+
+    protected void clear_route_edit_markers() {
+
+    }
+
     protected void edit_route_button_activate() {
-        if(edit_route_markers != null) {
-            view_binding.map.getOverlayManager().addAll(edit_route_markers);
-        } else  {
-            return;
-        }
+        if (!add_route_edit_markers()) return;
+
         view_binding.buttonEditRoute.setText("Stop Edit");
         view_binding.buttonExportPolygonToKml.setVisibility(View.INVISIBLE);
         view_binding.buttonAddMarker.setVisibility(View.VISIBLE);
@@ -268,23 +293,17 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         current_state = VIEW_STATE.EDIT_ROUTE;
     }
 
+    protected void save_route_or_routes() {
+        // TODO
+    }
+
     protected void edit_route_button_deactivate() {
-        if (edit_route_markers != null) {
-            view_binding.map.getOverlayManager().removeAll(edit_route_markers);
-        }
+        clear_route_edit_markers();
         view_binding.buttonEditRoute.setText("Edit Route");
         view_binding.buttonAddMarker.setVisibility(View.INVISIBLE);
         view_binding.buttonDeleteMarker.setVisibility(View.INVISIBLE);
 
-        if (changed_during_edit) {
-            changed_during_edit = false;
-            List<GeoPoint> new_route = new ArrayList<>();
-            for (Marker marker: edit_route_markers){
-                new_route.add(marker.getPosition());
-            }
-
-            view_model.set_flight_route(new_route);
-        }
+        save_route_or_routes();
 
         current_state = VIEW_STATE.NONE;
         set_marker_unselected(true);
@@ -321,25 +340,16 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         view_binding.buttonExportPolygonToKml.setOnClickListener(v -> view_model.save_polygon_to_kml());
     }
 
+
+
     protected void delete_marker_route_edit() {
-        edit_route_markers.remove(selected_marker);
-        view_binding.map.getOverlayManager().remove(selected_marker);
-        set_marker_unselected(true);
-        // TODO do we really need this? seems overkill to me... Or if not, do we need it
-        //  for current_state == VIEW_STATE.EDIT_POLYGON, too?
-        changed_during_edit = true;
-        view_binding.map.invalidate();
+        // TODO
     }
 
     protected void delete_marker_polygon_edit() {}
 
     protected void add_marker_route_edit() {
-        Marker new_marker = build_edit_marker((GeoPoint) view_binding.map.getMapCenter(), true, false);
-        edit_route_markers = insert_marker_at_index(edit_route_markers, edit_route_markers.indexOf(selected_marker), new_marker);
-        set_marker_selected(new_marker);
-        view_binding.map.getOverlayManager().add(new_marker);
-        view_binding.map.invalidate();
-        changed_during_edit = true;
+        // TODO
     }
 
     protected void add_marker_polygon_edit() {}

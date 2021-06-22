@@ -20,11 +20,8 @@ import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.OverlayManager;
 import org.osmdroid.views.overlay.Polygon;
-import org.osmdroid.views.overlay.Polyline;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,6 +37,7 @@ public class FlightMapFragment extends MapFragment {
 
     private List<Marker> polygon_vertices;
     private List<List<Marker>> polygon_holes;
+    private List<Marker> edit_route_markers;
 
     private boolean initial_polygon_edit;
 
@@ -76,13 +74,50 @@ public class FlightMapFragment extends MapFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 
-        initial_polygon_edit = false;
+
+        super.onViewCreated(view, savedInstanceState);
 
         view_binding.buttonPolygonEdit.setText("Edit Polygon");
 
         getArgsFromParent();
+
+    }
+
+    @Override
+    protected boolean add_route_edit_markers() {
+        if(edit_route_markers != null) {
+            view_binding.map.getOverlayManager().addAll(edit_route_markers);
+            return true;
+        } else  {
+            return false;
+        }
+    }
+
+    @Override
+    protected void clear_route_edit_markers() {
+        if (edit_route_markers != null) {
+            view_binding.map.getOverlayManager().removeAll(edit_route_markers);
+        }
+    }
+
+    @Override
+    protected void save_route_or_routes() {
+        if (changed_during_edit) {
+            changed_during_edit = false;
+            List<GeoPoint> new_route = new ArrayList<>();
+            for (Marker marker: edit_route_markers){
+                new_route.add(marker.getPosition());
+            }
+
+            view_model.set_flight_route(new_route);
+        }
+    }
+
+    @Override
+    protected void different_inits() {
+        initial_polygon_edit = false;
+        edit_route_markers = null;
 
     }
 
@@ -368,4 +403,27 @@ public class FlightMapFragment extends MapFragment {
         view_binding.buttonPolygonEdit.setEnabled(true);
     }
 
+    @Override
+    protected void observe_rover_routes(){}
+
+    @Override
+    protected void delete_marker_route_edit() {
+        edit_route_markers.remove(selected_marker);
+        view_binding.map.getOverlayManager().remove(selected_marker);
+        set_marker_unselected(true);
+        // TODO do we really need this? seems overkill to me... Or if not, do we need it
+        //  for current_state == VIEW_STATE.EDIT_POLYGON, too?
+        changed_during_edit = true;
+        view_binding.map.invalidate();
+    }
+
+    @Override
+    protected void add_marker_route_edit() {
+        Marker new_marker = build_edit_marker((GeoPoint) view_binding.map.getMapCenter(), true, false);
+        edit_route_markers = insert_marker_at_index(edit_route_markers, edit_route_markers.indexOf(selected_marker), new_marker);
+        set_marker_selected(new_marker);
+        view_binding.map.getOverlayManager().add(new_marker);
+        view_binding.map.invalidate();
+        changed_during_edit = true;
+    }
 }
