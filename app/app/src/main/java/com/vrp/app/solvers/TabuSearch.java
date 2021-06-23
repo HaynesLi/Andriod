@@ -23,6 +23,8 @@
  * */
 package com.vrp.app.solvers;
 
+import android.util.Log;
+
 import com.vrp.app.Solver;
 import com.vrp.app.Runner;
 import com.vrp.app.components.Arc;
@@ -184,13 +186,25 @@ public class TabuSearch implements Solver {
     }
 
     private void applyRelocationMove(RelocationMove relocationMove, Result currentSolution, int iterations) {
-        Node relocatedNode = currentSolution.getRoute().get(relocationMove.getFromRoute()).getNodes().get(relocationMove.getPositionOfRelocated());
-
-        Node A = currentSolution.getRoute().get(relocationMove.getFromRoute()).getNodes().get(relocationMove.getPositionOfRelocated() - 1);
-        Node B = currentSolution.getRoute().get(relocationMove.getFromRoute()).getNodes().get(relocationMove.getPositionOfRelocated());
-        Node C = currentSolution.getRoute().get(relocationMove.getFromRoute()).getNodes().get(relocationMove.getPositionOfRelocated() + 1);
-        Node F = currentSolution.getRoute().get(relocationMove.getToRoute()).getNodes().get(relocationMove.getPositionToBeInserted());
-        Node G = currentSolution.getRoute().get(relocationMove.getToRoute()).getNodes().get(relocationMove.getPositionToBeInserted() + 1);
+        Node relocatedNode;
+        Node A;
+        Node B;
+        Node C;
+        Node F;
+        Node G;
+        // TODO very dirty solution, but I just don't know what's the problem right now and it would
+        //  be tedious to search for it... Because for that purpose I had to first find out how TabuSearch in general is working
+        try {
+            relocatedNode = currentSolution.getRoute().get(relocationMove.getFromRoute()).getNodes().get(relocationMove.getPositionOfRelocated());
+            A = currentSolution.getRoute().get(relocationMove.getFromRoute()).getNodes().get(relocationMove.getPositionOfRelocated() - 1);
+            B = currentSolution.getRoute().get(relocationMove.getFromRoute()).getNodes().get(relocationMove.getPositionOfRelocated());
+            C = currentSolution.getRoute().get(relocationMove.getFromRoute()).getNodes().get(relocationMove.getPositionOfRelocated() + 1);
+            F = currentSolution.getRoute().get(relocationMove.getToRoute()).getNodes().get(relocationMove.getPositionToBeInserted());
+            G = currentSolution.getRoute().get(relocationMove.getToRoute()).getNodes().get(relocationMove.getPositionToBeInserted() + 1);
+        } catch (IndexOutOfBoundsException e) {
+            Log.d("DEBUG_VRP", "applyRelocationMove: I am here!");
+            return;
+        }
 
         tabuArcs[A.getId()][B.getId()] = iterations + globalRandom.nextInt(TABU);
         tabuArcs[B.getId()][C.getId()] = iterations + globalRandom.nextInt(TABU);

@@ -5,6 +5,7 @@ import com.vrp.app.Runner;
 import com.vrp.app.components.Node;
 import com.vrp.app.wrapper.ProblemInstance;
 import com.vrp.app.wrapper.Solution;
+import com.vrp.app.wrapper.Utils;
 
 import org.osmdroid.util.GeoPoint;
 
@@ -57,6 +58,7 @@ public class VRP_Wrapper {
         Solution best_solution = null;
 
         for (Algorithm algorithm: Algorithm.values()) {
+            //if (algorithm == Algorithm.TabuSearch) continue;
             Solution solution = solver.run(algorithm);
 
             if (solution.getCosts() < best_cost) {
@@ -104,11 +106,15 @@ public class VRP_Wrapper {
      *  run_problem_instance(...)
      */
     private static ProblemInstance get_instance_for_problem(int num_of_vehicles, List<GeoPoint> targets, int index_of_depot) {
-        ProblemInstance problem_instance = new ProblemInstance(num_of_vehicles, targets.size());
-        Node[] nodes = geo_points_to_nodes(targets);
-        problem_instance.setLocations(nodes);
 
+
+        ProblemInstance problem_instance = new ProblemInstance();
+        problem_instance.setProblemID(Utils.generateId());
+        problem_instance.setNumVehicles(num_of_vehicles);
+        Node[] nodes = geo_points_to_nodes(targets);
         Node depot = nodes[index_of_depot];
+        depot.setRouted(true);
+        problem_instance.setLocations(nodes);
         problem_instance.setDepot(depot);
 
         double[][] distances = get_distances_from_geopoints(targets);
@@ -116,7 +122,12 @@ public class VRP_Wrapper {
 
         problem_instance.setInfo(true);
 
+        //Log.d("DEBUG_VRP", problem_instance.toString());
+
         return problem_instance;
+
+        //return InstanceHandler.createRandom(num_of_vehicles, 10);
+
     }
 
     /**
@@ -151,7 +162,7 @@ public class VRP_Wrapper {
         Node[] nodes = new Node[geo_points.size()];
 
         for (int id = 0; id < geo_points.size(); id++) {
-            Node new_node = new Node(0, 0, id, 1);
+            Node new_node = new Node(id, id, id, 1);
             new_node.setRouted(false);
             nodes[id] = new_node;
         }
