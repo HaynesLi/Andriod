@@ -64,6 +64,10 @@ public class MapViewModel extends ViewModel {
         repository.set_flight_route(route);
     }
 
+    public void set_rover_routes(List<List<GeoPoint>> routes) {
+        repository.set_rover_routes(routes);
+    }
+
     @Inject
     public MapViewModel(Repository repository) {
         this.repository = repository;

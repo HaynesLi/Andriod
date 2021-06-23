@@ -318,7 +318,18 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
     }
 
     protected void save_route_or_routes() {
-        // TODO
+        if (changed_during_edit) {
+            changed_during_edit = false;
+            List<List<GeoPoint>> new_routes = new ArrayList<>();
+            for (List<Marker> route_markers: edit_rover_route_markers) {
+                new_routes.add(
+                        route_markers.stream().map(marker -> marker.getPosition())
+                                .collect(Collectors.toList())
+                );
+            }
+
+            view_model.set_rover_routes(new_routes);
+        }
     }
 
     protected void edit_route_button_deactivate() {

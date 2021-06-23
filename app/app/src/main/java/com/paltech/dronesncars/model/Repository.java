@@ -315,38 +315,65 @@ public class Repository {
             List<Result> current_results = resultDAO.getAllResults();
             List<GeoPoint> targets = current_results.stream().map(result -> result.location).collect(Collectors.toList());
 
+            if(!wait_for_rover_routine()) return;
+
             if(!targets.isEmpty() && num_of_rovers > 0) {
                 List<List<GeoPoint>> routes = VRP_Wrapper.get_routes_for_vehicles(num_of_rovers, targets);
 
-                RoverRoutine rover_routine;
-                int error_counter = 0;
-                do {
-                    rover_routine = roverRoutineDAO.getRoverRoutineByID(ROUTINE_ID);
-                    if (rover_routine == null) {
-                        error_counter++;
-                        try {
-                            // TODO: does this work like this?
-                            wait(5000);
-                        } catch (InterruptedException e) {
-                            Log.e("ERROR_WAITING", "start_rover_routes_computation: interrupt while waiting - ", e);
-                        }
-                    }
-                } while(rover_routine == null && error_counter < 4);
 
-                if (error_counter >= 4) {
-                    return;
-                }
                 if (!routes.isEmpty()) {
                     roverRouteDAO.delete_rover_routes_by_routine_id(ROUTINE_ID);
                 }
 
-                for (int rover_route_id = 0; rover_route_id < routes.size(); rover_route_id++) {
-                    List<GeoPoint> current_route = routes.get(rover_route_id);
-                    RoverRoute new_rover_route = new RoverRoute(rover_route_id, -1, current_route, ROUTINE_ID);
-
-                    roverRouteDAO.insertMultiple(new_rover_route);
-                }
+                insert_rover_routes(routes);
             }
         });
+    }
+
+    private boolean wait_for_rover_routine() {
+        RoverRoutine rover_routine;
+        int error_counter = 0;
+        do {
+            rover_routine = roverRoutineDAO.getRoverRoutineByID(ROUTINE_ID);
+            if (rover_routine == null) {
+                error_counter++;
+                try {
+                    // TODO: does this work like this?
+                    wait(5000);
+                } catch (InterruptedException e) {
+                    Log.e("ERROR_WAITING", "start_rover_routes_computation: interrupt while waiting - ", e);
+                }
+            }
+        } while(rover_routine == null && error_counter < 4);
+
+        if (error_counter >= 4) {
+            return false;
+        }
+        return true;
+    }
+
+    // TODO maybe add the copying of corresponding rover id from old routes to new routes?
+    public void set_rover_routes(List<List<GeoPoint>> rover_routes) {
+        executor.execute(() -> {
+
+            if(!wait_for_rover_routine()) return;
+
+            List<RoverRoute> current_rover_routes = roverRouteDAO.getAllRoverRoutes();
+            if(current_rover_routes != null && !current_rover_routes.isEmpty() &&
+                    rover_routes != null &&!rover_routes.isEmpty()) {
+                roverRouteDAO.delete_rover_routes_by_routine_id(ROUTINE_ID);
+            }
+
+            insert_rover_routes(rover_routes);
+        });
+    }
+
+    private void insert_rover_routes(List<List<GeoPoint>> rover_routes) {
+        for (int rover_route_id = 0; rover_route_id < rover_routes.size(); rover_route_id++) {
+            List<GeoPoint> current_route = rover_routes.get(rover_route_id);
+            RoverRoute new_rover_route = new RoverRoute(rover_route_id, -1, current_route, ROUTINE_ID);
+
+            roverRouteDAO.insertMultiple(new_rover_route);
+        }
     }
 }
