@@ -368,7 +368,11 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         view_binding.buttonAddMarker.setOnClickListener(v -> {
 
             if (selected_marker != null) {
-                add_marker_polygon_edit();
+                if (current_state == VIEW_STATE.EDIT_POLYGON) {
+                    add_marker_polygon_edit();
+                } else if (current_state == VIEW_STATE.EDIT_ROUTE) {
+                    add_marker_route_edit();
+                }
             }
         });
 
@@ -378,13 +382,40 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
 
 
     protected void delete_marker_route_edit() {
-        // TODO
+        for (List<Marker> marker_route: edit_rover_route_markers) {
+            if (marker_route.contains(selected_marker)) {
+                marker_route.remove(selected_marker);
+                view_binding.map.getOverlayManager().remove(selected_marker);
+                set_marker_unselected(true);
+                changed_during_edit = true;
+                view_binding.map.invalidate();
+                break;
+            }
+        }
     }
 
     protected void delete_marker_polygon_edit() {}
 
     protected void add_marker_route_edit() {
-        // TODO
+        Marker new_marker = build_edit_marker((GeoPoint) view_binding.map.getMapCenter(),
+                true,
+                false);
+
+        for (int i = 0; i < edit_rover_route_markers.size(); i++) {
+            List<Marker> marker_route = edit_rover_route_markers.get(i);
+            if (marker_route.contains(selected_marker)) {
+                edit_rover_route_markers.set(i,
+                        insert_marker_at_index(marker_route,
+                                marker_route.indexOf(selected_marker),
+                                new_marker));
+                set_marker_unselected(false);
+                set_marker_selected(new_marker);
+                view_binding.map.getOverlayManager().add(new_marker);
+                view_binding.map.invalidate();
+                changed_during_edit = true;
+                break;
+            }
+        }
     }
 
     protected void add_marker_polygon_edit() {}

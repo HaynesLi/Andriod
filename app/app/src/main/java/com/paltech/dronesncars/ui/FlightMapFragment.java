@@ -352,9 +352,6 @@ public class FlightMapFragment extends MapFragment {
 
     @Override
     protected void add_marker_polygon_edit() {
-        if (current_state == VIEW_STATE.EDIT_ROUTE) {
-            add_marker_route_edit();
-        } else if (current_state == VIEW_STATE.EDIT_POLYGON) {
             Marker new_marker = build_edit_marker((GeoPoint) view_binding.map.getMapCenter(), true, false);
             if (polygon_vertices.contains(selected_marker)) {
                 polygon_vertices = insert_marker_at_index(polygon_vertices, polygon_vertices.indexOf(selected_marker), new_marker);
@@ -370,7 +367,6 @@ public class FlightMapFragment extends MapFragment {
             set_marker_selected(new_marker);
             view_binding.map.getOverlayManager().add(new_marker);
             view_binding.map.invalidate();
-        }
     }
 
     @Override
@@ -420,8 +416,11 @@ public class FlightMapFragment extends MapFragment {
 
     @Override
     protected void add_marker_route_edit() {
-        Marker new_marker = build_edit_marker((GeoPoint) view_binding.map.getMapCenter(), true, false);
+        Marker new_marker = build_edit_marker((GeoPoint) view_binding.map.getMapCenter(),
+                true,
+                false);
         edit_route_markers = insert_marker_at_index(edit_route_markers, edit_route_markers.indexOf(selected_marker), new_marker);
+        set_marker_unselected(false);
         set_marker_selected(new_marker);
         view_binding.map.getOverlayManager().add(new_marker);
         view_binding.map.invalidate();
