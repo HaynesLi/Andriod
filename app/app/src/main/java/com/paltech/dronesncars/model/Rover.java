@@ -8,6 +8,11 @@ import java.util.Objects;
 
 @Entity
 public class Rover {
+
+    // TODO add info:
+    //  - IP / URL: String/IP
+    //  - position: GeoPoint
+
     @PrimaryKey
     @ColumnInfo(name = "rover_id")
     public int rover_id;
@@ -21,7 +26,7 @@ public class Rover {
     @ColumnInfo(name = "status")
     public RoverStatus status;
 
-    @ColumnInfo(name = "progress")
+    @ColumnInfo(name = "progress") // TODO last reached target point...
     public double progress;
 
     public Rover(int rover_id, String roverName, double battery) {
