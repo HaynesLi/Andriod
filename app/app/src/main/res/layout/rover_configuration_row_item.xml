@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/rover_id_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:labelFor="@+id/rover_id_content"
+        android:text="@string/rover_id"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/rover_id_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/rover_id"
+        app:layout_constraintStart_toEndOf="@id/rover_id_label"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/rover_ip_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ip_url_label"
+        app:layout_constraintTop_toBottomOf="@id/rover_id_label"
+        android:labelFor="@id/rover_ip_content"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <EditText
+        android:id="@+id/rover_ip_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text=""
+        app:layout_constraintTop_toBottomOf="@id/rover_id_label"
+        app:layout_constraintStart_toEndOf="@id/rover_ip_label"/>
+
+    <Button
+        android:id="@+id/button_test_connection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_test_connection_label"
+        app:layout_constraintTop_toBottomOf="@id/rover_ip_content"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/connection_test_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/connection_test_result_default"
+        app:layout_constraintTop_toBottomOf="@id/rover_ip_content"
+        app:layout_constraintStart_toEndOf="@id/button_test_connection"
+        app:layout_constraintBottom_toBottomOf="@id/button_test_connection"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

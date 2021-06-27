@@ -4,18 +4,22 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import org.osmdroid.util.GeoPoint;
+
 import java.util.Objects;
 
 @Entity
 public class Rover {
 
-    // TODO add info:
-    //  - IP / URL: String/IP
-    //  - position: GeoPoint
-
     @PrimaryKey
     @ColumnInfo(name = "rover_id")
     public int rover_id;
+
+    @ColumnInfo(name = "ip_address")
+    public String ip_address;
+
+    @ColumnInfo(name = "last_known_position")
+    public GeoPoint last_know_position;
 
     @ColumnInfo(name = "rover_name")
     public String roverName;
@@ -26,8 +30,11 @@ public class Rover {
     @ColumnInfo(name = "status")
     public RoverStatus status;
 
-    @ColumnInfo(name = "progress") // TODO last reached target point...
+    @ColumnInfo(name = "progress")
     public double progress;
+
+    @ColumnInfo(name = "last_reached_target")
+    public GeoPoint last_reached_target;
 
     public Rover(int rover_id, String roverName, double battery) {
         this.rover_id = rover_id;
