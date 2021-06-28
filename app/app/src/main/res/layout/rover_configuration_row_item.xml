@@ -25,10 +25,10 @@
         android:id="@+id/rover_ip_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/ip_url_label"
-        app:layout_constraintTop_toBottomOf="@id/rover_id_label"
         android:labelFor="@id/rover_ip_content"
-        app:layout_constraintStart_toStartOf="parent"/>
+        android:text="@string/ip_url_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rover_id_label" />
 
     <EditText
         android:id="@+id/rover_ip_content"
@@ -37,16 +37,17 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text=""
-        app:layout_constraintTop_toBottomOf="@id/rover_id_label"
-        app:layout_constraintStart_toEndOf="@id/rover_ip_label"/>
+        android:autofillHints="0.0.0.0"
+        app:layout_constraintStart_toEndOf="@+id/rover_ip_label"
+        app:layout_constraintTop_toBottomOf="@+id/rover_id_content" />
 
     <Button
         android:id="@+id/button_test_connection"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/button_test_connection_label"
-        app:layout_constraintTop_toBottomOf="@id/rover_ip_content"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rover_ip_content" />
 
     <TextView
         android:id="@+id/connection_test_result"
@@ -56,4 +57,13 @@
         app:layout_constraintTop_toBottomOf="@id/rover_ip_content"
         app:layout_constraintStart_toEndOf="@id/button_test_connection"
         app:layout_constraintBottom_toBottomOf="@id/button_test_connection"/>
+
+    <ImageButton
+        android:id="@+id/button_delete_rover"
+        android:contentDescription="@string/delete_rover_button_contentDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@+id/rover_ip_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_delete" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentRoverRoutineSettingsBinding;
@@ -23,6 +25,7 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
 
     private FragmentRoverRoutineSettingsBinding view_binding;
     private RoverRoutineSettingsViewModel view_model;
+    RoverConfigurationRecyclerAdapter roverConfigurationRecyclerAdapter;
 
     public RoverRoutineSettingsFragment() {
         // Required empty public constructor
@@ -71,8 +74,18 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
         view_binding = get_view_binding(view);
         view_model = get_view_model();
 
+        init_rover_configuration_recycler_view();
         setLiveDataSources();
         setListeners();
+    }
+
+    private void init_rover_configuration_recycler_view() {
+        RecyclerView.LayoutManager my_layout_manager = new LinearLayoutManager(requireActivity());
+        view_binding.roverConfigurationList.setLayoutManager(my_layout_manager);
+        view_binding.roverConfigurationList.scrollToPosition(0);
+        roverConfigurationRecyclerAdapter = new RoverConfigurationRecyclerAdapter();
+        view_binding.roverConfigurationList.setAdapter(roverConfigurationRecyclerAdapter);
+
     }
 
     private void setLiveDataSources() {
@@ -82,6 +95,7 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
                 view_model.add_rovers(num_of_rovers);
             }
         });
+        // TODO add rovers in view model and set livedata here
     }
 
     private void setListeners() {
