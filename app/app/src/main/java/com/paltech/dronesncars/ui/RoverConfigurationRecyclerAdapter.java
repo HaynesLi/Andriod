@@ -116,4 +116,9 @@ public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<Rove
             return view_binding.connectionTestResult;
         }
     }
+
+    public void set_local_rover_set(List<Rover> rovers) {
+        this.local_rover_set = rovers;
+        notifyDataSetChanged();
+    }
 }

@@ -8,6 +8,7 @@ import com.paltech.dronesncars.model.Repository;
 import com.paltech.dronesncars.model.Rover;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -46,5 +47,9 @@ public class RoverRoutineSettingsViewModel extends ViewModel {
 
     public void start_rover_routes_computation(int num_of_rovers) {
         repository.start_rover_routes_computation(num_of_rovers);
+    }
+
+    public LiveData<List<Rover>> get_all_rovers_livedata() {
+        return repository.getCurrentRovers();
     }
 }

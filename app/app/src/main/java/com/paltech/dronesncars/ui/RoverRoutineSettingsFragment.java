@@ -85,7 +85,6 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
         view_binding.roverConfigurationList.scrollToPosition(0);
         roverConfigurationRecyclerAdapter = new RoverConfigurationRecyclerAdapter();
         view_binding.roverConfigurationList.setAdapter(roverConfigurationRecyclerAdapter);
-
     }
 
     private void setLiveDataSources() {
@@ -95,7 +94,8 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
                 view_model.add_rovers(num_of_rovers);
             }
         });
-        // TODO add rovers in view model and set livedata here
+        view_model.get_all_rovers_livedata().observe(getViewLifecycleOwner(), rovers ->
+                roverConfigurationRecyclerAdapter.set_local_rover_set(rovers));
     }
 
     private void setListeners() {
