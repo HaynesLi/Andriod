@@ -55,4 +55,9 @@
     <string name="num_of_rovers_input_default">0</string>
     <string name="button_add_rover_label">Add Rover</string>
     <string name="button_edit_rovers_configure_label">Edit</string>
+    <string name="alert_dialog_rover_name_placeholder">Name: %1$s</string>
+    <string name="alert_dialog_rover_name">Name:</string>
+    <string name="alert_dialog_rover_inet_address_placeholder">IP: %1$s</string>
+    <string name="alert_dialog_rover_inet_address">IP:</string>
+    <string name="cancel_string">Cancel</string>
 </resources>

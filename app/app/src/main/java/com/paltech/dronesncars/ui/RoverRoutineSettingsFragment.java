@@ -1,9 +1,13 @@
 package com.paltech.dronesncars.ui;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -123,14 +127,7 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
             }
         });
 
-        view_binding.buttonAddRover.setOnClickListener(v -> {
-            try {
-                //IpAdresse darf jetzt nicht mehr doppelt vorkommen... führt hier zu Fehler
-                view_model.add_Rover("Hubert", InetAddress.getByName("127.0.0.1"));
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
-        });
+        view_binding.buttonAddRover.setOnClickListener(v -> show_name_and_ip_alert_dialog());
     }
 
     private void set_rover_configuration_items_editable(boolean editable) {
@@ -140,5 +137,35 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
                     view_binding.roverConfigurationList.findViewHolderForAdapterPosition(index);
             holder.set_editable(editable);
         }
+    }
+
+    private void show_name_and_ip_alert_dialog() {
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+        final View my_dialog_view = inflater.inflate(R.layout.rover_configuration_alert_dialog, null);
+        final AlertDialog my_dialog = new AlertDialog.Builder(requireContext()).create();
+        my_dialog.setView(my_dialog_view);
+
+        EditText rover_name = my_dialog_view.findViewById(R.id.alert_dialog_rover_name_content);
+        EditText rover_ip = my_dialog_view.findViewById(R.id.alert_dialog_rover_inetaddress_content);
+        Button add_rover_button = my_dialog_view.findViewById(R.id.button_finish_configure_dialog);
+        Button cancel_button = my_dialog_view.findViewById(R.id.button_cancel_configure_dialog);
+
+        add_rover_button.setOnClickListener(v -> {
+            String name = rover_name.getText().toString();
+            String ip = rover_ip.getText().toString();
+            if (!"".equals(name) && !"".equals(ip)) {
+                try {
+                    view_model.add_Rover(name, InetAddress.getByName(ip));
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                    Log.d("InetAddress Error", "show_name_and_ip_alert_dialog: not a legit InetAddress");
+                }
+            }
+            my_dialog.dismiss();
+        });
+
+        cancel_button.setOnClickListener(v -> my_dialog.dismiss());
+
+        my_dialog.show();
     }
 }
