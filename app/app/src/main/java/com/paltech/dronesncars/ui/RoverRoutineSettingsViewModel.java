@@ -55,4 +55,9 @@ public class RoverRoutineSettingsViewModel extends ViewModel {
     public void set_rover_used(Rover rover, boolean set_used) {
         repository.set_rover_used(rover, set_used);
     }
+
+    public LiveData<Integer> get_num_of_used_rovers() {
+        return repository.get_num_of_used_rovers_livedata();
+    }
+
 }

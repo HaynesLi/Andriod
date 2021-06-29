@@ -54,4 +54,5 @@
     <string name="delete_rover_button_contentDescription">delete_icon</string>
     <string name="num_of_rovers_input_default">0</string>
     <string name="button_add_rover_label">Add Rover</string>
+    <string name="button_edit_rovers_configure_label">Edit</string>
 </resources>

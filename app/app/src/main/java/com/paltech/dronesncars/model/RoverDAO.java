@@ -37,6 +37,9 @@ public interface RoverDAO {
     @Query("SELECT Count(rover_id) FROM rover WHERE is_used")
     int get_num_of_used_rovers();
 
+    @Query("SELECT Count(rover_id) FROM rover WHERE is_used")
+    LiveData<Integer> get_num_of_used_rovers_livedata();
+
     // TODO: add Transaction to get all routes for one rover
     @Transaction
     @Query("SELECT * FROM RoverRoute, Rover WHERE rover_id = (:rover_id) and corresponding_rover_id = rover_id")

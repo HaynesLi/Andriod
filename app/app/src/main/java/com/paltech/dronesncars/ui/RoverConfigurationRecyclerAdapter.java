@@ -91,6 +91,16 @@ public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<Rove
         public ImageButton get_delete_rover_button() {
             return view_binding.buttonDeleteRover;
         }
+
+        public void set_editable(boolean editable) {
+            if (editable) {
+                view_binding.checkBoxUseThisRover.setVisibility(View.GONE);
+                view_binding.buttonDeleteRover.setVisibility(View.VISIBLE);
+            } else {
+                view_binding.buttonDeleteRover.setVisibility(View.GONE);
+                view_binding.checkBoxUseThisRover.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     public void set_local_rover_set(List<Rover> rovers) {

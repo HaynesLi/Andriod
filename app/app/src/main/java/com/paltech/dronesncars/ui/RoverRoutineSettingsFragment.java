@@ -91,13 +91,12 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
     }
 
     private void setLiveDataSources() {
-        view_model.num_of_rovers.observe(getViewLifecycleOwner(), num_of_rovers -> {
-            if (num_of_rovers != 0) {
-                view_binding.numOfRoversInput.setText(num_of_rovers.toString());
-            }
-        });
         view_model.get_all_rovers_livedata().observe(getViewLifecycleOwner(), rovers ->
                 roverConfigurationRecyclerAdapter.set_local_rover_set(rovers));
+
+        view_model.get_num_of_used_rovers().observe(getViewLifecycleOwner(), num_of_used_rovers -> {
+            view_binding.numOfRoversInput.setText(num_of_used_rovers.toString());
+        });
     }
 
     private void setListeners() {
@@ -111,6 +110,19 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
             }
         });
 
+        view_binding.buttonEditRoversConfigure.setOnClickListener(v -> {
+            if ("Edit".contentEquals(view_binding.buttonEditRoversConfigure.getText())) {
+                // TODO extract to string resource
+                view_binding.buttonEditRoversConfigure.setText("Cancel");
+                view_binding.buttonAddRover.setEnabled(false);
+                set_rover_configuration_items_editable(true);
+            } else if ("Cancel".contentEquals(view_binding.buttonEditRoversConfigure.getText())) {
+                view_binding.buttonEditRoversConfigure.setText(R.string.button_edit_rovers_configure_label);
+                view_binding.buttonAddRover.setEnabled(true);
+                set_rover_configuration_items_editable(false);
+            }
+        });
+
         view_binding.buttonAddRover.setOnClickListener(v -> {
             try {
                 //IpAdresse darf jetzt nicht mehr doppelt vorkommen... führt hier zu Fehler
@@ -119,5 +131,14 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
                 e.printStackTrace();
             }
         });
+    }
+
+    private void set_rover_configuration_items_editable(boolean editable) {
+        for (int index = 0; index < roverConfigurationRecyclerAdapter.getItemCount(); index++) {
+            RoverConfigurationRecyclerAdapter.RoverConfigurationViewHolder holder;
+            holder = (RoverConfigurationRecyclerAdapter.RoverConfigurationViewHolder)
+                    view_binding.roverConfigurationList.findViewHolderForAdapterPosition(index);
+            holder.set_editable(editable);
+        }
     }
 }

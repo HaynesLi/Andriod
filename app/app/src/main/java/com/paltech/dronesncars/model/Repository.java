@@ -339,7 +339,7 @@ public class Repository {
 
     private boolean check_for_missing_rover_routine() {
         RoverRoutine rover_routine;
-            rover_routine = roverRoutineDAO.getRoverRoutineByID(ROUTINE_ID);
+        rover_routine = roverRoutineDAO.getRoverRoutineByID(ROUTINE_ID);
         return rover_routine == null;
     }
 
@@ -406,5 +406,9 @@ public class Repository {
                 Log.d("Error", "IpAdresse schon für einen Rover vergeben");
             }
         });
+    }
+
+    public LiveData<Integer> get_num_of_used_rovers_livedata() {
+        return roverDAO.get_num_of_used_rovers_livedata();
     }
 }
