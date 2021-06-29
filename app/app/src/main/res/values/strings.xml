@@ -52,4 +52,6 @@
     <string name="button_test_connection_label">Test Connection</string>
     <string name="connection_test_result_default">No Result</string>
     <string name="delete_rover_button_contentDescription">delete_icon</string>
+    <string name="num_of_rovers_input_default">0</string>
+    <string name="button_add_rover_label">Add Rover</string>
 </resources>

@@ -316,16 +316,16 @@ public class Repository {
         roverRoutineDAO.insert(rover_routine);
     }
 
-    public void start_rover_routes_computation(int num_of_rovers) {
+    public void start_rover_routes_computation() {
         executor.execute(() -> {
             List<Result> current_results = resultDAO.getAllResults();
             List<GeoPoint> targets = current_results.stream().map(result -> result.location).collect(Collectors.toList());
+            int num_of_rovers = roverDAO.get_num_of_used_rovers();
 
             if(check_for_missing_rover_routine()) create_rover_routine();
 
             if(!targets.isEmpty() && num_of_rovers > 0) {
                 List<List<GeoPoint>> routes = VRP_Wrapper.get_routes_for_vehicles(num_of_rovers, targets);
-
 
                 if (!routes.isEmpty()) {
                     roverRouteDAO.delete_rover_routes_by_routine_id(ROUTINE_ID);
@@ -369,6 +369,20 @@ public class Repository {
     public void delete_rover(Rover rover) {
         executor.execute(() -> {
             roverDAO.delete(rover);
+        });
+    }
+
+    public void set_rover_used(Rover rover, boolean set_used) {
+        executor.execute(() -> {
+            Rover current_rover = roverDAO.getRoverByID(rover.rover_id);
+            if (current_rover == null) {
+                current_rover = rover;
+                current_rover.is_used = set_used;
+                roverDAO.insertMultipleRovers(current_rover);
+            } else {
+                current_rover.is_used = set_used;
+                roverDAO.update(current_rover);
+            }
         });
     }
 }

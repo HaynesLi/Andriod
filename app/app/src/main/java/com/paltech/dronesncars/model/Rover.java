@@ -36,6 +36,9 @@ public class Rover {
     @ColumnInfo(name = "last_reached_target")
     public GeoPoint last_reached_target;
 
+    @ColumnInfo(name = "is_used", defaultValue = "False")
+    public boolean is_used;
+
     public Rover(int rover_id, String roverName, double battery) {
         this.rover_id = rover_id;
         this.roverName = roverName;

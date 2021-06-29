@@ -1,12 +1,9 @@
 package com.paltech.dronesncars.ui;
 
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -55,37 +52,20 @@ public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<Rove
     public void onBindViewHolder(@NonNull @NotNull RoverConfigurationRecyclerAdapter.RoverConfigurationViewHolder holder, int position) {
         Rover rover = local_rover_set.get(position);
         holder.get_rover_id_text().setText(String.format("%d", rover.rover_id));
-        holder.get_rover_status().setText(rover.status.toString());
+        holder.get_rover_name().setText(rover.roverName);
         set_listeners(rover, holder);
+        holder.get_rover_used_checkbox().setChecked(rover.is_used);
     }
 
     private void set_listeners(Rover rover, @NonNull RoverConfigurationRecyclerAdapter.RoverConfigurationViewHolder holder) {
-        holder.get_connection_test_button().setOnClickListener(view -> connection_test());
 
         holder.get_delete_rover_button().setOnClickListener(view -> view_model.delete_rover(rover));
 
-        holder.get_rover_id_text().addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String ip = s.toString();
-                change_ip_in_viewmodel(ip, rover);
-            }
+        holder.get_rover_used_checkbox().setOnCheckedChangeListener((button_view, is_checked) -> {
+            view_model.set_rover_used(rover, is_checked);
         });
+
     }
-
-    // TODO
-    private void change_ip_in_viewmodel(String ip, Rover rover) {}
-
-    // TODO
-    private void connection_test() {}
 
     @Override
     public int getItemCount() {
@@ -100,24 +80,18 @@ public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<Rove
             view_binding = RoverConfigurationRowItemBinding.bind(item_view);
         }
 
+        public TextView get_rover_name() {
+            return view_binding.roverNameContent;
+        }
+
         public TextView get_rover_id_text() {
             return view_binding.roverIdContent;
         }
 
-        public EditText get_rover_ip_text() {
-            return view_binding.roverIpContent;
-        }
-
-        public Button get_connection_test_button() {
-            return view_binding.buttonTestConnection;
-        }
+        public CheckBox get_rover_used_checkbox() { return view_binding.checkBoxUseThisRover; }
 
         public ImageButton get_delete_rover_button() {
             return view_binding.buttonDeleteRover;
-        }
-
-        public TextView get_rover_status() {
-            return view_binding.connectionTestResult;
         }
     }
 

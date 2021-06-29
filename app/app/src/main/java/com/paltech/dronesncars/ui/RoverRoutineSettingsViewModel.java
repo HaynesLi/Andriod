@@ -45,8 +45,8 @@ public class RoverRoutineSettingsViewModel extends ViewModel {
         getNumOfRovers();
     }
 
-    public void start_rover_routes_computation(int num_of_rovers) {
-        repository.start_rover_routes_computation(num_of_rovers);
+    public void start_rover_routes_computation() {
+        repository.start_rover_routes_computation();
     }
 
     public LiveData<List<Rover>> get_all_rovers_livedata() {
@@ -55,5 +55,9 @@ public class RoverRoutineSettingsViewModel extends ViewModel {
 
     public void delete_rover(Rover rover) {
         repository.delete_rover(rover);
+    }
+
+    public void set_rover_used(Rover rover, boolean set_used) {
+        repository.set_rover_used(rover, set_used);
     }
 }

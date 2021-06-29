@@ -91,7 +91,6 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
         view_model.num_of_rovers.observe(getViewLifecycleOwner(), num_of_rovers -> {
             if (num_of_rovers != 0) {
                 view_binding.numOfRoversInput.setText(num_of_rovers.toString());
-                view_model.add_rovers(num_of_rovers);
             }
         });
         view_model.get_all_rovers_livedata().observe(getViewLifecycleOwner(), rovers ->
@@ -99,12 +98,7 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
     }
 
     private void setListeners() {
-        view_binding.computeRoutineButton.setOnClickListener(v -> {
-            int num_of_rovers = Integer.parseInt(view_binding.numOfRoversInput.getText().toString());
-            view_model.set_num_of_rovers(num_of_rovers);
-
-            view_model.start_rover_routes_computation(num_of_rovers);
-        });
+        view_binding.computeRoutineButton.setOnClickListener(v -> view_model.start_rover_routes_computation());
 
         view_binding.acceptRoverRoutineButton.setOnClickListener(v -> {
             NavDirections action = RoverRouteFragmentDirections.actionRoverRouteFragmentToRoverStatusFragment();
@@ -112,6 +106,9 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
             if (parentFragment != null) {
                 NavHostFragment.findNavController(parentFragment).navigate(action);
             }
+        });
+
+        view_binding.buttonAddRover.setOnClickListener(v -> {
         });
     }
 }
