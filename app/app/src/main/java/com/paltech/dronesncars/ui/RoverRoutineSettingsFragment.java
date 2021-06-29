@@ -83,7 +83,7 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
         RecyclerView.LayoutManager my_layout_manager = new LinearLayoutManager(requireActivity());
         view_binding.roverConfigurationList.setLayoutManager(my_layout_manager);
         view_binding.roverConfigurationList.scrollToPosition(0);
-        roverConfigurationRecyclerAdapter = new RoverConfigurationRecyclerAdapter();
+        roverConfigurationRecyclerAdapter = new RoverConfigurationRecyclerAdapter(view_model);
         view_binding.roverConfigurationList.setAdapter(roverConfigurationRecyclerAdapter);
     }
 

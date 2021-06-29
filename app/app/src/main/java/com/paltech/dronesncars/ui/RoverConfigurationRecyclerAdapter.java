@@ -25,9 +25,16 @@ import java.util.List;
 public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<RoverConfigurationRecyclerAdapter.RoverConfigurationViewHolder> {
 
     private List<Rover> local_rover_set;
+    private RoverRoutineSettingsViewModel view_model;
 
-    public RoverConfigurationRecyclerAdapter(List<Rover> rover_set) {
+    public RoverConfigurationRecyclerAdapter(List<Rover> rover_set, RoverRoutineSettingsViewModel view_model) {
         this.local_rover_set = rover_set;
+        this.view_model = view_model;
+    }
+
+    public RoverConfigurationRecyclerAdapter(RoverRoutineSettingsViewModel view_model) {
+        this.local_rover_set = new ArrayList<>();
+        this.view_model = view_model;
     }
 
     public RoverConfigurationRecyclerAdapter() {
@@ -55,10 +62,7 @@ public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<Rove
     private void set_listeners(Rover rover, @NonNull RoverConfigurationRecyclerAdapter.RoverConfigurationViewHolder holder) {
         holder.get_connection_test_button().setOnClickListener(view -> connection_test());
 
-        holder.get_delete_rover_button().setOnClickListener(view -> {
-            local_rover_set.remove(rover);
-            notifyDataSetChanged();
-        });
+        holder.get_delete_rover_button().setOnClickListener(view -> view_model.delete_rover(rover));
 
         holder.get_rover_id_text().addTextChangedListener(new TextWatcher() {
             @Override

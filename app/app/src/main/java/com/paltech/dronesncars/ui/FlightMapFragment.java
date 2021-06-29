@@ -139,15 +139,16 @@ public class FlightMapFragment extends MapFragment {
 
 
     private void getArgsFromParent() {
-        Fragment parentFragment = getParentFragment();
-        if (parentFragment != null && parentFragment.getClass() == DroneScreen.class) {
-            DroneScreen parentDroneScreen = (DroneScreen) parentFragment;
+        DroneScreen parentDroneScreen = (DroneScreen) getParentFragment();
+        if (parentDroneScreen != null) {
             Uri kml_file_uri = parentDroneScreen.getKml_file_uri();
             if (kml_file_uri != null) {
                 parseKMLFile(kml_file_uri);
             } else {
                 initial_polygon_edit();
             }
+        } else {
+            initial_polygon_edit();
         }
     }
 

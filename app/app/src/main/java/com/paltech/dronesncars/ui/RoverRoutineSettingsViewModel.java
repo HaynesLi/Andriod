@@ -52,4 +52,8 @@ public class RoverRoutineSettingsViewModel extends ViewModel {
     public LiveData<List<Rover>> get_all_rovers_livedata() {
         return repository.getCurrentRovers();
     }
+
+    public void delete_rover(Rover rover) {
+        repository.delete_rover(rover);
+    }
 }

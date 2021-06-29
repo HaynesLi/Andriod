@@ -2,6 +2,7 @@ package com.paltech.dronesncars.model;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.util.List;
@@ -17,9 +18,15 @@ public class RoverRoutine {
     @ColumnInfo(name = "num_of_rovers")
     public int num_of_rovers;
 
+    @Ignore
     public RoverRoutine(int rover_routine_id, int num_of_rovers) {
         this.rover_routine_id = rover_routine_id;
         this.num_of_rovers = num_of_rovers;
+    }
+
+    public RoverRoutine(int rover_routine_id) {
+        this.rover_routine_id = rover_routine_id;
+        this.num_of_rovers = 0;
     }
 
     @Override

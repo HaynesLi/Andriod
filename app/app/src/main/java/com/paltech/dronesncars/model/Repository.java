@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
 import com.paltech.dronesncars.computing.FlightRouteGenerator;
@@ -310,12 +311,17 @@ public class Repository {
         });
     }
 
+    private void create_rover_routine() {
+        RoverRoutine rover_routine = new RoverRoutine(ROUTINE_ID);
+        roverRoutineDAO.insert(rover_routine);
+    }
+
     public void start_rover_routes_computation(int num_of_rovers) {
         executor.execute(() -> {
             List<Result> current_results = resultDAO.getAllResults();
             List<GeoPoint> targets = current_results.stream().map(result -> result.location).collect(Collectors.toList());
 
-            if(!wait_for_rover_routine()) return;
+            if(check_for_missing_rover_routine()) create_rover_routine();
 
             if(!targets.isEmpty() && num_of_rovers > 0) {
                 List<List<GeoPoint>> routes = VRP_Wrapper.get_routes_for_vehicles(num_of_rovers, targets);
@@ -330,37 +336,20 @@ public class Repository {
         });
     }
 
-    private boolean wait_for_rover_routine() {
+    private boolean check_for_missing_rover_routine() {
         RoverRoutine rover_routine;
-        int error_counter = 0;
-        do {
             rover_routine = roverRoutineDAO.getRoverRoutineByID(ROUTINE_ID);
-            if (rover_routine == null) {
-                error_counter++;
-                try {
-                    // TODO: does this work like this?
-                    wait(5000);
-                } catch (InterruptedException e) {
-                    Log.e("ERROR_WAITING", "start_rover_routes_computation: interrupt while waiting - ", e);
-                }
-            }
-        } while(rover_routine == null && error_counter < 4);
-
-        if (error_counter >= 4) {
-            return false;
-        }
-        return true;
+        return rover_routine == null;
     }
 
     // TODO maybe add the copying of corresponding rover id from old routes to new routes?
-    public void set_rover_routes(List<List<GeoPoint>> rover_routes) {
+    public void set_rover_routes(@NonNull List<List<GeoPoint>> rover_routes) {
         executor.execute(() -> {
 
-            if(!wait_for_rover_routine()) return;
+            if(check_for_missing_rover_routine()) create_rover_routine();
 
             List<RoverRoute> current_rover_routes = roverRouteDAO.getAllRoverRoutes();
-            if(current_rover_routes != null && !current_rover_routes.isEmpty() &&
-                    rover_routes != null &&!rover_routes.isEmpty()) {
+            if(current_rover_routes != null && !current_rover_routes.isEmpty() && !rover_routes.isEmpty()) {
                 roverRouteDAO.delete_rover_routes_by_routine_id(ROUTINE_ID);
             }
 
@@ -375,5 +364,11 @@ public class Repository {
 
             roverRouteDAO.insertMultiple(new_rover_route);
         }
+    }
+
+    public void delete_rover(Rover rover) {
+        executor.execute(() -> {
+            roverDAO.delete(rover);
+        });
     }
 }
