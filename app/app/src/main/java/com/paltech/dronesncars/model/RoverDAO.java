@@ -8,6 +8,7 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
 
+import java.net.InetAddress;
 import java.util.List;
 
 @Dao
@@ -46,4 +47,10 @@ public interface RoverDAO {
 
     @Query("SELECT rover_id FROM rover ORDER BY rover_id")
     List<Integer> get_all_ids_not_livedata();
+
+    @Query("SELECT ip_address FROM rover ORDER BY rover_id")
+    LiveData<List<InetAddress>> get_all_ip_addresses();
+
+    @Query("SELECT ip_address FROM rover ORDER BY rover_id")
+    List<InetAddress> get_all_ip_addresses_not_livedata();
 }
