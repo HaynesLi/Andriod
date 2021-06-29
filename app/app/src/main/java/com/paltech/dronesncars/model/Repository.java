@@ -388,18 +388,23 @@ public class Repository {
     public void create_new_rover(String roverName, InetAddress ip_address){
         executor.execute(()->{
             final List<Integer> roverIds = roverDAO.get_all_ids_not_livedata();
-            Log.d("your mum", roverIds.toString());
-            //if(roverIds.getValue() != null) {
-                for (int i = 0;i<roverIds.size()+1; i++) {
+            final List<InetAddress> ip_adresses= roverDAO.get_all_ip_addresses_not_livedata();
+            if(!ip_adresses.contains(ip_address)) {
+                //if(roverIds.getValue() != null) {
+                for (int i = 0; i < roverIds.size() + 1; i++) {
                     if (!roverIds.contains(i)) {
-                        Rover rover = new Rover(i);
+                        Rover rover = new Rover(i, ip_address);
                         rover.roverName = roverName;
                         rover.ip_address = ip_address;
                         roverDAO.insertMultipleRovers(rover);
                         break;
                     }
                 }
-            //}
+                //}
+            }else{
+                // Hier möglicherweise einen Popup?
+                Log.d("Error", "IpAdresse schon für einen Rover vergeben");
+            }
         });
     }
 }

@@ -113,6 +113,7 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
 
         view_binding.buttonAddRover.setOnClickListener(v -> {
             try {
+                //IpAdresse darf jetzt nicht mehr doppelt vorkommen... führt hier zu Fehler
                 view_model.add_Rover("Hubert", InetAddress.getByName("127.0.0.1"));
             } catch (UnknownHostException e) {
                 e.printStackTrace();

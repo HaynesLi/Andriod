@@ -40,8 +40,9 @@ public class Rover {
     @ColumnInfo(name = "is_used", defaultValue = "False")
     public boolean is_used;
 
-    public Rover(int rover_id) {
+    public Rover(int rover_id, InetAddress ip_address) {
         this.rover_id = rover_id;
+        this.ip_address = ip_address;
         this.status = RoverStatus.DISCONNECTED;
     }
 
