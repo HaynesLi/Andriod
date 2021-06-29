@@ -16,6 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentRoverRoutineSettingsBinding;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link RoverRoutineSettingsFragment#newInstance} factory method to
@@ -109,6 +112,11 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
         });
 
         view_binding.buttonAddRover.setOnClickListener(v -> {
+            try {
+                view_model.add_Rover("Hubert", InetAddress.getByName("127.0.0.1"));
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
         });
     }
 }

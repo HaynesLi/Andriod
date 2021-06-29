@@ -53,17 +53,15 @@ public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<Rove
         Rover rover = local_rover_set.get(position);
         holder.get_rover_id_text().setText(String.format("%d", rover.rover_id));
         holder.get_rover_name().setText(rover.roverName);
-        set_listeners(rover, holder);
         holder.get_rover_used_checkbox().setChecked(rover.is_used);
+        set_listeners(rover, holder);
     }
 
     private void set_listeners(Rover rover, @NonNull RoverConfigurationRecyclerAdapter.RoverConfigurationViewHolder holder) {
 
         holder.get_delete_rover_button().setOnClickListener(view -> view_model.delete_rover(rover));
 
-        holder.get_rover_used_checkbox().setOnCheckedChangeListener((button_view, is_checked) -> {
-            view_model.set_rover_used(rover, is_checked);
-        });
+        holder.get_rover_used_checkbox().setOnCheckedChangeListener((button_view, is_checked) -> view_model.set_rover_used(rover, is_checked));
 
     }
 

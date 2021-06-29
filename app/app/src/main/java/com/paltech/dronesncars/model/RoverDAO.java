@@ -33,11 +33,17 @@ public interface RoverDAO {
     @Query("DELETE FROM rover")
     void deleteAllRovers();
 
-    @Query("SELECT Sum(Distinct rover_id) FROM rover WHERE is_used")
+    @Query("SELECT Count(rover_id) FROM rover WHERE is_used")
     int get_num_of_used_rovers();
 
     // TODO: add Transaction to get all routes for one rover
     @Transaction
     @Query("SELECT * FROM RoverRoute, Rover WHERE rover_id = (:rover_id) and corresponding_rover_id = rover_id")
     List<RoverRoute> getRoutesForRover(int rover_id);
+
+    @Query("SELECT rover_id FROM rover ORDER BY rover_id")
+    LiveData<List<Integer>> get_all_ids();
+
+    @Query("SELECT rover_id FROM rover ORDER BY rover_id")
+    List<Integer> get_all_ids_not_livedata();
 }

@@ -20,6 +20,7 @@ import org.osmdroid.views.overlay.Polygon;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -367,9 +368,7 @@ public class Repository {
     }
 
     public void delete_rover(Rover rover) {
-        executor.execute(() -> {
-            roverDAO.delete(rover);
-        });
+        executor.execute(() -> roverDAO.delete(rover));
     }
 
     public void set_rover_used(Rover rover, boolean set_used) {
@@ -383,6 +382,24 @@ public class Repository {
                 current_rover.is_used = set_used;
                 roverDAO.update(current_rover);
             }
+        });
+    }
+
+    public void create_new_rover(String roverName, InetAddress ip_address){
+        executor.execute(()->{
+            final List<Integer> roverIds = roverDAO.get_all_ids_not_livedata();
+            Log.d("your mum", roverIds.toString());
+            //if(roverIds.getValue() != null) {
+                for (int i = 0;i<roverIds.size()+1; i++) {
+                    if (!roverIds.contains(i)) {
+                        Rover rover = new Rover(i);
+                        rover.roverName = roverName;
+                        rover.ip_address = ip_address;
+                        roverDAO.insertMultipleRovers(rover);
+                        break;
+                    }
+                }
+            //}
         });
     }
 }

@@ -16,9 +16,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(AndroidJUnit4.class)
 public class RoverDatabaseTest {
@@ -33,15 +36,33 @@ public class RoverDatabaseTest {
     }
 
     @After
-    public void closeDb() throws IOException {
-        database.clearAllTables();
-        database.close();
+    public void closeDb() {
+            database.clearAllTables();
+            database.close();
     }
 
     @Test
-    public void roverTest() throws Exception {
-        Rover rover_1 = new Rover(111, "Nautilus", 0.5);
-        Rover rover_2 = new Rover(110, "HMS Victory", 0.99);
+    public void test_get_ids() throws UnknownHostException {
+
+        Rover rover_1 = new Rover(111);
+        rover_1.ip_address = InetAddress.getByName("127.0.0.1");
+        rover_1.roverName = "Hubert";
+        Rover rover_2 = new Rover(110);
+        rover_2.ip_address = InetAddress.getByName("127.0.0.1");
+        rover_2.roverName = "Hubert";
+
+        roverDAO.insertMultipleRovers(rover_1, rover_2);
+
+        List<Integer> ids = roverDAO.get_all_ids_not_livedata();
+        assertNotNull(ids);
+        assert(ids.get(0) == 110);
+        assert(ids.get(1) == 111);
+    }
+
+
+    public void roverTest() {
+        Rover rover_1 = new Rover(111);
+        Rover rover_2 = new Rover(110);
 
         roverDAO.insertMultipleRovers(rover_1, rover_2);
 

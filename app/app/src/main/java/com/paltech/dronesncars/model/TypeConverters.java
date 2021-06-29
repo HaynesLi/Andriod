@@ -16,6 +16,8 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polygon;
 
 import java.lang.reflect.Type;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +25,24 @@ public class TypeConverters {
 
     private static final Type GEOPOINT_LIST_TYPE = new TypeToken<ArrayList<GeoPoint>>() {}.getType();
     private static final Type GEOPOINT_LIST_LIST_TYPE = new TypeToken<ArrayList<ArrayList<GeoPoint>>>() {}.getType();
+
+    @TypeConverter
+    public InetAddress from_String_to_InetAddress(String value){
+        try {
+            return InetAddress.getByName(value);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @TypeConverter
+    public String from_InetAddress_to_String(InetAddress value) {
+        if (value == null) {
+            return "127.0.0.1";
+        }
+        return value.toString();
+    }
 
     @TypeConverter
     public String fromPolygon(Polygon value) {

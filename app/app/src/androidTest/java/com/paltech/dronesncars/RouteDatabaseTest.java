@@ -49,7 +49,7 @@ public class RouteDatabaseTest {
 
     @Test
     public void routeDatabaseTest() {
-        Rover rover = new Rover(1, "Bismarck", 1.0);
+        Rover rover = new Rover(1);
         RoverRoutine roverRoutine = new RoverRoutine(3, 1);
 
         List<GeoPoint> route = new ArrayList<>();
@@ -78,8 +78,8 @@ public class RouteDatabaseTest {
 
     @Test
     public void routeRoverRelationshipDatabaseTest() {
-        Rover rover_1 = new Rover(1, "Bismarck", 1.0);
-        Rover rover_2 = new Rover(32, "Titanic", 1.0);
+        Rover rover_1 = new Rover(1);
+        Rover rover_2 = new Rover(32);
         RoverRoutine roverRoutine = new RoverRoutine(3, 1);
 
         List<GeoPoint> route = new ArrayList<>();

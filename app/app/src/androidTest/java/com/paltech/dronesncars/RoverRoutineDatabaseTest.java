@@ -51,7 +51,7 @@ public class RoverRoutineDatabaseTest {
 
     @Test
     public void roverRoutineDatabaseTest() {
-        Rover rover = new Rover(1, "Bismarck", 1.0);
+        Rover rover = new Rover(1);
         RoverRoutine expected_roverRoutine = new RoverRoutine(3, 1);
 
         List<GeoPoint> route = new ArrayList<>();
@@ -76,7 +76,7 @@ public class RoverRoutineDatabaseTest {
 
     @Test
     public void roverRoutineRouteRelationshipDatabaseTest() {
-        Rover rover = new Rover(1, "Bismarck", 1.0);
+        Rover rover = new Rover(1);
         RoverRoutine expected_roverRoutine = new RoverRoutine(3, 1);
 
         List<GeoPoint> route = new ArrayList<>();
@@ -99,6 +99,6 @@ public class RoverRoutineDatabaseTest {
 
         List<RoverRoute> actual_routes = roverRouteDAO.findRoverRoutesForRoutine(expected_roverRoutine.rover_routine_id);
         assertEquals(actual_routes.size(), 2);
-        assertEquals(new ArraySet<RoverRoute>(actual_routes), expected_routes);
+        assertEquals(new ArraySet<>(actual_routes), expected_routes);
     }
 }

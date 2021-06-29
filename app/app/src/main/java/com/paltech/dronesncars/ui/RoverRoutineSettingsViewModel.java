@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel;
 import com.paltech.dronesncars.model.Repository;
 import com.paltech.dronesncars.model.Rover;
 
-import java.util.ArrayList;
+import java.net.InetAddress;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -30,13 +30,8 @@ public class RoverRoutineSettingsViewModel extends ViewModel {
         repository.getNumOfRovers(_num_of_rovers::postValue);
     }
 
-    public void add_rovers(int num_of_rovers) {
-        ArrayList<Rover> rovers = new ArrayList<>();
-        for (int i = 0; i < num_of_rovers; i++) {
-            rovers.add(new Rover(i, "Hubert_"+i, -1.0));
-        }
-
-        repository.setCurrentRovers(rovers);
+    public void add_Rover(String rover_name, InetAddress inet_address) {
+        repository.create_new_rover(rover_name, inet_address);
     }
 
     @Inject

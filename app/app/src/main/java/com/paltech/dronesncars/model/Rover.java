@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey;
 
 import org.osmdroid.util.GeoPoint;
 
+import java.net.InetAddress;
 import java.util.Objects;
 
 @Entity
@@ -16,7 +17,7 @@ public class Rover {
     public int rover_id;
 
     @ColumnInfo(name = "ip_address")
-    public String ip_address;
+    public InetAddress ip_address;
 
     @ColumnInfo(name = "last_known_position")
     public GeoPoint last_know_position;
@@ -39,12 +40,9 @@ public class Rover {
     @ColumnInfo(name = "is_used", defaultValue = "False")
     public boolean is_used;
 
-    public Rover(int rover_id, String roverName, double battery) {
+    public Rover(int rover_id) {
         this.rover_id = rover_id;
-        this.roverName = roverName;
-        this.battery = battery;
         this.status = RoverStatus.DISCONNECTED;
-        this.progress = 0.0;
     }
 
     @Override
