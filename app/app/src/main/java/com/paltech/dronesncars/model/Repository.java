@@ -97,7 +97,7 @@ public class Repository {
                         final List<Rover> rovers = getRovers();
                         Log.d("ApiCalls", rovers.size()+" rovers");
                         for(int i = 0; i<rovers.size();i++){
-                            final String BASE_URL = rovers.get(i).ip_address.toString() + ":5000";
+                            final String BASE_URL = "http:/"+rovers.get(i).ip_address.toString() + ":5000";
                             Log.d("ApiCalls", BASE_URL);
                             Retrofit retrofit = new Retrofit.Builder()
                                     .baseUrl(BASE_URL)
