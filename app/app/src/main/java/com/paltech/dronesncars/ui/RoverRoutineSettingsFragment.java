@@ -87,7 +87,7 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
         init_rover_configuration_recycler_view();
         setLiveDataSources();
         setListeners();
-        view_model.startRoverUpdates();
+        timer = view_model.startRoverUpdates();
     }
 
     @Override
@@ -165,8 +165,6 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
             String ip = rover_ip.getText().toString();
             if (!"".equals(name) && !"".equals(ip)) {
                 try {
-                    Log.d("AddRover", name);
-                    Log.d("AddRover", ip);
                     view_model.add_Rover(name, InetAddress.getByName(ip));
                 } catch (UnknownHostException e) {
                     e.printStackTrace();

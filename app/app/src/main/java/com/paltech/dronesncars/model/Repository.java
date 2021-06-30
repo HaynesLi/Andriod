@@ -60,7 +60,7 @@ public class Repository {
     private final RoverRouteDAO roverRouteDAO;
     private final RoverRoutineDAO roverRoutineDAO;
     private final PolygonModelDAO polygonModelDAO;
-
+    private final RoverConnection roverConnection;
     private final StorageManager storageManager;
 
 
@@ -83,48 +83,15 @@ public class Repository {
         this.context = context;
         this.executor = executor;
         this.storageManager = storageManager;
+        roverConnection = new RoverConnection(this, executor);
     }
 
-    public Timer updateRovers(){
-        int delay = 0; // delay for 0 sec.
-        int period = 10000; // repeat every 10 sec.
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask()
-        {
-            public void run()
-            {
-                executor.execute(()->{
-                        final List<Rover> rovers = getRovers();
-                        Log.d("ApiCalls", rovers.size()+" rovers");
-                        for(int i = 0; i<rovers.size();i++){
-                            final String BASE_URL = "http:/"+rovers.get(i).ip_address.toString() + ":5000";
-                            Log.d("ApiCalls", BASE_URL);
-                            Retrofit retrofit = new Retrofit.Builder()
-                                    .baseUrl(BASE_URL)
-                                    .addConverterFactory(GsonConverterFactory.create())
-                                    .build();
-                            IPlusService requestClient = retrofit.create(IPlusService.class);
-                            requestClient.getJSON().enqueue(new Callback<RoverUpdateModel>() {
-                                @Override
-                                public void onResponse(Call<RoverUpdateModel> call, Response<RoverUpdateModel> response) {
-                                    Log.d("ApiCalls",response.code()+"\n"+response.body());
-                                }
-
-                                @Override
-                                public void onFailure(Call<RoverUpdateModel> call, Throwable t) {
-                                    Log.d("ApiCalls", "Fail");
-                                }
-                            });
-                        }
-                });
-            }
-        }, delay, period);
-        return timer;
+    public void updateRover(Rover rover){
+        roverDAO.update(rover);
     }
 
-    public interface IPlusService {
-        @GET("/getJSON")
-        Call<RoverUpdateModel> getJSON();
+    public Timer updateAllRoversContinuously(int secondsBetweenUpdate){
+       return roverConnection.updateAllRoversContinuously(secondsBetweenUpdate);
     }
 
     public List<Rover> getRovers() {

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.paltech.dronesncars.model.Repository;
 import com.paltech.dronesncars.model.Rover;
+import com.paltech.dronesncars.model.RoverConnection;
 
 import java.net.InetAddress;
 import java.util.List;
@@ -32,7 +33,7 @@ public class RoverRoutineSettingsViewModel extends ViewModel {
     }
 
     public Timer startRoverUpdates(){
-        return repository.updateRovers();
+        return repository.updateAllRoversContinuously(10);
     }
 
     public void add_Rover(String rover_name, InetAddress inet_address) {

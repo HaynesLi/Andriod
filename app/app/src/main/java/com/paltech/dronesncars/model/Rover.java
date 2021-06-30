@@ -19,23 +19,26 @@ public class Rover {
     @ColumnInfo(name = "ip_address")
     public InetAddress ip_address;
 
-    @ColumnInfo(name = "last_known_position")
-    public GeoPoint last_know_position;
+    @ColumnInfo(name = "position")
+    public String position;
 
     @ColumnInfo(name = "rover_name")
     public String roverName;
 
     @ColumnInfo(name = "battery")
-    public double battery;
+    public int battery;
 
     @ColumnInfo(name = "status")
     public RoverStatus status;
 
+    @ColumnInfo(name = "mission")
+    public String mission;
+
+    @ColumnInfo(name = "currentWaypoint")
+    public int currentWaypoint;
+
     @ColumnInfo(name = "progress")
     public double progress;
-
-    @ColumnInfo(name = "last_reached_target")
-    public GeoPoint last_reached_target;
 
     @ColumnInfo(name = "is_used", defaultValue = "False")
     public boolean is_used;
