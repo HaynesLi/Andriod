@@ -22,6 +22,7 @@ import com.paltech.dronesncars.databinding.FragmentRoverRoutineSettingsBinding;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Timer;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,6 +34,8 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
     private FragmentRoverRoutineSettingsBinding view_binding;
     private RoverRoutineSettingsViewModel view_model;
     RoverConfigurationRecyclerAdapter roverConfigurationRecyclerAdapter;
+
+    private Timer timer;
 
     public RoverRoutineSettingsFragment() {
         // Required empty public constructor
@@ -84,6 +87,13 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
         init_rover_configuration_recycler_view();
         setLiveDataSources();
         setListeners();
+        view_model.startRoverUpdates();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        timer.cancel();
     }
 
     private void init_rover_configuration_recycler_view() {

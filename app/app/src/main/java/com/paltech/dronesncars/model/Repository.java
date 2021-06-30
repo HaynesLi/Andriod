@@ -12,6 +12,7 @@ import com.paltech.dronesncars.computing.FlightRouteGenerator;
 import com.paltech.dronesncars.computing.VRP_Wrapper;
 import com.paltech.dronesncars.computing.WeedDetectorInterface;
 import com.paltech.dronesncars.computing.WeedDetectorMock;
+import com.paltech.dronesncars.ui.RoverUpdateModel;
 import com.paltech.dronesncars.ui.ViewModelCallback;
 
 import org.osmdroid.bonuspack.kml.KmlDocument;
@@ -28,12 +29,21 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.qualifiers.ApplicationContext;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
 
 public class Repository {
 
@@ -73,6 +83,48 @@ public class Repository {
         this.context = context;
         this.executor = executor;
         this.storageManager = storageManager;
+    }
+
+    public Timer updateRovers(){
+        int delay = 0; // delay for 0 sec.
+        int period = 10000; // repeat every 10 sec.
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask()
+        {
+            public void run()
+            {
+                executor.execute(()->{
+                        final List<Rover> rovers = getRovers();
+                        Log.d("ApiCalls", rovers.size()+" rovers");
+                        for(int i = 0; i<rovers.size();i++){
+                            final String BASE_URL = rovers.get(i).ip_address.toString() + ":5000";
+                            Log.d("ApiCalls", BASE_URL);
+                            Retrofit retrofit = new Retrofit.Builder()
+                                    .baseUrl(BASE_URL)
+                                    .addConverterFactory(GsonConverterFactory.create())
+                                    .build();
+                            IPlusService requestClient = retrofit.create(IPlusService.class);
+                            requestClient.getJSON().enqueue(new Callback<RoverUpdateModel>() {
+                                @Override
+                                public void onResponse(Call<RoverUpdateModel> call, Response<RoverUpdateModel> response) {
+                                    Log.d("ApiCalls",response.code()+"\n"+response.body());
+                                }
+
+                                @Override
+                                public void onFailure(Call<RoverUpdateModel> call, Throwable t) {
+                                    Log.d("ApiCalls", "Fail");
+                                }
+                            });
+                        }
+                });
+            }
+        }, delay, period);
+        return timer;
+    }
+
+    public interface IPlusService {
+        @GET("/getJSON")
+        Call<RoverUpdateModel> getJSON();
     }
 
     public List<Rover> getRovers() {

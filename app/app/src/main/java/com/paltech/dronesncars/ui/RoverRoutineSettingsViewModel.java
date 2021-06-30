@@ -9,6 +9,7 @@ import com.paltech.dronesncars.model.Rover;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.Timer;
 
 import javax.inject.Inject;
 
@@ -28,6 +29,10 @@ public class RoverRoutineSettingsViewModel extends ViewModel {
 
     private void getNumOfRovers() {
         repository.getNumOfRovers(_num_of_rovers::postValue);
+    }
+
+    public Timer startRoverUpdates(){
+        return repository.updateRovers();
     }
 
     public void add_Rover(String rover_name, InetAddress inet_address) {
