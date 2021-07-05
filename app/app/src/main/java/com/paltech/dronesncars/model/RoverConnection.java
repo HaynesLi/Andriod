@@ -66,13 +66,17 @@ public class RoverConnection {
                 }else{
                     rover.status = RoverStatus.DISCONNECTED;
                 }
-                repository.updateRover(rover);
+                executor.execute(()->{
+                    repository.updateRover(rover);
+                });
             }
 
             @Override
             public void onFailure(Call<RoverUpdateModel> call, Throwable t) {
                 rover.status = RoverStatus.DISCONNECTED;
-                repository.updateRover(rover);
+                executor.execute(()->{
+                    repository.updateRover(rover);
+                });
             }
         });
     }

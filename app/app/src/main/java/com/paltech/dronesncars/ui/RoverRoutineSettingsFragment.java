@@ -24,9 +24,12 @@ import com.paltech.dronesncars.model.RoverStatus;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
+
+import kotlin.collections.ArrayDeque;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -93,7 +96,6 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
         setLiveDataSources();
         setListeners();
         displayAllRovers = false;
-        timer = view_model.startRoverUpdates();
     }
 
     @Override
@@ -143,15 +145,14 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
                 // TODO extract to string resource
                 view_binding.buttonEditRoversConfigure.setText("Cancel");
                 view_binding.buttonAddRover.setEnabled(false);
-                set_rover_configuration_items_editable(true);
                 displayAllRovers = true;
             } else if ("Cancel".contentEquals(view_binding.buttonEditRoversConfigure.getText())) {
                 view_binding.buttonEditRoversConfigure.setText(R.string.button_edit_rovers_configure_label);
                 view_binding.buttonAddRover.setEnabled(true);
-                set_rover_configuration_items_editable(false);
                 displayAllRovers = false;
             }
             get_active_rovers(displayAllRovers);
+            set_rover_configuration_items_editable(displayAllRovers);
         });
 
         view_binding.buttonAddRover.setOnClickListener(v -> show_name_and_ip_alert_dialog());
@@ -161,7 +162,7 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
         if(displayAllRovers) {
             roverConfigurationRecyclerAdapter.set_local_rover_set(allRovers);
         }else {
-            List<Rover> activeRovers = Arrays.asList(new Rover[]{});
+            List<Rover> activeRovers = new ArrayList<>();
             for (int i = 0; i < allRovers.size(); i++) {
                 if (allRovers.get(i).status == RoverStatus.CONNECTED) {
                     activeRovers.add(allRovers.get(i));
