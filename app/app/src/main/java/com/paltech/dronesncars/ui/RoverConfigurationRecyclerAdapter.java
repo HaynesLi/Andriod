@@ -31,6 +31,7 @@ public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<Rove
     private List<Rover> local_rover_set;
     private RoverRoutineSettingsViewModel view_model;
     private RecyclerView view;
+    private boolean editable;
 
     public RoverConfigurationRecyclerAdapter(List<Rover> rover_set, RoverRoutineSettingsViewModel view_model) {
         this.local_rover_set = rover_set;
@@ -52,10 +53,15 @@ public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<Rove
     public RoverConfigurationViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.rover_configuration_row_item,
                 parent, false);
-
-        this.view = (RecyclerView) view;
-
         return new RoverConfigurationViewHolder(view);
+    }
+
+    public void setEditable(boolean editable){
+        this.editable = editable;
+    }
+
+    public boolean getEditable(){
+        return this.editable;
     }
 
     @Override
@@ -65,6 +71,13 @@ public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<Rove
         holder.get_rover_name().setText(rover.roverName);
         holder.get_rover_used_checkbox().setChecked(rover.is_used);
         set_listeners(rover, holder);
+        if (editable) {
+            holder.get_rover_used_checkbox().setVisibility(View.GONE);
+            holder.get_delete_rover_button().setVisibility(View.VISIBLE);
+        }else{
+            holder.get_rover_used_checkbox().setVisibility(View.VISIBLE);
+            holder.get_delete_rover_button().setVisibility(View.GONE);
+        }
     }
 
     private void set_listeners(Rover rover, @NonNull RoverConfigurationRecyclerAdapter.RoverConfigurationViewHolder holder) {

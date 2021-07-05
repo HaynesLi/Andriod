@@ -148,8 +148,9 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
                 view_binding.buttonAddRover.setEnabled(true);
                 displayAllRovers = false;
             }
-            get_active_rovers(displayAllRovers);
             set_rover_configuration_items_editable(displayAllRovers);
+            roverConfigurationRecyclerAdapter.setEditable(displayAllRovers);
+            get_active_rovers(displayAllRovers);
         });
 
         view_binding.buttonAddRover.setOnClickListener(v -> show_name_and_ip_alert_dialog());
