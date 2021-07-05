@@ -19,9 +19,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentRoverRoutineSettingsBinding;
+import com.paltech.dronesncars.model.Rover;
+import com.paltech.dronesncars.model.RoverStatus;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Timer;
 
 /**
@@ -34,8 +38,9 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
     private FragmentRoverRoutineSettingsBinding view_binding;
     private RoverRoutineSettingsViewModel view_model;
     RoverConfigurationRecyclerAdapter roverConfigurationRecyclerAdapter;
-
+    private boolean displayAllRovers;
     private Timer timer;
+    private List<Rover> allRovers;
 
     public RoverRoutineSettingsFragment() {
         // Required empty public constructor
@@ -87,13 +92,20 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
         init_rover_configuration_recycler_view();
         setLiveDataSources();
         setListeners();
+        displayAllRovers = false;
         timer = view_model.startRoverUpdates();
     }
 
     @Override
     public void onPause() {
-        super.onPause();
         timer.cancel();
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        timer = view_model.startRoverUpdates();
     }
 
     private void init_rover_configuration_recycler_view() {
@@ -105,8 +117,10 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
     }
 
     private void setLiveDataSources() {
-        view_model.get_all_rovers_livedata().observe(getViewLifecycleOwner(), rovers ->
-                roverConfigurationRecyclerAdapter.set_local_rover_set(rovers));
+        view_model.get_all_rovers_livedata().observe(getViewLifecycleOwner(), rovers -> {
+            allRovers = rovers;
+            get_active_rovers(displayAllRovers);
+        });
 
         view_model.get_num_of_used_rovers().observe(getViewLifecycleOwner(), num_of_used_rovers -> {
             view_binding.numOfRoversInput.setText(num_of_used_rovers.toString());
@@ -130,14 +144,31 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
                 view_binding.buttonEditRoversConfigure.setText("Cancel");
                 view_binding.buttonAddRover.setEnabled(false);
                 set_rover_configuration_items_editable(true);
+                displayAllRovers = true;
             } else if ("Cancel".contentEquals(view_binding.buttonEditRoversConfigure.getText())) {
                 view_binding.buttonEditRoversConfigure.setText(R.string.button_edit_rovers_configure_label);
                 view_binding.buttonAddRover.setEnabled(true);
                 set_rover_configuration_items_editable(false);
+                displayAllRovers = false;
             }
+            get_active_rovers(displayAllRovers);
         });
 
         view_binding.buttonAddRover.setOnClickListener(v -> show_name_and_ip_alert_dialog());
+    }
+
+    public void get_active_rovers(boolean displayAllRovers){
+        if(displayAllRovers) {
+            roverConfigurationRecyclerAdapter.set_local_rover_set(allRovers);
+        }else {
+            List<Rover> activeRovers = Arrays.asList(new Rover[]{});
+            for (int i = 0; i < allRovers.size(); i++) {
+                if (allRovers.get(i).status == RoverStatus.CONNECTED) {
+                    activeRovers.add(allRovers.get(i));
+                }
+            }
+            roverConfigurationRecyclerAdapter.set_local_rover_set(activeRovers);
+        }
     }
 
     private void set_rover_configuration_items_editable(boolean editable) {
