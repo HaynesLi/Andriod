@@ -25,11 +25,8 @@ import com.paltech.dronesncars.model.RoverStatus;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
-
-import kotlin.collections.ArrayDeque;
 
 /**
  * A simple {@link Fragment} subclass.

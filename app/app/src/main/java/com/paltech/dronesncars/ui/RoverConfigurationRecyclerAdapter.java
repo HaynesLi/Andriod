@@ -3,6 +3,7 @@ package com.paltech.dronesncars.ui;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -29,6 +30,7 @@ public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<Rove
 
     private List<Rover> local_rover_set;
     private RoverRoutineSettingsViewModel view_model;
+    private RecyclerView view;
 
     public RoverConfigurationRecyclerAdapter(List<Rover> rover_set, RoverRoutineSettingsViewModel view_model) {
         this.local_rover_set = rover_set;
@@ -50,6 +52,8 @@ public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<Rove
     public RoverConfigurationViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.rover_configuration_row_item,
                 parent, false);
+
+        this.view = (RecyclerView) view;
 
         return new RoverConfigurationViewHolder(view);
     }
@@ -112,5 +116,19 @@ public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<Rove
     public void set_local_rover_set(List<Rover> rovers) {
         this.local_rover_set = rovers;
         notifyDataSetChanged();
+    }
+
+    public RoverConfigurationViewHolder get_holder_at_position(int position) {
+        final RoverConfigurationViewHolder[] itemView = new RoverConfigurationViewHolder[1];
+        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener()
+        {
+            @Override
+            public void onGlobalLayout() {
+                itemView[0] = (RoverConfigurationViewHolder) view.findViewHolderForAdapterPosition(position);
+                view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
+
+        return itemView[0];
     }
 }
