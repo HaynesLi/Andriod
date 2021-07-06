@@ -7,4 +7,6 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="paltech_green">#3f6b1c</color>
+    <color name="paltech_light_green">#809c68</color>
 </resources>
