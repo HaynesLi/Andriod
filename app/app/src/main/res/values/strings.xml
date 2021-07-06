@@ -60,4 +60,10 @@
     <string name="alert_dialog_rover_inet_address_placeholder">IP: %1$s</string>
     <string name="alert_dialog_rover_inet_address">IP:</string>
     <string name="cancel_string">Cancel</string>
+    <string name="startscreen_drawer_title">StartScreen</string>
+    <string name="dronescreen_drawer_title">DroneScreen</string>
+    <string name="scanresultsscreen_drawer_title">ScanResultsScreen</string>
+    <string name="roverconfigurationscreen_drawer_title">RoverConfigurationScreen</string>
+    <string name="roverstatusscreen_drawer_title">RoverStatusScreen</string>
+    <string name="reportscreen_drawer_title">ReportScreen</string>
 </resources>
