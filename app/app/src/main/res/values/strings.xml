@@ -66,4 +66,5 @@
     <string name="roverconfigurationscreen_drawer_title">RoverConfigurationScreen</string>
     <string name="roverstatusscreen_drawer_title">RoverStatusScreen</string>
     <string name="reportscreen_drawer_title">ReportScreen</string>
+    <string name="button_delete_polygon_label">delete polygon</string>
 </resources>
