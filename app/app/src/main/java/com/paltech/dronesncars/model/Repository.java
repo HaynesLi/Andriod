@@ -12,6 +12,7 @@ import com.paltech.dronesncars.computing.FlightRouteGenerator;
 import com.paltech.dronesncars.computing.VRP_Wrapper;
 import com.paltech.dronesncars.computing.WeedDetectorInterface;
 import com.paltech.dronesncars.computing.WeedDetectorMock;
+import com.paltech.dronesncars.ui.RoverUpdateModel;
 import com.paltech.dronesncars.ui.ViewModelCallback;
 
 import org.osmdroid.bonuspack.kml.KmlDocument;
@@ -28,12 +29,21 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.qualifiers.ApplicationContext;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
 
 public class Repository {
 
@@ -50,7 +60,7 @@ public class Repository {
     private final RoverRouteDAO roverRouteDAO;
     private final RoverRoutineDAO roverRoutineDAO;
     private final PolygonModelDAO polygonModelDAO;
-
+    private final RoverConnection roverConnection;
     private final StorageManager storageManager;
 
 
@@ -73,6 +83,15 @@ public class Repository {
         this.context = context;
         this.executor = executor;
         this.storageManager = storageManager;
+        roverConnection = new RoverConnection(this, executor);
+    }
+
+    public void updateRover(Rover rover){
+        roverDAO.update(rover);
+    }
+
+    public Timer updateAllRoversContinuously(int secondsBetweenUpdate){
+       return roverConnection.updateAllRoversContinuously(secondsBetweenUpdate);
     }
 
     public List<Rover> getRovers() {

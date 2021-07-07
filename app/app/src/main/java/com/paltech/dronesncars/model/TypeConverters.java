@@ -1,5 +1,7 @@
 package com.paltech.dronesncars.model;
 
+import android.util.Log;
+
 import androidx.room.TypeConverter;
 
 import com.google.gson.GsonBuilder;
@@ -41,7 +43,7 @@ public class TypeConverters {
         if (value == null) {
             return "127.0.0.1";
         }
-        return value.toString();
+        return value.getHostAddress();
     }
 
     @TypeConverter

@@ -3,26 +3,35 @@ package com.paltech.dronesncars.ui;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.RoverConfigurationRowItemBinding;
 import com.paltech.dronesncars.model.Rover;
+import com.paltech.dronesncars.model.RoverStatus;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<RoverConfigurationRecyclerAdapter.RoverConfigurationViewHolder> {
 
     private List<Rover> local_rover_set;
     private RoverRoutineSettingsViewModel view_model;
+    private RecyclerView view;
+    private boolean editable;
 
     public RoverConfigurationRecyclerAdapter(List<Rover> rover_set, RoverRoutineSettingsViewModel view_model) {
         this.local_rover_set = rover_set;
@@ -44,8 +53,15 @@ public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<Rove
     public RoverConfigurationViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.rover_configuration_row_item,
                 parent, false);
-
         return new RoverConfigurationViewHolder(view);
+    }
+
+    public void setEditable(boolean editable){
+        this.editable = editable;
+    }
+
+    public boolean getEditable(){
+        return this.editable;
     }
 
     @Override
@@ -55,6 +71,13 @@ public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<Rove
         holder.get_rover_name().setText(rover.roverName);
         holder.get_rover_used_checkbox().setChecked(rover.is_used);
         set_listeners(rover, holder);
+        if (editable) {
+            holder.get_rover_used_checkbox().setVisibility(View.GONE);
+            holder.get_delete_rover_button().setVisibility(View.VISIBLE);
+        }else{
+            holder.get_rover_used_checkbox().setVisibility(View.VISIBLE);
+            holder.get_delete_rover_button().setVisibility(View.GONE);
+        }
     }
 
     private void set_listeners(Rover rover, @NonNull RoverConfigurationRecyclerAdapter.RoverConfigurationViewHolder holder) {
@@ -106,5 +129,19 @@ public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<Rove
     public void set_local_rover_set(List<Rover> rovers) {
         this.local_rover_set = rovers;
         notifyDataSetChanged();
+    }
+
+    public RoverConfigurationViewHolder get_holder_at_position(int position) {
+        final RoverConfigurationViewHolder[] itemView = new RoverConfigurationViewHolder[1];
+        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener()
+        {
+            @Override
+            public void onGlobalLayout() {
+                itemView[0] = (RoverConfigurationViewHolder) view.findViewHolderForAdapterPosition(position);
+                view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
+
+        return itemView[0];
     }
 }
