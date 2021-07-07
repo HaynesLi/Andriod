@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
         nav_controller = Navigation.findNavController(this, R.id.nav_host_fragment);
 
         Set<Integer> primary_destinations = new ArraySet<>();
-        primary_destinations.add(R.id.startScreen);
         primary_destinations.add(R.id.droneScreen);
         primary_destinations.add(R.id.scanResultsFragment);
         primary_destinations.add(R.id.roverRouteFragment);
