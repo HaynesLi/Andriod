@@ -13,6 +13,12 @@ import java.util.List;
 
 @Dao
 public interface RoverDAO {
+    @Query("SELECT COUNT(*) FROM rover WHERE status = 'CONNECTED'")
+    LiveData<Integer> get_num_connected_rovers_livedata();
+
+    @Query("SELECT COUNT(*) FROM rover")
+    LiveData<Integer> get_num_rovers_livedata();
+
     @Query("SELECT * FROM rover WHERE ip_address = (:ip_address)")
     Rover getRoverByIpAddress(InetAddress ip_address);
 

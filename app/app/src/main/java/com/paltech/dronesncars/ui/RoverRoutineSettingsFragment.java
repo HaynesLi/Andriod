@@ -122,7 +122,17 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
         });
 
         view_model.get_num_of_used_rovers().observe(getViewLifecycleOwner(), num_of_used_rovers -> {
-            view_binding.numOfRoversInput.setText(num_of_used_rovers.toString());
+            view_binding.numOfRoversInput.setText("Number of selected Rovers: "+num_of_used_rovers.toString());
+        });
+
+        view_model.get_num_of_connected_rovers().observe(getViewLifecycleOwner(), num_connected_rovers ->{
+            String tmp = view_binding.numOfConnectedRoversInput.getText().toString();
+            view_binding.numOfConnectedRoversInput.setText("Number of connected Rovers: "+num_connected_rovers.toString()+"/"+tmp.split("/")[1]);
+        });
+
+        view_model.get_num_of_rovers().observe(getViewLifecycleOwner(), num_rovers ->{
+            String tmp = view_binding.numOfConnectedRoversInput.getText().toString();
+            view_binding.numOfConnectedRoversInput.setText(tmp.split("/")[0]+"/"+num_rovers.toString());
         });
     }
 

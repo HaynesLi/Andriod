@@ -66,4 +66,11 @@ public class RoverRoutineSettingsViewModel extends ViewModel {
         return repository.get_num_of_used_rovers_livedata();
     }
 
+    public LiveData<Integer> get_num_of_connected_rovers() {
+        return repository.get_num_of_connected_rovers_livedata();
+    }
+
+    public LiveData<Integer> get_num_of_rovers() {
+        return repository.get_num_of_rovers_livedata();
+    }
 }

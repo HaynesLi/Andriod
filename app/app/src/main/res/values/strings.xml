@@ -21,7 +21,7 @@
     <string name="scan_results">Scan Results</string>
     <string name="configure_rovers">Configure Rovers</string>
     <string name="rover_routine">Rover Routine</string>
-    <string name="number_of_rovers">Number of Rovers: </string>
+    <string name="number_of_rovers">Number of selected Rovers: 0</string>
     <string name="num_of_rovers_hint_1">1</string>
     <string name="create">Create Rover Routine</string>
     <string name="rover_id">Rover ID: </string>
@@ -52,7 +52,6 @@
     <string name="button_test_connection_label">Test Connection</string>
     <string name="connection_test_result_default">No Result</string>
     <string name="delete_rover_button_contentDescription">delete_icon</string>
-    <string name="num_of_rovers_input_default">0</string>
     <string name="button_add_rover_label">Add Rover</string>
     <string name="button_edit_rovers_configure_label">Edit</string>
     <string name="alert_dialog_rover_name_placeholder">Name: %1$s</string>
@@ -67,4 +66,5 @@
     <string name="roverstatusscreen_drawer_title">RoverStatusScreen</string>
     <string name="reportscreen_drawer_title">ReportScreen</string>
     <string name="button_delete_polygon_label">delete polygon</string>
+    <string name="number_of_connected_rovers">Number of connected Rovers: 0/0</string>
 </resources>

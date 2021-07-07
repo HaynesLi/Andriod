@@ -433,4 +433,12 @@ public class Repository {
     public LiveData<Integer> get_num_of_used_rovers_livedata() {
         return roverDAO.get_num_of_used_rovers_livedata();
     }
+
+    public LiveData<Integer> get_num_of_connected_rovers_livedata() {
+        return roverDAO.get_num_connected_rovers_livedata();
+    }
+
+    public LiveData<Integer> get_num_of_rovers_livedata() {
+        return roverDAO.get_num_rovers_livedata();
+    }
 }
