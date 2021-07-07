@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -407,7 +408,7 @@ public class Repository {
         });
     }
 
-    public void create_new_rover(String roverName, InetAddress ip_address){
+    public void create_new_rover(String roverName, InetAddress ip_address, ViewModelCallback<String> callback ){
         executor.execute(()->{
             final List<Integer> roverIds = roverDAO.get_all_ids_not_livedata();
             final List<InetAddress> ip_adresses= roverDAO.get_all_ip_addresses_not_livedata();
@@ -424,8 +425,7 @@ public class Repository {
                 }
                 //}
             }else{
-                // Hier möglicherweise einen Popup?
-                Log.d("Error", "IpAdresse schon für einen Rover vergeben");
+                callback.onComplete(ip_address.getHostAddress()+" is already used for rover with name: "+roverDAO.getRoverByIpAddress(ip_address).roverName);
             }
         });
     }

@@ -148,7 +148,6 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
                 view_binding.buttonAddRover.setEnabled(true);
                 displayAllRovers = false;
             }
-            set_rover_configuration_items_editable(displayAllRovers);
             roverConfigurationRecyclerAdapter.setEditable(displayAllRovers);
             get_active_rovers(displayAllRovers);
         });
@@ -169,16 +168,6 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
             roverConfigurationRecyclerAdapter.set_local_rover_set(activeRovers);
         }
     }
-
-    private void set_rover_configuration_items_editable(boolean editable) {
-        for (int index = 0; index < roverConfigurationRecyclerAdapter.getItemCount(); index++) {
-            RoverConfigurationRecyclerAdapter.RoverConfigurationViewHolder holder;
-            holder = (RoverConfigurationRecyclerAdapter.RoverConfigurationViewHolder)
-                    view_binding.roverConfigurationList.findViewHolderForAdapterPosition(index);
-            holder.set_editable(editable);
-        }
-    }
-
     private void show_name_and_ip_alert_dialog() {
         LayoutInflater inflater = LayoutInflater.from(requireContext());
         final View my_dialog_view = inflater.inflate(R.layout.rover_configuration_alert_dialog, null);
@@ -195,7 +184,7 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
             String ip = rover_ip.getText().toString();
             if (!"".equals(name) && !"".equals(ip)) {
                 try {
-                    view_model.add_Rover(name, InetAddress.getByName(ip));
+                    view_model.add_Rover(name, InetAddress.getByName(ip), this::show_toast);
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                     Log.d("InetAddress Error", "show_name_and_ip_alert_dialog: not a legit InetAddress");

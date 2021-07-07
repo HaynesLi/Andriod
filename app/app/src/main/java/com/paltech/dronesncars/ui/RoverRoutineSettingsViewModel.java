@@ -36,8 +36,8 @@ public class RoverRoutineSettingsViewModel extends ViewModel {
         return repository.updateAllRoversContinuously(10);
     }
 
-    public void add_Rover(String rover_name, InetAddress inet_address) {
-        repository.create_new_rover(rover_name, inet_address);
+    public void add_Rover(String rover_name, InetAddress inet_address, ViewModelCallback<String> callback) {
+        repository.create_new_rover(rover_name, inet_address, callback);
     }
 
     @Inject

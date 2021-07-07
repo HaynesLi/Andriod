@@ -72,8 +72,8 @@ public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<Rove
         holder.get_rover_used_checkbox().setChecked(rover.is_used);
         set_listeners(rover, holder);
         if (editable) {
-            holder.get_rover_used_checkbox().setVisibility(View.GONE);
             holder.get_delete_rover_button().setVisibility(View.VISIBLE);
+            holder.get_rover_used_checkbox().setVisibility(View.GONE);
         }else{
             holder.get_rover_used_checkbox().setVisibility(View.VISIBLE);
             holder.get_delete_rover_button().setVisibility(View.GONE);
@@ -84,7 +84,11 @@ public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<Rove
 
         holder.get_delete_rover_button().setOnClickListener(view -> view_model.delete_rover(rover));
 
-        holder.get_rover_used_checkbox().setOnCheckedChangeListener((button_view, is_checked) -> view_model.set_rover_used(rover, is_checked));
+        holder.get_rover_used_checkbox().setOnCheckedChangeListener((button_view, is_checked) -> {
+            if(!editable) {
+                view_model.set_rover_used(rover, is_checked);
+            }
+        });
 
     }
 

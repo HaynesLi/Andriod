@@ -3,6 +3,7 @@ package com.paltech.dronesncars.ui;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
@@ -23,4 +24,9 @@ public abstract class LandscapeFragment<View_Binding extends ViewBinding, View_M
 
     abstract View_Model get_view_model();
 
+    public void show_toast(String msg){
+        requireActivity().runOnUiThread(()->{
+            Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show();
+        });
+    }
 }

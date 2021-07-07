@@ -13,6 +13,9 @@ import java.util.List;
 
 @Dao
 public interface RoverDAO {
+    @Query("SELECT * FROM rover WHERE ip_address = (:ip_address)")
+    Rover getRoverByIpAddress(InetAddress ip_address);
+
     @Query("SELECT * FROM rover")
     List<Rover> getAll();
 
