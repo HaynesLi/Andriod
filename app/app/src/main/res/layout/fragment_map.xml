@@ -102,5 +102,28 @@
             app:layout_constraintStart_toStartOf="@id/button_add_marker"
             app:layout_constraintTop_toBottomOf="@id/guideline_bottom_map"/>
 
+        <Button
+            android:id="@+id/button_import_kml"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/import_kml"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/button_edit_route"
+            app:layout_constraintEnd_toStartOf="@+id/button_delete_polygon"
+            app:layout_constraintTop_toBottomOf="@+id/button_edit_route"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/button_delete_polygon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_delete_polygon_label"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/button_import_kml"
+            app:layout_constraintEnd_toEndOf="@+id/button_export_polygon_to_kml"
+            app:layout_constraintTop_toBottomOf="@+id/button_edit_route"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            android:visibility="gone"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

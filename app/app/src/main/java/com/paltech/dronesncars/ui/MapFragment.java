@@ -323,7 +323,7 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
             List<List<GeoPoint>> new_routes = new ArrayList<>();
             for (List<Marker> route_markers: edit_rover_route_markers) {
                 new_routes.add(
-                        route_markers.stream().map(marker -> marker.getPosition())
+                        route_markers.stream().map(Marker::getPosition)
                                 .collect(Collectors.toList())
                 );
             }
@@ -367,13 +367,11 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
 
         view_binding.buttonAddMarker.setOnClickListener(v -> {
 
-            if (selected_marker != null) {
                 if (current_state == VIEW_STATE.EDIT_POLYGON) {
                     add_marker_polygon_edit();
                 } else if (current_state == VIEW_STATE.EDIT_ROUTE) {
                     add_marker_route_edit();
                 }
-            }
         });
 
         view_binding.buttonExportPolygonToKml.setOnClickListener(v -> view_model.save_polygon_to_kml());
@@ -421,7 +419,7 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
     protected void add_marker_polygon_edit() {}
 
     protected List<Marker> insert_marker_at_index(List<Marker> list, int index, Marker marker) {
-        if (index > 0 && index <= list.size()) {
+        if (index >= 0 && index <= list.size()) {
             List<Marker> before = list.subList(0, index);
             List<Marker> after = list.subList(index, list.size());
             List<Marker> insertion = new ArrayList<>();

@@ -314,18 +314,21 @@ public class Repository {
     public void mock_results() {
 
         executor.execute(() -> {
-            Polygon current_polygon = polygonModelDAO.getPolygonModelByID(POLYGON_ID).polygon;
-            if (current_polygon != null) {
-                WeedDetectorInterface weed_detector = new WeedDetectorMock(current_polygon);
-                List<Result> mock_results = weed_detector.get_results_from_pictures(
-                        new ArrayList<>(),
-                        new ArrayList<>()
-                );
+            PolygonModel current_polygon_model = polygonModelDAO.getPolygonModelByID(POLYGON_ID);
+            if (current_polygon_model != null) {
+                Polygon current_polygon = current_polygon_model.polygon;
+                if (current_polygon != null) {
+                    WeedDetectorInterface weed_detector = new WeedDetectorMock(current_polygon);
+                    List<Result> mock_results = weed_detector.get_results_from_pictures(
+                            new ArrayList<>(),
+                            new ArrayList<>()
+                    );
 
-                if (!mock_results.isEmpty()) {
-                    resultDAO.delete_all_results();
-                    Result[] result_array = new Result[mock_results.size()];
-                    resultDAO.insertMultipleResults(mock_results.toArray(result_array));
+                    if (!mock_results.isEmpty()) {
+                        resultDAO.delete_all_results();
+                        Result[] result_array = new Result[mock_results.size()];
+                        resultDAO.insertMultipleResults(mock_results.toArray(result_array));
+                    }
                 }
             }
         });

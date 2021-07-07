@@ -27,8 +27,9 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rover_status_title"
-            app:layout_constraintBottom_toTopOf="@+id/bottom_guideline_recycler_view"/>
+            app:layout_constraintTop_toBottomOf="@+id/button_mock_progress_update"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_guideline_recycler_view"
+            app:layout_constrainedHeight="true"/>
 
         <Button
             android:id="@+id/button_assume_finished"
@@ -51,10 +52,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Mock progress"
-            app:layout_constraintBottom_toTopOf="@+id/bottom_guideline_recycler_view"
-            app:layout_constraintEnd_toStartOf="@+id/rover_status_recycler_view"
+            app:layout_constraintBottom_toTopOf="@+id/rover_status_recycler_view"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rover_status_title" />
+            app:layout_constraintTop_toBottomOf="@+id/guideline_center_horizontal" />
+
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/rover_status_map_container"
+            android:name="com.paltech.dronesncars.ui.RoverMap"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/guideline_center_horizontal"
+            app:layout_constraintTop_toBottomOf="@id/rover_status_title"
+            />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
