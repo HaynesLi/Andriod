@@ -64,6 +64,7 @@ public class RoverConnection {
                     rover.mission = response.body().getMission();
                     rover.status = RoverStatus.CONNECTED;
                 }else{
+                    Log.d("RoverConnection", "onFailure: Response but failed");
                     rover.status = RoverStatus.DISCONNECTED;
                 }
                 executor.execute(()->{
@@ -74,6 +75,7 @@ public class RoverConnection {
             @Override
             public void onFailure(Call<RoverUpdateModel> call, Throwable t) {
                 rover.status = RoverStatus.DISCONNECTED;
+                Log.d("RoverConnection", "onFailure: FAILED");
                 executor.execute(()->{
                     repository.updateRover(rover);
                 });
