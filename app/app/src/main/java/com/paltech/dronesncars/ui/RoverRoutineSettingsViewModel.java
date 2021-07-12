@@ -73,4 +73,8 @@ public class RoverRoutineSettingsViewModel extends ViewModel {
     public LiveData<Integer> get_num_of_rovers() {
         return repository.get_num_of_rovers_livedata();
     }
+
+    public void associate_rovers_to_routes(ViewModelCallback<String> callback_for_toast) {
+        repository.associate_rovers_to_routes(callback_for_toast);
+    }
 }

@@ -140,6 +140,7 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
         view_binding.computeRoutineButton.setOnClickListener(v -> view_model.start_rover_routes_computation());
 
         view_binding.acceptRoverRoutineButton.setOnClickListener(v -> {
+            view_model.associate_rovers_to_routes(this::show_toast);
             NavDirections action = RoverRouteFragmentDirections.actionRoverRouteFragmentToRoverStatusFragment();
             RoverRouteFragment parentFragment = (RoverRouteFragment) getParentFragment();
             if (parentFragment != null) {

@@ -441,4 +441,32 @@ public class Repository {
     public LiveData<Integer> get_num_of_rovers_livedata() {
         return roverDAO.get_num_rovers_livedata();
     }
+
+    public void associate_rovers_to_routes(ViewModelCallback<String> callback_for_toast) {
+        executor.execute(() -> {
+            List<Rover> all_rovers = roverDAO.getAll();
+            List<RoverRoute> all_rover_routes = roverRouteDAO.getAllRoverRoutes();
+
+            int index_of_todo_routes = 0;
+            int index_of_next_rover = 0;
+            while(index_of_todo_routes < all_rover_routes.size() && index_of_next_rover < all_rovers.size()) {
+                RoverRoute current_route = all_rover_routes.get(index_of_todo_routes);
+                Rover current_rover = all_rovers.get(index_of_next_rover);
+
+                if (current_rover.is_used && current_rover.status == RoverStatus.CONNECTED) {
+                    current_route.corresponding_rover_id = current_rover.rover_id;
+                    roverRouteDAO.update(current_route);
+                    index_of_todo_routes++;
+                } else if (current_rover.is_used) {
+                    current_rover.is_used = false;
+                    roverDAO.update(current_rover);
+                }
+                index_of_next_rover++;
+            }
+
+            if (index_of_todo_routes < all_rover_routes.size()) {
+                callback_for_toast.onComplete("Not enough rovers selected & connected! This may result in not every target being reached...");
+            }
+        });
+    }
 }
