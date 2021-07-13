@@ -30,17 +30,15 @@ public class RoverStatusRecyclerAdapter extends RecyclerView.Adapter<RoverStatus
             view_binding = RoverStatusRowItemBinding.bind(itemView);
         }
 
-        public TextView getRoverIDText() {
-            return view_binding.roverItemId;
+        public TextView getRoverNameAndIdText() {
+            return view_binding.roverNameAndIdContent;
         }
 
-        public TextView getRoverNameText() {
-            return view_binding.roverName;
-        }
+        public TextView getStatus() { return view_binding.roverConnectionContent; }
 
-        public TextView getStatus() { return view_binding.roverStatus; }
+        public TextView getProgress() { return view_binding.roverProgressContent; }
 
-        public TextView getProgress() { return view_binding.roverProgress; }
+        public TextView getBattery() { return view_binding.roverBatteryContent; }
     }
 
     @NonNull
@@ -53,10 +51,10 @@ public class RoverStatusRecyclerAdapter extends RecyclerView.Adapter<RoverStatus
     @Override
     public void onBindViewHolder(@NonNull RoverStatusRecyclerAdapter.RoverStatusViewHolder holder, int position) {
         Rover rover = localRoverSet.get(position);
-        holder.getRoverIDText().setText(String.format("%d", rover.rover_id));
-        holder.getRoverNameText().setText(rover.roverName);
-        holder.getStatus().setText(rover.status.toString());
-        holder.getProgress().setText(String.format("%d%%", (int) Math.round(rover.progress * 100)));
+        holder.getRoverNameAndIdText().setText(rover.roverName+" (ID: "+rover.rover_id+")");
+        holder.getStatus().setText("Status:\t\t"+rover.status.toString());
+        holder.getProgress().setText(String.format("Progress:\t\t%d%%", (int) Math.round(rover.progress * 100)));
+        holder.getBattery().setText("Battery:\t\t"+rover.battery+"%");
     }
 
     @Override

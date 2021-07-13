@@ -214,6 +214,10 @@ public class Repository {
         return roverDAO.getAllLiveData();
     }
 
+    public LiveData<List<Rover>> getUsedRovers(){
+        return roverDAO.getUsedRoversLiveData();
+    }
+
     public void setCurrentRovers(List<Rover> currentRovers) {
         executor.execute(() -> {
             roverDAO.deleteAllRovers();
