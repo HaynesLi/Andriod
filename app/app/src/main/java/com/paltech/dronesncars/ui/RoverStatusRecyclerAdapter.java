@@ -17,17 +17,24 @@ import java.util.List;
 public class RoverStatusRecyclerAdapter extends RecyclerView.Adapter<RoverStatusRecyclerAdapter.RoverStatusViewHolder> {
 
     private List<Rover> localRoverSet;
+    private OnRoverStatusItemClickedListener clicked_listener;
 
-    public RoverStatusRecyclerAdapter(List<Rover> rover_set) {
+    public RoverStatusRecyclerAdapter(List<Rover> rover_set, OnRoverStatusItemClickedListener clicked_listener) {
         this.localRoverSet = rover_set;
+        this.clicked_listener = clicked_listener;
     }
 
-    public static class RoverStatusViewHolder extends RecyclerView.ViewHolder {
+    public static class RoverStatusViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         RoverStatusRowItemBinding view_binding;
+        OnRoverStatusItemClickedListener clicked_listener;
+        private Rover rover;
 
-        public RoverStatusViewHolder(@NonNull View itemView) {
+        public RoverStatusViewHolder(@NonNull View itemView, OnRoverStatusItemClickedListener clicked_listener) {
             super(itemView);
+            this.clicked_listener = clicked_listener;
+            this.rover = null;
             view_binding = RoverStatusRowItemBinding.bind(itemView);
+            itemView.setOnClickListener(this);
         }
 
         public TextView getRoverNameAndIdText() {
@@ -38,14 +45,28 @@ public class RoverStatusRecyclerAdapter extends RecyclerView.Adapter<RoverStatus
 
         public TextView getProgress() { return view_binding.roverProgressContent; }
 
-        public TextView getBattery() { return view_binding.roverBatteryContent; }
+        public TextView getProgress() { return view_binding.roverProgress; }
+
+        public void setRover(Rover rover) {
+            this.rover = rover;
+        }
+
+        public Rover getRover() {
+            return this.rover;
+        }
+
+        @Override
+        public void onClick(View v) {
+            clicked_listener.onRoverStatusItemClicked(this.rover);
+        }
     }
 
     @NonNull
     @Override
     public RoverStatusViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.rover_status_row_item, parent, false);
-        return new RoverStatusViewHolder(view);
+
+        return new RoverStatusViewHolder(view, clicked_listener);
     }
 
     @Override
@@ -65,5 +86,9 @@ public class RoverStatusRecyclerAdapter extends RecyclerView.Adapter<RoverStatus
     public void setLocalRoverSet(List<Rover> roverSet) {
         this.localRoverSet = roverSet;
         notifyDataSetChanged();
+    }
+
+    public interface OnRoverStatusItemClickedListener {
+        void onRoverStatusItemClicked(Rover clicked_rover);
     }
 }

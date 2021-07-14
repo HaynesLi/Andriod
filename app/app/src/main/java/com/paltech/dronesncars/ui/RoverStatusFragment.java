@@ -1,6 +1,7 @@
 package com.paltech.dronesncars.ui;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentRoverStatusBinding;
+import com.paltech.dronesncars.model.Rover;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -24,7 +26,7 @@ import java.util.Timer;
  * Use the {@link RoverStatusFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBinding, RoverStatusViewModel> {
+public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBinding, RoverStatusViewModel> implements RoverStatusRecyclerAdapter.OnRoverStatusItemClickedListener {
 
     FragmentRoverStatusBinding view_binding;
     RoverStatusViewModel view_model;
@@ -100,7 +102,7 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
         view_binding.roverStatusRecyclerView.setLayoutManager(mLayoutManager);
         view_binding.roverStatusRecyclerView.scrollToPosition(0);
 
-        roverStatusAdapter = new RoverStatusRecyclerAdapter(new ArrayList<>());
+        roverStatusAdapter = new RoverStatusRecyclerAdapter(new ArrayList<>(), this);
         view_binding.roverStatusRecyclerView.setAdapter(roverStatusAdapter);
     }
 
@@ -116,5 +118,13 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
             NavHostFragment.findNavController(this).navigate(action);
         });
         view_binding.buttonMockProgressUpdate.setOnClickListener(v -> view_model.mock_progress_update());
+    }
+
+    @Override
+    public void onRoverStatusItemClicked(Rover clicked_rover) {
+        if (clicked_rover != null) {
+            Log.d("RoverStatusItem", "onRoverStatusItemClicked: rover " + clicked_rover.roverName + " was clicked");
+            // TODO
+        }
     }
 }
