@@ -20,13 +20,15 @@ public class RoverConnection {
 
     private Repository repository;
     private Executor executor;
+    private boolean wasCalledInStatusFragment;
 
     public RoverConnection(Repository repository, Executor executor){
         this.repository = repository;
         this.executor = executor;
     }
 
-    public Timer updateAllRoversContinuously(int secondsBetweenUpdate){
+    public Timer updateAllRoversContinuously(int secondsBetweenUpdate, boolean wasCalledInStatusFragment){
+        this.wasCalledInStatusFragment = wasCalledInStatusFragment;
         int delay = 0;
         int period = secondsBetweenUpdate*1000;
         Timer timer = new Timer();
@@ -65,7 +67,9 @@ public class RoverConnection {
                     rover.status = RoverStatus.CONNECTED;
                 }else{
                     rover.status = RoverStatus.DISCONNECTED;
-                    rover.is_used = false;
+                    if(!wasCalledInStatusFragment) {
+                        rover.is_used = false;
+                    }
                 }
                 executor.execute(()->{
                     repository.updateRover(rover);
@@ -75,7 +79,9 @@ public class RoverConnection {
             @Override
             public void onFailure(Call<RoverUpdateModel> call, Throwable t) {
                 rover.status = RoverStatus.DISCONNECTED;
-                rover.is_used = false;
+                if(!wasCalledInStatusFragment) {
+                    rover.is_used = false;
+                }
                 executor.execute(()->{
                     repository.updateRover(rover);
                 });

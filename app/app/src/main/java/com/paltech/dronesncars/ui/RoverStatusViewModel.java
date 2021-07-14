@@ -25,7 +25,7 @@ public class RoverStatusViewModel extends ViewModel {
     public LiveData<List<Rover>> getUsedRovers() { return this.repository.getUsedRovers(); }
 
     public Timer startRoverUpdates(){
-        return repository.updateAllRoversContinuously(10);
+        return repository.updateAllRoversContinuously(10, true);
     }
 
     @Inject

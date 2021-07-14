@@ -91,8 +91,8 @@ public class Repository {
         roverDAO.update(rover);
     }
 
-    public Timer updateAllRoversContinuously(int secondsBetweenUpdate){
-       return roverConnection.updateAllRoversContinuously(secondsBetweenUpdate);
+    public Timer updateAllRoversContinuously(int secondsBetweenUpdate, boolean wasCalledInStatusFragment){
+       return roverConnection.updateAllRoversContinuously(secondsBetweenUpdate, wasCalledInStatusFragment);
     }
 
     public List<Rover> getRovers() {
