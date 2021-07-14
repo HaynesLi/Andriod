@@ -45,7 +45,7 @@ public class RoverStatusRecyclerAdapter extends RecyclerView.Adapter<RoverStatus
 
         public TextView getProgress() { return view_binding.roverProgressContent; }
 
-        public TextView getProgress() { return view_binding.roverProgress; }
+        public TextView getBattery() { return view_binding.roverBatteryContent; }
 
         public void setRover(Rover rover) {
             this.rover = rover;
@@ -76,6 +76,7 @@ public class RoverStatusRecyclerAdapter extends RecyclerView.Adapter<RoverStatus
         holder.getStatus().setText("Status:\t\t"+rover.status.toString());
         holder.getProgress().setText(String.format("Progress:\t\t%d%%", (int) Math.round(rover.progress * 100)));
         holder.getBattery().setText("Battery:\t\t"+rover.battery+"%");
+        holder.setRover(rover);
     }
 
     @Override
