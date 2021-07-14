@@ -28,6 +28,9 @@ public interface RoverDAO {
     @Query("SELECT * FROM rover")
     LiveData<List<Rover>> getAllLiveData();
 
+    @Query("SELECT * FROM rover WHERE is_used = 1")
+    LiveData<List<Rover>> getUsedRoversLiveData();
+
     @Query("SELECT * FROM rover WHERE rover_id = (:rid)")
     Rover getRoverByID(int rid);
 

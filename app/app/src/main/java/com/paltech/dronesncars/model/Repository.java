@@ -91,8 +91,8 @@ public class Repository {
         roverDAO.update(rover);
     }
 
-    public Timer updateAllRoversContinuously(int secondsBetweenUpdate){
-       return roverConnection.updateAllRoversContinuously(secondsBetweenUpdate);
+    public Timer updateAllRoversContinuously(int secondsBetweenUpdate, boolean wasCalledInStatusFragment){
+       return roverConnection.updateAllRoversContinuously(secondsBetweenUpdate, wasCalledInStatusFragment);
     }
 
     public List<Rover> getRovers() {
@@ -212,6 +212,10 @@ public class Repository {
 
     public LiveData<List<Rover>> getCurrentRovers() {
         return roverDAO.getAllLiveData();
+    }
+
+    public LiveData<List<Rover>> getUsedRovers(){
+        return roverDAO.getUsedRoversLiveData();
     }
 
     public void setCurrentRovers(List<Rover> currentRovers) {

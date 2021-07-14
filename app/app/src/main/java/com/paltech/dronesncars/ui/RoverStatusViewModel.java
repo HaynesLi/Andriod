@@ -7,6 +7,7 @@ import com.paltech.dronesncars.model.Repository;
 import com.paltech.dronesncars.model.Rover;
 
 import java.util.List;
+import java.util.Timer;
 
 import javax.inject.Inject;
 
@@ -19,6 +20,12 @@ public class RoverStatusViewModel extends ViewModel {
 
     public LiveData<List<Rover>> getAllRovers() {
         return this.repository.getCurrentRovers();
+    }
+
+    public LiveData<List<Rover>> getUsedRovers() { return this.repository.getUsedRovers(); }
+
+    public Timer startRoverUpdates(){
+        return repository.updateAllRoversContinuously(10, true);
     }
 
     @Inject

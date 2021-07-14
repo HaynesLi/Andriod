@@ -19,6 +19,7 @@ import com.paltech.dronesncars.databinding.FragmentRoverStatusBinding;
 import com.paltech.dronesncars.model.Rover;
 
 import java.util.ArrayList;
+import java.util.Timer;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,6 +30,7 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
 
     FragmentRoverStatusBinding view_binding;
     RoverStatusViewModel view_model;
+    Timer timer;
 
     private RoverStatusRecyclerAdapter roverStatusAdapter;
 
@@ -83,6 +85,18 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
         setListeners();
     }
 
+    @Override
+    public void onPause() {
+        timer.cancel();
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        timer = view_model.startRoverUpdates();
+    }
+
     private void init_rover_status_recycler_view() {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         view_binding.roverStatusRecyclerView.setLayoutManager(mLayoutManager);
@@ -94,7 +108,7 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
 
 
     private void setLiveDataSources() {
-        view_model.getAllRovers().observe(getViewLifecycleOwner(),
+        view_model.getUsedRovers().observe(getViewLifecycleOwner(),
                 rovers -> roverStatusAdapter.setLocalRoverSet(rovers));
     }
 

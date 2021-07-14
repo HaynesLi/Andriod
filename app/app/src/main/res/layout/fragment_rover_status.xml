@@ -25,10 +25,22 @@
             android:id="@+id/rover_status_recycler_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/rover_milestone_recycler_view"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/button_mock_progress_update"
             app:layout_constraintBottom_toTopOf="@+id/bottom_guideline_recycler_view"
+            app:layout_constrainedHeight="true"
+            app:layout_constraintHorizontal_chainStyle="spread"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rover_milestone_recycler_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@+id/rover_status_recycler_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/rover_status_recycler_view"
+            app:layout_constraintBottom_toBottomOf="@+id/rover_status_recycler_view"
+            app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constrainedHeight="true"/>
 
         <Button

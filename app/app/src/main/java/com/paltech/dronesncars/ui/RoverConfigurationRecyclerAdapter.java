@@ -67,8 +67,8 @@ public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<Rove
     @Override
     public void onBindViewHolder(@NonNull @NotNull RoverConfigurationRecyclerAdapter.RoverConfigurationViewHolder holder, int position) {
         Rover rover = local_rover_set.get(position);
-        holder.get_rover_id_text().setText(String.format("%d", rover.rover_id));
-        holder.get_rover_name().setText(rover.roverName);
+        holder.get_rover_battery_info().setText("Battery:\t\t"+rover.battery+"%");
+        holder.get_rover_name_and_id().setText(rover.roverName+" (ID: "+rover.rover_id+")");
         holder.get_rover_used_checkbox().setChecked(rover.is_used);
         set_listeners(rover, holder);
         if (editable) {
@@ -105,13 +105,11 @@ public class RoverConfigurationRecyclerAdapter extends RecyclerView.Adapter<Rove
             view_binding = RoverConfigurationRowItemBinding.bind(item_view);
         }
 
-        public TextView get_rover_name() {
-            return view_binding.roverNameContent;
+        public TextView get_rover_name_and_id() {
+            return view_binding.roverNameAndIdContent;
         }
 
-        public TextView get_rover_id_text() {
-            return view_binding.roverIdContent;
-        }
+        public TextView get_rover_battery_info(){ return view_binding.roverBatteryContent;}
 
         public CheckBox get_rover_used_checkbox() { return view_binding.checkBoxUseThisRover; }
 

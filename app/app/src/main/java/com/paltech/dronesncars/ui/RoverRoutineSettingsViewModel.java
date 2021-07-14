@@ -33,7 +33,7 @@ public class RoverRoutineSettingsViewModel extends ViewModel {
     }
 
     public Timer startRoverUpdates(){
-        return repository.updateAllRoversContinuously(10);
+        return repository.updateAllRoversContinuously(10, false);
     }
 
     public void add_Rover(String rover_name, InetAddress inet_address, ViewModelCallback<String> callback) {
