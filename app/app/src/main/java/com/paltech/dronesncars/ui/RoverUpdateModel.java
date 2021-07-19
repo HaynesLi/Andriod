@@ -2,12 +2,17 @@ package com.paltech.dronesncars.ui;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.osmdroid.util.GeoPoint;
+
 public class RoverUpdateModel {
     @SerializedName("battery")
     private int battery;
 
-    @SerializedName("position")
-    private String position;
+    @SerializedName("latitude")
+    private Float latitude;
+
+    @SerializedName("longitude")
+    private Float longitude;
 
     @SerializedName("mission")
     private String mission;
@@ -19,8 +24,12 @@ public class RoverUpdateModel {
         return this.battery;
     }
 
-    public String getPosition(){
-        return this.position;
+    public Float getLatitude(){
+        return this.latitude;
+    }
+
+    public Float getLongitude(){
+        return this.longitude;
     }
 
     public String getMission(){
