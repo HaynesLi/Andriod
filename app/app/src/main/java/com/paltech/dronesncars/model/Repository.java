@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.paltech.dronesncars.computing.FlightRouteGenerator;
 import com.paltech.dronesncars.computing.VRP_Wrapper;
@@ -472,5 +473,9 @@ public class Repository {
                 callback_for_toast.onComplete("Not enough rovers selected & connected! This may result in not every target being reached...");
             }
         });
+    }
+
+    public MutableLiveData<Rover> get_livedata_observed_rover(Rover observed_rover) {
+        return roverDAO.get_rover_by_id_mutable_livedata(observed_rover.rover_id);
     }
 }

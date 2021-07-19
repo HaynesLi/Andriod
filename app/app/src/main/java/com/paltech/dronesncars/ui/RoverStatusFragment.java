@@ -30,6 +30,7 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
 
     FragmentRoverStatusBinding view_binding;
     RoverStatusViewModel view_model;
+    MapViewModel map_view_model;
     Timer timer;
 
     private RoverStatusRecyclerAdapter roverStatusAdapter;
@@ -79,6 +80,7 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
 
         view_binding = get_view_binding(view);
         view_model = get_view_model();
+        map_view_model = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
 
         init_rover_status_recycler_view();
         setLiveDataSources();
@@ -124,7 +126,7 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
     public void onRoverStatusItemClicked(Rover clicked_rover) {
         if (clicked_rover != null) {
             Log.d("RoverStatusItem", "onRoverStatusItemClicked: rover " + clicked_rover.roverName + " was clicked");
-            // TODO
+            map_view_model.set_status_observed_rover(clicked_rover);
         }
     }
 }
