@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.paltech.dronesncars.ui.RoverUpdateModel;
 
+import org.osmdroid.util.GeoPoint;
+
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -61,7 +63,7 @@ public class RoverConnection {
             public void onResponse(Call<RoverUpdateModel> call, Response<RoverUpdateModel> response) {
                 if(response.isSuccessful()){
                     rover.battery = response.body().getBattery();
-                    rover.position = response.body().getPosition();
+                    rover.position = new GeoPoint(response.body().getLatitude(), response.body().getLongitude());
                     rover.currentWaypoint = response.body().getCurrentWaypoint();
                     rover.mission = response.body().getMission();
                     rover.status = RoverStatus.CONNECTED;
