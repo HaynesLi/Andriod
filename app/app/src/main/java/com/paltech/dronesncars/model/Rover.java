@@ -19,8 +19,14 @@ public class Rover {
     @ColumnInfo(name = "ip_address")
     public InetAddress ip_address;
 
+    @ColumnInfo(name = "latitude")
+    public Float latitude;
+
+    @ColumnInfo(name = "longitude")
+    public Float longitude;
+
     @ColumnInfo(name = "position")
-    public String position;
+    public GeoPoint position;
 
     @ColumnInfo(name = "rover_name")
     public String roverName;
