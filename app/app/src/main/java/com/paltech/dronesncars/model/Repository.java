@@ -475,7 +475,7 @@ public class Repository {
         });
     }
 
-    public MutableLiveData<Rover> get_livedata_observed_rover(Rover observed_rover) {
+    public LiveData<Rover> get_livedata_observed_rover(Rover observed_rover) {
         return roverDAO.get_rover_by_id_mutable_livedata(observed_rover.rover_id);
     }
 }

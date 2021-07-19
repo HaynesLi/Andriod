@@ -73,9 +73,7 @@ public class RoverConnection {
                         rover.is_used = false;
                     }
                 }
-                executor.execute(()->{
-                    repository.updateRover(rover);
-                });
+                executor.execute(()-> repository.updateRover(rover));
             }
 
             @Override
@@ -84,9 +82,8 @@ public class RoverConnection {
                 if(!wasCalledInStatusFragment) {
                     rover.is_used = false;
                 }
-                executor.execute(()->{
-                    repository.updateRover(rover);
-                });
+                executor.execute(()-> repository.updateRover(rover));
+                Log.d("RoverConnection", "onFailure: "+t.getMessage());
             }
         });
     }

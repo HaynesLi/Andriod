@@ -36,7 +36,7 @@ public interface RoverDAO {
     Rover getRoverByID(int rid);
 
     @Query("SELECT * FROM rover WHERE rover_id = (:rid)")
-    MutableLiveData<Rover> get_rover_by_id_mutable_livedata(int rid);
+    LiveData<Rover> get_rover_by_id_mutable_livedata(int rid);
 
     @Insert
     void insertMultipleRovers(Rover... rovers);
