@@ -64,7 +64,12 @@ public class RoverConnection {
                 if(response.isSuccessful()){
                     rover.battery = response.body().getBattery();
                     rover.position = new GeoPoint(response.body().getLatitude(), response.body().getLongitude());
-                    rover.currentWaypoint = response.body().getCurrentWaypoint();
+                    if(wasCalledInStatusFragment){
+                        int current_waypoint = response.body().getCurrentWaypoint();
+                        for(;rover.currentWaypoint<current_waypoint;rover.currentWaypoint++){
+                            rover.waypoints.get(rover.currentWaypoint).milestone_completed = true;
+                        }
+                    }
                     rover.mission = response.body().getMission();
                     rover.status = RoverStatus.CONNECTED;
                 }else{
