@@ -461,8 +461,8 @@ public class Repository {
                     current_route.corresponding_rover_id = current_rover.rover_id;
                     roverRouteDAO.update(current_route);
                     current_rover.waypoints = new ArrayList<>();
-                    for(int i=1;i<current_route.route.size()+1;i++){
-                        current_rover.waypoints.add(new Waypoint(current_route.rover_route_id, i, current_route.route.get(i), false)); //is_navigation_point muss noch angepasst werden (nicht immer false)
+                    for(int i=0;i<current_route.route.size();i++){
+                        current_rover.waypoints.add(new Waypoint(current_route.rover_route_id, i+1, current_route.route.get(i), false)); //is_navigation_point muss noch angepasst werden (nicht immer false)
                     }
                     current_rover.mission = current_route.rover_route_id;
                     current_rover.currentWaypoint = 0;

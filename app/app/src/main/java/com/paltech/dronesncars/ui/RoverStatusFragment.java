@@ -158,7 +158,7 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
     @Override
     public void onRoverMilestonesItemClicked(Waypoint clicked_waypoint) {
         if (clicked_waypoint != null) {
-            Log.d("RoverMilestoneItem", "onRoverMilestoneItemClicked: rover " + clicked_waypoint.corresponding_route_id+":"+ clicked_waypoint.waypoint_number+ " was clicked");
+            Log.d("RoverMilestoneItem", "onRoverMilestoneItemClicked: waypoint " + clicked_waypoint.corresponding_route_id+":"+ clicked_waypoint.waypoint_number+ " was clicked");
             // TODO
         }
     }

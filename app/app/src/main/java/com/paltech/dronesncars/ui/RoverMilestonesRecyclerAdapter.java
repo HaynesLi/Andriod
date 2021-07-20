@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.RoverMilestonesRowItemBinding;
+import com.paltech.dronesncars.model.Rover;
 import com.paltech.dronesncars.model.Waypoint;
 
 import java.util.List;
@@ -43,6 +44,10 @@ public class RoverMilestonesRecyclerAdapter extends RecyclerView.Adapter<RoverMi
 
         public TextView getMilestoneLongitudeText() { return view_binding.milestoneLongitudeContent; }
 
+        public void setWaypoint(Waypoint waypoint) {
+            this.waypoint = waypoint;
+        }
+
         @Override
         public void onClick(View v) {
             clicked_listener.onRoverMilestonesItemClicked(this.waypoint);
@@ -63,6 +68,7 @@ public class RoverMilestonesRecyclerAdapter extends RecyclerView.Adapter<RoverMi
         holder.getMilestoneWaypointText().setText("Waypoint "+waypoint.waypoint_number);
         holder.getMilestoneLatitudeText().setText("Latitude:\t\t"+waypoint.position.getLatitude());
         holder.getMilestoneLongitudeText().setText("Longitude:\t\t"+waypoint.position.getLongitude());
+        holder.setWaypoint(waypoint);
     }
 
     @Override
