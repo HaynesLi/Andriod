@@ -1,10 +1,14 @@
 package com.paltech.dronesncars.ui;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -19,6 +23,8 @@ import com.paltech.dronesncars.databinding.FragmentRoverStatusBinding;
 import com.paltech.dronesncars.model.Rover;
 import com.paltech.dronesncars.model.Waypoint;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -159,7 +165,19 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
     public void onRoverMilestonesItemClicked(Waypoint clicked_waypoint) {
         if (clicked_waypoint != null) {
             Log.d("RoverMilestoneItem", "onRoverMilestoneItemClicked: waypoint " + clicked_waypoint.corresponding_route_id+":"+ clicked_waypoint.waypoint_number+ " was clicked");
-            // TODO
+            show_milestone_popUp(clicked_waypoint);
         }
+    }
+
+    private void show_milestone_popUp(Waypoint clicked_waypoint) {
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+        final View my_dialog_view = inflater.inflate(R.layout.milestone_popup, null);
+        final AlertDialog my_dialog = new AlertDialog.Builder(requireContext()).create();
+        my_dialog.setView(my_dialog_view);
+
+        TextView text = my_dialog_view.findViewById(R.id.textBsp);
+        text.setText(clicked_waypoint.corresponding_route_id+":"+ clicked_waypoint.waypoint_number);
+
+        my_dialog.show();
     }
 }
