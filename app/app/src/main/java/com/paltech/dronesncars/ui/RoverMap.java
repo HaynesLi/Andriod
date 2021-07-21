@@ -87,18 +87,29 @@ public class RoverMap extends MapFragment {
 
             if (observed_route != null) {
                 List<GeoPoint> route = observed_route.route;
+                GeoPoint position = observed_rover.position;
                 if (route != null && !route.isEmpty()) {
                     if (observed_rover.currentWaypoint > route.size()) {
                         clear_current_observed_route();
                     } else if (observed_rover.currentWaypoint == 0 || observed_rover.currentWaypoint == route.size()) {
                         clear_current_observed_route();
                         Polyline route_overlay = new Polyline();
-                        route_overlay.setPoints(route);
+                        List<GeoPoint> adjusted_route = new ArrayList<>(route);
+
                         if (observed_rover.currentWaypoint == 0) {
                             route_overlay.getOutlinePaint().setColor(Color.RED); // TODO is this red?
+                            if (position != null) {
+                                adjusted_route.add(position);
+                            }
                         } else {
+                            if (position != null) {
+                                adjusted_route.add(0, position);
+                            }
                             route_overlay.getOutlinePaint().setColor(Color.GREEN); // TODO is this paltech-green?
                         }
+
+
+                        route_overlay.setPoints(adjusted_route);
 
                         route_overlay.getOutlinePaint().setStrokeWidth(1);
 
@@ -107,23 +118,28 @@ public class RoverMap extends MapFragment {
                         view_binding.map.invalidate();
                     } else {
                         clear_current_observed_route();
-                        List<GeoPoint> driven = route.subList(0, observed_rover.currentWaypoint);
-                        List<GeoPoint> not_driven = route.subList(observed_rover.currentWaypoint+1, route.size()-1); // TODO do we need route.size() as ending boundary instead?
-                        GeoPoint position = observed_rover.position;
+                        List<GeoPoint> driven = new ArrayList<>(route.subList(0, observed_rover.currentWaypoint));
+                        List<GeoPoint> not_driven = new ArrayList<>(route.subList(observed_rover.currentWaypoint+1, route.size()-1)); // TODO do we need route.size() as ending boundary instead?
+
                         if (position != null) {
                             driven.add(position);
                             not_driven.add(0, position);
+                        } else {
+                            driven.add(not_driven.get(0));
                         }
 
                         Polyline driven_overlay = new Polyline();
                         driven_overlay.setPoints(driven);
-                        driven_overlay.getOutlinePaint().setColor(0x3f6b1c);
+                        driven_overlay.getOutlinePaint().setColor(Color.GREEN);
+                        driven_overlay.getOutlinePaint().setStrokeWidth(1);
 
                         Polyline not_driven_overlay = new Polyline();
                         not_driven_overlay.setPoints(not_driven);
-                        not_driven_overlay.getOutlinePaint().setColor(0xff0000);
+                        not_driven_overlay.getOutlinePaint().setColor(Color.RED);
+                        not_driven_overlay.getOutlinePaint().setStrokeWidth(1);
 
                         this.observed_rover_route.add(driven_overlay);
+
                         this.observed_rover_route.add(not_driven_overlay);
                         view_binding.map.getOverlayManager().addAll(observed_rover_route);
                         view_binding.map.invalidate();
