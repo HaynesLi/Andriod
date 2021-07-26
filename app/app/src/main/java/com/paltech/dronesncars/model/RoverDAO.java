@@ -1,6 +1,7 @@
 package com.paltech.dronesncars.model;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -34,6 +35,9 @@ public interface RoverDAO {
 
     @Query("SELECT * FROM rover WHERE rover_id = (:rid)")
     Rover getRoverByID(int rid);
+
+    @Query("SELECT * FROM rover WHERE rover_id = (:rid)")
+    LiveData<Rover> get_rover_by_id_mutable_livedata(int rid);
 
     @Insert
     void insertMultipleRovers(Rover... rovers);

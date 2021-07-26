@@ -3,11 +3,13 @@ package com.paltech.dronesncars.ui;
 import android.net.Uri;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.paltech.dronesncars.model.FlightRoute;
 import com.paltech.dronesncars.model.Repository;
+import com.paltech.dronesncars.model.Rover;
 import com.paltech.dronesncars.model.RoverRoute;
 
 import org.osmdroid.util.GeoPoint;
@@ -83,4 +85,18 @@ public class MapViewModel extends ViewModel {
 
     public LiveData<List<RoverRoute>> get_rover_routes() { return this.repository.get_rover_routes();}
 
+    /*private MutableLiveData<Rover> _status_observed_rover = new MutableLiveData<>();
+    public LiveData<Rover> status_observed_rover = _status_observed_rover;*/
+
+    MediatorLiveData<Rover> status_observed_rover = new MediatorLiveData<>();
+    private LiveData<Rover> observed_rover_source = null;
+
+    public void set_status_observed_rover(Rover clicked_rover) {
+        if (observed_rover_source != null) {
+            status_observed_rover.removeSource(observed_rover_source);
+        }
+        observed_rover_source = repository.get_livedata_observed_rover(clicked_rover);
+        this.status_observed_rover.setValue(null);
+        this.status_observed_rover.addSource(observed_rover_source, value -> status_observed_rover.setValue(value));
+    }
 }

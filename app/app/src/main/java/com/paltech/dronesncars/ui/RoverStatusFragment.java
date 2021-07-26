@@ -38,6 +38,7 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
 
     FragmentRoverStatusBinding view_binding;
     RoverStatusViewModel view_model;
+    MapViewModel map_view_model;
     Timer timer;
     Rover selected_rover;
 
@@ -89,6 +90,7 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
 
         view_binding = get_view_binding(view);
         view_model = get_view_model();
+        map_view_model = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
 
         init_rover_status_recycler_view();
         init_rover_milestones_recycler_view();
@@ -143,6 +145,7 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
     @Override
     public void onRoverStatusItemClicked(Rover clicked_rover) {
         if (clicked_rover != null) {
+            map_view_model.set_status_observed_rover(clicked_rover);
             List<Waypoint> waypoint_list = new ArrayList<>();
             if(clicked_rover.equals(selected_rover)){
                 selected_rover = null;
