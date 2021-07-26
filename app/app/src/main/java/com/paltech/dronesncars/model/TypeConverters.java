@@ -26,6 +26,7 @@ import java.util.List;
 public class TypeConverters {
 
     private static final Type GEOPOINT_LIST_TYPE = new TypeToken<ArrayList<GeoPoint>>() {}.getType();
+    private static final Type WAYPOINT_LIST_TYPE = new TypeToken<ArrayList<Waypoint>>() {}.getType();
     private static final Type GEOPOINT_LIST_LIST_TYPE = new TypeToken<ArrayList<ArrayList<GeoPoint>>>() {}.getType();
 
     @TypeConverter
@@ -44,6 +45,30 @@ public class TypeConverters {
             return "127.0.0.1";
         }
         return value.getHostAddress();
+    }
+
+    @TypeConverter
+    public String fromWaypointList(List<Waypoint> value) {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+
+        JsonSerializer<Waypoint> serializer = new WaypointJsonGenerator();
+        JsonSerializer<GeoPoint> geoPointJsonSerializer = new GeoPointJsonGenerator();
+        gsonBuilder.registerTypeAdapter(Waypoint.class, serializer);
+        gsonBuilder.registerTypeAdapter(GeoPoint.class, geoPointJsonSerializer);
+
+        return gsonBuilder.create().toJson(value);
+    }
+
+    @TypeConverter
+    public List<Waypoint> fromWaypointListString(String value) {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+
+        JsonDeserializer<Waypoint> deserializer = new WaypointJsonGenerator();
+        JsonDeserializer<GeoPoint> geoPointJsonDeserializer = new GeoPointJsonGenerator();
+        gsonBuilder.registerTypeAdapter(Waypoint.class, deserializer);
+        gsonBuilder.registerTypeAdapter(GeoPoint.class, geoPointJsonDeserializer);
+
+        return gsonBuilder.create().fromJson(value, WAYPOINT_LIST_TYPE);
     }
 
     @TypeConverter
@@ -156,6 +181,36 @@ public class TypeConverters {
             polygon_json.add("holes", context.serialize(src.getHoles()));
 
             return polygon_json;
+        }
+    }
+
+    private class WaypointJsonGenerator implements JsonSerializer<Waypoint>, JsonDeserializer<Waypoint> {
+        @Override
+        public Waypoint deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject waypoint_json = json.getAsJsonObject();
+            GeoPoint position = context.deserialize(waypoint_json.getAsJsonObject("position"), GeoPoint.class);
+            int corresponding_route_id = waypoint_json.get("corresponding_route_id").getAsInt();
+            boolean is_navigation_point = waypoint_json.get("is_navigation_point").getAsBoolean();
+            boolean milestone_completed = waypoint_json.get("milestone_completed").getAsBoolean();
+            int waypoint_number = waypoint_json.get("waypoint_number").getAsInt();
+
+            Waypoint waypoint = new Waypoint(corresponding_route_id, waypoint_number, position,is_navigation_point);
+            waypoint.milestone_completed = milestone_completed;
+
+            return waypoint;
+        }
+
+        @Override
+        public JsonElement serialize(Waypoint src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject waypoint_json = new JsonObject();
+
+            waypoint_json.add("position", context.serialize(src.position));
+            waypoint_json.add("corresponding_route_id", context.serialize(src.corresponding_route_id));
+            waypoint_json.add("is_navigation_point", context.serialize(src.is_navigation_point));
+            waypoint_json.add("milestone_completed", context.serialize(src.milestone_completed));
+            waypoint_json.add("waypoint_number", context.serialize(src.waypoint_number));
+
+            return waypoint_json;
         }
     }
 }

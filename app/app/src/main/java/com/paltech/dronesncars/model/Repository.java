@@ -461,7 +461,14 @@ public class Repository {
                 if (current_rover.is_used && current_rover.status == RoverStatus.CONNECTED) {
                     current_route.corresponding_rover_id = current_rover.rover_id;
                     roverRouteDAO.update(current_route);
+                    current_rover.waypoints = new ArrayList<>();
+                    for(int i=0;i<current_route.route.size();i++){
+                        current_rover.waypoints.add(new Waypoint(current_route.rover_route_id, i+1, current_route.route.get(i), false)); //is_navigation_point muss noch angepasst werden (nicht immer false)
+                    }
+                    current_rover.mission = current_route.rover_route_id;
+                    current_rover.currentWaypoint = 0;
                     index_of_todo_routes++;
+                    roverDAO.update(current_rover);
                 } else if (current_rover.is_used) {
                     current_rover.is_used = false;
                     roverDAO.update(current_rover);

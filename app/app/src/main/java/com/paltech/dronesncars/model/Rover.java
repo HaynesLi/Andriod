@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey;
 import org.osmdroid.util.GeoPoint;
 
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -38,7 +39,10 @@ public class Rover {
     public RoverStatus status;
 
     @ColumnInfo(name = "mission")
-    public String mission;
+    public int mission;
+
+    @ColumnInfo(name = "waypoints")
+    public List<Waypoint> waypoints;
 
     @ColumnInfo(name = "currentWaypoint")
     public int currentWaypoint;

@@ -1,10 +1,14 @@
 package com.paltech.dronesncars.ui;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -17,8 +21,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentRoverStatusBinding;
 import com.paltech.dronesncars.model.Rover;
+import com.paltech.dronesncars.model.Waypoint;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 
 /**
@@ -26,14 +34,16 @@ import java.util.Timer;
  * Use the {@link RoverStatusFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBinding, RoverStatusViewModel> implements RoverStatusRecyclerAdapter.OnRoverStatusItemClickedListener {
+public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBinding, RoverStatusViewModel> implements RoverStatusRecyclerAdapter.OnRoverStatusItemClickedListener, RoverMilestonesRecyclerAdapter.OnRoverMilestonesItemClickedListener {
 
     FragmentRoverStatusBinding view_binding;
     RoverStatusViewModel view_model;
     MapViewModel map_view_model;
     Timer timer;
+    Rover selected_rover;
 
     private RoverStatusRecyclerAdapter roverStatusAdapter;
+    private RoverMilestonesRecyclerAdapter roverMilestonesAdapter;
 
     public RoverStatusFragment() {
         // Required empty public constructor
@@ -83,6 +93,7 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
         map_view_model = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
 
         init_rover_status_recycler_view();
+        init_rover_milestones_recycler_view();
         setLiveDataSources();
         setListeners();
     }
@@ -108,6 +119,15 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
         view_binding.roverStatusRecyclerView.setAdapter(roverStatusAdapter);
     }
 
+    private void init_rover_milestones_recycler_view() {
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        view_binding.roverMilestoneRecyclerView.setLayoutManager(mLayoutManager);
+        view_binding.roverMilestoneRecyclerView.scrollToPosition(0);
+
+        roverMilestonesAdapter = new RoverMilestonesRecyclerAdapter(new ArrayList<>(),this);
+        view_binding.roverMilestoneRecyclerView.setAdapter(roverMilestonesAdapter);
+    }
+
 
     private void setLiveDataSources() {
         view_model.getUsedRovers().observe(getViewLifecycleOwner(),
@@ -125,8 +145,42 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
     @Override
     public void onRoverStatusItemClicked(Rover clicked_rover) {
         if (clicked_rover != null) {
-            Log.d("RoverStatusItem", "onRoverStatusItemClicked: rover " + clicked_rover.roverName + " was clicked");
             map_view_model.set_status_observed_rover(clicked_rover);
+            List<Waypoint> waypoint_list = new ArrayList<>();
+            if(clicked_rover.equals(selected_rover)){
+                selected_rover = null;
+                roverMilestonesAdapter.setLocalWaypointSet(waypoint_list);
+            }else {
+                this.selected_rover = clicked_rover;
+                Log.d("RoverStatusItem", "onRoverStatusItemClicked: rover " + clicked_rover.roverName + " was clicked");
+                for (int i = 0; i < clicked_rover.waypoints.size(); i++) {
+                    Waypoint waypoint = clicked_rover.waypoints.get(i);
+                    if (waypoint.milestone_completed && !waypoint.is_navigation_point) {
+                        waypoint_list.add(waypoint);
+                    }
+                }
+                roverMilestonesAdapter.setLocalWaypointSet(waypoint_list);
+            }
         }
+    }
+
+    @Override
+    public void onRoverMilestonesItemClicked(Waypoint clicked_waypoint) {
+        if (clicked_waypoint != null) {
+            Log.d("RoverMilestoneItem", "onRoverMilestoneItemClicked: waypoint " + clicked_waypoint.corresponding_route_id+":"+ clicked_waypoint.waypoint_number+ " was clicked");
+            show_milestone_popUp(clicked_waypoint);
+        }
+    }
+
+    private void show_milestone_popUp(Waypoint clicked_waypoint) {
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+        final View my_dialog_view = inflater.inflate(R.layout.milestone_popup, null);
+        final AlertDialog my_dialog = new AlertDialog.Builder(requireContext()).create();
+        my_dialog.setView(my_dialog_view);
+
+        TextView text = my_dialog_view.findViewById(R.id.textBsp);
+        text.setText(clicked_waypoint.corresponding_route_id+":"+ clicked_waypoint.waypoint_number);
+
+        my_dialog.show();
     }
 }

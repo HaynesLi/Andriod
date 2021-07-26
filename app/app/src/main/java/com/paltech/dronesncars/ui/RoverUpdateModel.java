@@ -15,7 +15,7 @@ public class RoverUpdateModel {
     private Float longitude;
 
     @SerializedName("mission")
-    private String mission;
+    private int mission;
 
     @SerializedName("currentWaypoint")
     private int currentWaypoint;
@@ -32,9 +32,7 @@ public class RoverUpdateModel {
         return this.longitude;
     }
 
-    public String getMission(){
-        return this.mission;
-    }
+    public int getMission(){ return this.mission; }
 
     public int getCurrentWaypoint(){
         return this.currentWaypoint;
