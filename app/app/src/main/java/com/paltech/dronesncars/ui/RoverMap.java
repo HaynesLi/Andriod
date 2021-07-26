@@ -111,7 +111,7 @@ public class RoverMap extends MapFragment {
 
                         route_overlay.setPoints(adjusted_route);
 
-                        route_overlay.getOutlinePaint().setStrokeWidth(1);
+                        route_overlay.getOutlinePaint().setStrokeWidth(2);
 
                         this.observed_rover_route.add(route_overlay);
                         view_binding.map.getOverlayManager().addAll(observed_rover_route);
@@ -131,12 +131,12 @@ public class RoverMap extends MapFragment {
                         Polyline driven_overlay = new Polyline();
                         driven_overlay.setPoints(driven);
                         driven_overlay.getOutlinePaint().setColor(Color.GREEN);
-                        driven_overlay.getOutlinePaint().setStrokeWidth(1);
+                        driven_overlay.getOutlinePaint().setStrokeWidth(2);
 
                         Polyline not_driven_overlay = new Polyline();
                         not_driven_overlay.setPoints(not_driven);
                         not_driven_overlay.getOutlinePaint().setColor(Color.RED);
-                        not_driven_overlay.getOutlinePaint().setStrokeWidth(1);
+                        not_driven_overlay.getOutlinePaint().setStrokeWidth(2);
 
                         this.observed_rover_route.add(driven_overlay);
 
