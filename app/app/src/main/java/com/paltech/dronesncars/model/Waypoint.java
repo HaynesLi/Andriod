@@ -2,7 +2,6 @@ package com.paltech.dronesncars.model;
 
 import org.osmdroid.util.GeoPoint;
 
-import java.net.InetAddress;
 import java.util.Objects;
 
 public class Waypoint {
@@ -17,11 +16,14 @@ public class Waypoint {
 
     public boolean milestone_completed;
 
-    public Waypoint(int corresponding_route_id, int waypoint_number, GeoPoint position, boolean is_navigation_point) {
+    public int mission_id;
+
+    public Waypoint(int corresponding_route_id, int waypoint_number, GeoPoint position, boolean is_navigation_point, int mission_id) {
         this.corresponding_route_id = corresponding_route_id;
         this.waypoint_number = waypoint_number;
         this.position = position;
         this.is_navigation_point = is_navigation_point;
+        this.mission_id = mission_id;
         this.milestone_completed = false;
 
     }

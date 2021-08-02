@@ -193,8 +193,9 @@ public class TypeConverters {
             boolean is_navigation_point = waypoint_json.get("is_navigation_point").getAsBoolean();
             boolean milestone_completed = waypoint_json.get("milestone_completed").getAsBoolean();
             int waypoint_number = waypoint_json.get("waypoint_number").getAsInt();
+            int mission_id = waypoint_json.get("mission_id").getAsInt();
 
-            Waypoint waypoint = new Waypoint(corresponding_route_id, waypoint_number, position,is_navigation_point);
+            Waypoint waypoint = new Waypoint(corresponding_route_id, waypoint_number, position,is_navigation_point, mission_id);
             waypoint.milestone_completed = milestone_completed;
 
             return waypoint;
@@ -209,6 +210,7 @@ public class TypeConverters {
             waypoint_json.add("is_navigation_point", context.serialize(src.is_navigation_point));
             waypoint_json.add("milestone_completed", context.serialize(src.milestone_completed));
             waypoint_json.add("waypoint_number", context.serialize(src.waypoint_number));
+            waypoint_json.add("mission_id", context.serialize(src.mission_id));
 
             return waypoint_json;
         }

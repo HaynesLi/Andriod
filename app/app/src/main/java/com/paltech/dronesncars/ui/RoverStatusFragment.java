@@ -1,6 +1,8 @@
 package com.paltech.dronesncars.ui;
 
 import android.app.AlertDialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,6 +26,7 @@ import com.paltech.dronesncars.databinding.FragmentRoverStatusBinding;
 import com.paltech.dronesncars.model.Rover;
 import com.paltech.dronesncars.model.Waypoint;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -152,7 +156,6 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
                 roverMilestonesAdapter.setLocalWaypointSet(waypoint_list);
             }else {
                 this.selected_rover = clicked_rover;
-                Log.d("RoverStatusItem", "onRoverStatusItemClicked: rover " + clicked_rover.roverName + " was clicked");
                 for (int i = 0; i < clicked_rover.waypoints.size(); i++) {
                     Waypoint waypoint = clicked_rover.waypoints.get(i);
                     if (waypoint.milestone_completed && !waypoint.is_navigation_point) {
@@ -167,7 +170,6 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
     @Override
     public void onRoverMilestonesItemClicked(Waypoint clicked_waypoint) {
         if (clicked_waypoint != null) {
-            Log.d("RoverMilestoneItem", "onRoverMilestoneItemClicked: waypoint " + clicked_waypoint.corresponding_route_id+":"+ clicked_waypoint.waypoint_number+ " was clicked");
             show_milestone_popUp(clicked_waypoint);
         }
     }
@@ -177,6 +179,26 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
         final View my_dialog_view = inflater.inflate(R.layout.milestone_popup, null);
         final AlertDialog my_dialog = new AlertDialog.Builder(requireContext()).create();
         my_dialog.setView(my_dialog_view);
+
+        String pathPicPrevious = requireContext().getFilesDir()+"/Milestones/Mission_"+clicked_waypoint.mission_id+"/Waypoint_"+clicked_waypoint.waypoint_number+"/previous.jpeg";
+        File imgFilePrevious = new  File(pathPicPrevious);
+        if(imgFilePrevious.exists()){
+            ImageView image = my_dialog_view.findViewById(R.id.picPrevious);
+            Bitmap myBitmap = BitmapFactory.decodeFile(imgFilePrevious.getAbsolutePath());
+            image.setImageBitmap(myBitmap);
+        }else{
+            Log.d("RoverStatusFragment", "File PicPrevious not found");
+        }
+
+        String pathPicAfter = requireContext().getFilesDir()+"/Milestones/Mission_"+clicked_waypoint.mission_id+"/Waypoint_"+clicked_waypoint.waypoint_number+"/after.jpeg";
+        File imgFileAfter = new  File(pathPicAfter);
+        if(imgFileAfter.exists()){
+            ImageView image = my_dialog_view.findViewById(R.id.picAfter);
+            Bitmap myBitmap = BitmapFactory.decodeFile(imgFileAfter.getAbsolutePath());
+            image.setImageBitmap(myBitmap);
+        }else{
+            Log.d("RoverStatusFragment", "File PicAfter not found");
+        }
 
         TextView text = my_dialog_view.findViewById(R.id.textBsp);
         text.setText(clicked_waypoint.corresponding_route_id+":"+ clicked_waypoint.waypoint_number);

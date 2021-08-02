@@ -58,7 +58,6 @@ public class RoverMilestonesRecyclerAdapter extends RecyclerView.Adapter<RoverMi
     @Override
     public RoverMilestonesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.rover_milestones_row_item, parent, false);
-
         return new RoverMilestonesViewHolder(view, clicked_listener);
     }
 
