@@ -485,4 +485,8 @@ public class Repository {
     public LiveData<Rover> get_livedata_observed_rover(Rover observed_rover) {
         return roverDAO.get_rover_by_id_mutable_livedata(observed_rover.rover_id);
     }
+
+    public Context getContext(){
+        return this.context;
+    }
 }

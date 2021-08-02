@@ -2,7 +2,6 @@ package com.paltech.dronesncars.model;
 
 import org.osmdroid.util.GeoPoint;
 
-import java.net.InetAddress;
 import java.util.Objects;
 
 public class Waypoint {
