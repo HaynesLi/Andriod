@@ -463,7 +463,7 @@ public class Repository {
                     roverRouteDAO.update(current_route);
                     current_rover.waypoints = new ArrayList<>();
                     for(int i=0;i<current_route.route.size();i++){
-                        current_rover.waypoints.add(new Waypoint(current_route.rover_route_id, i+1, current_route.route.get(i), false)); //is_navigation_point muss noch angepasst werden (nicht immer false)
+                        current_rover.waypoints.add(new Waypoint(current_route.rover_route_id, i+1, current_route.route.get(i), false, current_route.rover_route_id)); //is_navigation_point muss noch angepasst werden (nicht immer false)
                     }
                     current_rover.mission = current_route.rover_route_id;
                     current_rover.currentWaypoint = 0;

@@ -61,8 +61,7 @@ public class RoverConnection {
     }
 
     public void updateRover(Rover rover){
-        final String BASE_URL = "http://"+rover.ip_address.getHostAddress() + ":5000";
-        Log.d("ABC", BASE_URL);
+        final String BASE_URL = "http:/"+rover.ip_address.getHostAddress() + ":5000";
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -76,16 +75,19 @@ public class RoverConnection {
                     rover.position = new GeoPoint(response.body().getLatitude(), response.body().getLongitude());
                     rover.mission = response.body().getMission();
                     rover.status = RoverStatus.CONNECTED;
-                    if(wasCalledInStatusFragment){
-                        int current_waypoint = response.body().getCurrentWaypoint();
-                        for(;rover.currentWaypoint<current_waypoint;rover.currentWaypoint++){
-                            if(!rover.waypoints.get(rover.currentWaypoint).is_navigation_point) {
-                                getWaypointPicPrevious(rover.ip_address, rover.mission, rover.currentWaypoint);
-                                getWaypointPicAfter(rover.ip_address, rover.mission, rover.currentWaypoint);
-                                getWaypointInfo(rover.ip_address, rover.mission, rover.currentWaypoint);
+                    if(rover.waypoints != null && rover.waypoints.size() != 0) {
+                        if (wasCalledInStatusFragment) {
+                            int current_waypoint = response.body().getCurrentWaypoint();
+                            for (; rover.currentWaypoint < current_waypoint; rover.currentWaypoint++) {
+                                if (!rover.waypoints.get(rover.currentWaypoint).is_navigation_point) {
+                                    getWaypointPicPrevious(rover.ip_address, rover.mission, rover.currentWaypoint + 1);
+                                    getWaypointPicAfter(rover.ip_address, rover.mission, rover.currentWaypoint + 1);
+                                    getWaypointInfo(rover.ip_address, rover.mission, rover.currentWaypoint + 1);
+                                }
+                                rover.waypoints.get(rover.currentWaypoint).milestone_completed = true;
                             }
-                            rover.waypoints.get(rover.currentWaypoint).milestone_completed = true;
                         }
+                        rover.progress = (double) rover.currentWaypoint / (double) rover.waypoints.size();
                     }
                 }else{
                     rover.status = RoverStatus.DISCONNECTED;
@@ -109,7 +111,7 @@ public class RoverConnection {
     }
 
     public void getWaypointPicPrevious(InetAddress ip_address, int mission, int waypoint){
-        final String BASE_URL = "http://"+ip_address.getHostAddress() + ":5000";
+        final String BASE_URL = "http:/"+ip_address.getHostAddress() + ":5000";
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -119,8 +121,7 @@ public class RoverConnection {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if(response.isSuccessful()){
-                    String path = repository.getContext().getApplicationInfo().dataDir+"/Milestones/Mission_"+mission+"/Waypoint_"+waypoint+"/previous.jpeg";
-                    writeResponseBodyToDisk("", response.body());
+                    writeResponseBodyToDisk(mission,waypoint,"previous.jpeg", response.body());
                 }else{
                     Log.d("RoverConnection", "Response was not successful");
                 }
@@ -133,7 +134,7 @@ public class RoverConnection {
     }
 
     public void getWaypointPicAfter(InetAddress ip_address, int mission, int waypoint){
-        final String BASE_URL = "http://"+ip_address.getHostAddress() + ":5000";
+        final String BASE_URL = "http:/"+ip_address.getHostAddress() + ":5000";
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -143,8 +144,7 @@ public class RoverConnection {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if(response.isSuccessful()){
-                    String path = repository.getContext().getApplicationInfo().dataDir+"/Milestones/Mission_"+mission+"/Waypoint_"+waypoint+"/after.jpeg";
-                    writeResponseBodyToDisk("", response.body());
+                    writeResponseBodyToDisk(mission,waypoint,"after.jpeg", response.body());             //writeResponseBodyToDisk(path, response.body());
                 }else{
                     Log.d("RoverConnection", "Response was not successful");
                 }
@@ -157,7 +157,7 @@ public class RoverConnection {
     }
 
     public void getWaypointInfo(InetAddress ip_address, int mission, int waypoint){
-        final String BASE_URL = "http://"+ip_address.getHostAddress() + ":5000";
+        final String BASE_URL = "http:/"+ip_address.getHostAddress() + ":5000";
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -167,8 +167,7 @@ public class RoverConnection {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if(response.isSuccessful()){
-                    String path = repository.getContext().getApplicationInfo().dataDir+"/Milestones/Mission_"+mission+"/Waypoint_"+waypoint+"/waypointInfo.json";
-                    writeResponseBodyToDisk("", response.body());
+                    writeResponseBodyToDisk(mission,waypoint,"waypoint_data.json", response.body());                  //writeResponseBodyToDisk(path, response.body());
                 }else{
                     Log.d("RoverConnection", "Response was not successful");
                 }
@@ -181,7 +180,7 @@ public class RoverConnection {
     }
 
     public interface IGetJson {
-        @GET("/getJSON/")
+        @GET("/getJSON")
         Call<RoverUpdateModel> getJSON();
     }
 
@@ -198,10 +197,21 @@ public class RoverConnection {
         Call<ResponseBody> getWaypointInfo(@Path("missionId")int missionId, @Path("waypointNumber")int waypointNumber);
     }
 
-    private boolean writeResponseBodyToDisk(String path,ResponseBody body) {
+    private void checkDirectories(int mission, int waypoint){
+        String base_path = repository.getContext().getFilesDir()+"/Milestones/Mission_"+mission+"/Waypoint_"+waypoint;
+        File file = new File(base_path);
+        if(!file.exists()){
+            file.mkdirs();
+        }
+    }
+
+    private boolean writeResponseBodyToDisk(int mission, int waypoint, String filename,ResponseBody body) {
         try {
-            // todo change the file location/name according to your needs
+            checkDirectories(mission, waypoint);
+            String path = repository.getContext().getFilesDir()+"/Milestones/Mission_"+mission+"/Waypoint_"+waypoint+"/"+filename;
+            // todo change the file location/name according to your need
             File file = new File(path);
+
 
             InputStream inputStream = null;
             OutputStream outputStream = null;
@@ -225,8 +235,6 @@ public class RoverConnection {
                     outputStream.write(fileReader, 0, read);
 
                     fileSizeDownloaded += read;
-
-                    Log.d("RoverConnection", "file download: " + fileSizeDownloaded + " of " + fileSize);
                 }
 
                 outputStream.flush();
