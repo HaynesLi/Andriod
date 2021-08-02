@@ -118,8 +118,14 @@ public class RoverMap extends MapFragment {
                         view_binding.map.invalidate();
                     } else {
                         clear_current_observed_route();
-                        List<GeoPoint> driven = new ArrayList<>(route.subList(0, observed_rover.currentWaypoint));
-                        List<GeoPoint> not_driven = new ArrayList<>(route.subList(observed_rover.currentWaypoint+1, route.size()-1)); // TODO do we need route.size() as ending boundary instead?
+                        List<GeoPoint> driven = new ArrayList<>(route.subList(0, observed_rover.currentWaypoint-1));
+                        if (0 == observed_rover.currentWaypoint - 1) {
+                            driven.add(route.get(0));
+                        }
+                        List<GeoPoint> not_driven = new ArrayList<>(route.subList(observed_rover.currentWaypoint, route.size()-1)); // TODO do we need route.size() as ending boundary instead?
+                        if (observed_rover.currentWaypoint == route.size()-1) {
+                            not_driven.add(route.get(observed_rover.currentWaypoint));
+                        }
 
                         if (position != null) {
                             driven.add(position);
