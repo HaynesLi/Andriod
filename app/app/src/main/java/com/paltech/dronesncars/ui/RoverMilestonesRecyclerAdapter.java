@@ -1,5 +1,6 @@
 package com.paltech.dronesncars.ui;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class RoverMilestonesRecyclerAdapter extends RecyclerView.Adapter<RoverMilestonesRecyclerAdapter.RoverMilestonesViewHolder> {
@@ -49,7 +52,7 @@ public class RoverMilestonesRecyclerAdapter extends RecyclerView.Adapter<RoverMi
 
         public TextView getMilestoneWaypointText() { return view_binding.milestoneWaypointContent; }
 
-        public TextView getMilestoneLatitudeText() { return view_binding.milestoneLongitudeContent; }
+        public TextView getMilestoneLatitudeText() { return view_binding.milestoneLatitudeContent; }
 
         public TextView getMilestoneLongitudeText() { return view_binding.milestoneLongitudeContent; }
 
@@ -74,10 +77,23 @@ public class RoverMilestonesRecyclerAdapter extends RecyclerView.Adapter<RoverMi
     public void onBindViewHolder(@NonNull RoverMilestonesRecyclerAdapter.RoverMilestonesViewHolder holder, int position) {
         Waypoint waypoint = localWaypointSet.get(position);
         holder.getMilestoneWaypointText().setText("Waypoint "+waypoint.waypoint_number);
-        holder.getMilestoneLatitudeText().setText("Latitude:\t\t"+waypoint.position.getLatitude());
-        holder.getMilestoneLongitudeText().setText("Longitude:\t\t"+waypoint.position.getLongitude());
+        holder.getMilestoneLatitudeText().setText("Latitude:\t\t\t"+String.format("%.9g%n", waypoint.position.getLatitude()));
+        holder.getMilestoneLongitudeText().setText("Longitude:\t\t"+String.format("%.9g%n", waypoint.position.getLongitude()));
         holder.setWaypoint(waypoint);
-
+        String pathToWaypointData = holder.getLayoutMilestoneItem().getContext().getFilesDir()+"/Milestones/Mission_"+waypoint.mission_id+"/Waypoint_"+waypoint.waypoint_number+"/waypoint_data.json";
+        try {
+            byte[] encoded = Files.readAllBytes(Paths.get(pathToWaypointData));
+            String jsonString = new String(encoded, StandardCharsets.UTF_8);
+            JSONObject jsonObject = new JSONObject(jsonString);
+            String errors = jsonObject.getString("errors");
+            if(errors.equals("")){
+                holder.getLayoutMilestoneItem().setBackgroundResource(R.drawable.rectangle_green);
+            }else{
+                holder.getLayoutMilestoneItem().setBackgroundResource(R.drawable.rectangle_red);
+            }
+        } catch (IOException | JSONException e) {
+            holder.getLayoutMilestoneItem().setBackgroundResource(R.drawable.rectangle_red);
+        }
     }
 
     @Override

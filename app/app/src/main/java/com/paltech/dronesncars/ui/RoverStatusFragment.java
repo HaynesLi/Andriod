@@ -213,14 +213,17 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
         TextView timeText = my_dialog_view.findViewById(R.id.timeText);
         TextView confidenceText = my_dialog_view.findViewById(R.id.confidenceText);
         TextView depthText = my_dialog_view.findViewById(R.id.depthText);
+        TextView errorText = my_dialog_view.findViewById(R.id.errorText);
 
         String pathWaypointData = requireContext().getFilesDir()+"/Milestones/Mission_"+clicked_waypoint.mission_id+"/Waypoint_"+clicked_waypoint.waypoint_number+"/waypoint_data.json";
         try {
-            String jsonString = readFile(pathWaypointData, StandardCharsets.UTF_8);
+            byte[] encoded = Files.readAllBytes(Paths.get(pathWaypointData));
+            String jsonString = new String(encoded, StandardCharsets.UTF_8);
             JSONObject jsonObject = new JSONObject(jsonString);
             timeText.setText(jsonObject.getString("time_in_seconds"));
             confidenceText.setText(jsonObject.getString("confidence"));
             depthText.setText(jsonObject.getString("depth_in_cm"));
+            errorText.setText(jsonObject.getString("errors"));
 
         } catch (IOException | JSONException e) {
             e.printStackTrace();
@@ -234,12 +237,5 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
 
         my_dialog.show();
         my_dialog.getWindow().setLayout(832, 388);
-    }
-
-    static String readFile(String path, Charset encoding)
-            throws IOException
-    {
-        byte[] encoded = Files.readAllBytes(Paths.get(path));
-        return new String(encoded, encoding);
     }
 }
