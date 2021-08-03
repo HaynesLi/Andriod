@@ -94,6 +94,11 @@ public class MapViewModel extends ViewModel {
     public void set_status_observed_rover(Rover clicked_rover) {
         if (observed_rover_source != null) {
             status_observed_rover.removeSource(observed_rover_source);
+            if (observed_rover_source.getValue().equals(clicked_rover)) {
+                status_observed_rover.setValue(null);
+                observed_rover_source = null;
+                return;
+            }
         }
         observed_rover_source = repository.get_livedata_observed_rover(clicked_rover);
         this.status_observed_rover.setValue(null);

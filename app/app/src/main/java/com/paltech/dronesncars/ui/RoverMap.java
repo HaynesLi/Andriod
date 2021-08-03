@@ -152,6 +152,8 @@ public class RoverMap extends MapFragment {
                     }
                 }
             }
+        } else if (observed_rover == null) {
+            clear_current_observed_route();
         }
     }
 
