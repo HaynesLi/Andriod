@@ -1,8 +1,10 @@
 package com.paltech.dronesncars.ui;
 
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.RoverStatusRowItemBinding;
 import com.paltech.dronesncars.model.Rover;
+import com.paltech.dronesncars.model.RoverStatus;
 
 import java.util.List;
 
@@ -36,6 +39,8 @@ public class RoverStatusRecyclerAdapter extends RecyclerView.Adapter<RoverStatus
             view_binding = RoverStatusRowItemBinding.bind(itemView);
             itemView.setOnClickListener(this);
         }
+
+        public LinearLayout getLayoutStatusItem() { return view_binding.layoutStatusRowItem; }
 
         public TextView getRoverNameAndIdText() {
             return view_binding.roverNameAndIdContent;
@@ -76,6 +81,11 @@ public class RoverStatusRecyclerAdapter extends RecyclerView.Adapter<RoverStatus
         holder.getStatus().setText("Status:\t\t"+rover.status.toString());
         holder.getProgress().setText(String.format("Progress:\t\t%d%%", (int) Math.round(rover.progress * 100)));
         holder.getBattery().setText("Battery:\t\t"+rover.battery+"%");
+        if(rover.status == RoverStatus.DISCONNECTED){
+            holder.getLayoutStatusItem().setBackgroundResource(R.drawable.rectangle_red);
+        }else  {
+            holder.getLayoutStatusItem().setBackgroundResource(R.drawable.rectangle_green);
+        }
         holder.setRover(rover);
     }
 

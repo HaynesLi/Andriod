@@ -3,6 +3,7 @@ package com.paltech.dronesncars.ui;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,8 +12,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.RoverMilestonesRowItemBinding;
 import com.paltech.dronesncars.model.Rover;
+import com.paltech.dronesncars.model.RoverStatus;
 import com.paltech.dronesncars.model.Waypoint;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class RoverMilestonesRecyclerAdapter extends RecyclerView.Adapter<RoverMilestonesRecyclerAdapter.RoverMilestonesViewHolder> {
@@ -37,6 +44,8 @@ public class RoverMilestonesRecyclerAdapter extends RecyclerView.Adapter<RoverMi
             view_binding = RoverMilestonesRowItemBinding.bind(itemView);
             itemView.setOnClickListener(this);
         }
+
+        public LinearLayout getLayoutMilestoneItem() { return view_binding.layoutMilestonesRowItem; }
 
         public TextView getMilestoneWaypointText() { return view_binding.milestoneWaypointContent; }
 
@@ -68,6 +77,7 @@ public class RoverMilestonesRecyclerAdapter extends RecyclerView.Adapter<RoverMi
         holder.getMilestoneLatitudeText().setText("Latitude:\t\t"+waypoint.position.getLatitude());
         holder.getMilestoneLongitudeText().setText("Longitude:\t\t"+waypoint.position.getLongitude());
         holder.setWaypoint(waypoint);
+
     }
 
     @Override

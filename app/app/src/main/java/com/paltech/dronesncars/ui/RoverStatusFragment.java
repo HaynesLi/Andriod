@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -26,9 +27,18 @@ import com.paltech.dronesncars.databinding.FragmentRoverStatusBinding;
 import com.paltech.dronesncars.model.Rover;
 import com.paltech.dronesncars.model.Waypoint;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -200,9 +210,36 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
             Log.d("RoverStatusFragment", "File PicAfter not found");
         }
 
-        TextView text = my_dialog_view.findViewById(R.id.textBsp);
-        text.setText(clicked_waypoint.corresponding_route_id+":"+ clicked_waypoint.waypoint_number);
+        TextView timeText = my_dialog_view.findViewById(R.id.timeText);
+        TextView confidenceText = my_dialog_view.findViewById(R.id.confidenceText);
+        TextView depthText = my_dialog_view.findViewById(R.id.depthText);
+
+        String pathWaypointData = requireContext().getFilesDir()+"/Milestones/Mission_"+clicked_waypoint.mission_id+"/Waypoint_"+clicked_waypoint.waypoint_number+"/waypoint_data.json";
+        try {
+            String jsonString = readFile(pathWaypointData, StandardCharsets.UTF_8);
+            JSONObject jsonObject = new JSONObject(jsonString);
+            timeText.setText(jsonObject.getString("time_in_seconds"));
+            confidenceText.setText(jsonObject.getString("confidence"));
+            depthText.setText(jsonObject.getString("depth_in_cm"));
+
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        TextView waypointText = my_dialog_view.findViewById(R.id.waypointText);
+        waypointText.setText("Waypoint "+clicked_waypoint.waypoint_number);
+        TextView missionText = my_dialog_view.findViewById(R.id.missionText);
+        missionText.setText("Mission "+clicked_waypoint.mission_id);
 
         my_dialog.show();
+        my_dialog.getWindow().setLayout(832, 388);
+    }
+
+    static String readFile(String path, Charset encoding)
+            throws IOException
+    {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, encoding);
     }
 }

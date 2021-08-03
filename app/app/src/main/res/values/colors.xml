@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="paltech_green">#3f6b1c</color>
     <color name="paltech_light_green">#809c68</color>
+    <color name="red">#C1121C</color>
 </resources>
