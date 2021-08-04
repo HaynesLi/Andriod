@@ -1,7 +1,5 @@
 package com.paltech.dronesncars.model;
 
-import android.util.Log;
-
 import androidx.room.TypeConverter;
 
 import com.google.gson.GsonBuilder;
@@ -28,6 +26,19 @@ public class TypeConverters {
     private static final Type GEOPOINT_LIST_TYPE = new TypeToken<ArrayList<GeoPoint>>() {}.getType();
     private static final Type WAYPOINT_LIST_TYPE = new TypeToken<ArrayList<Waypoint>>() {}.getType();
     private static final Type GEOPOINT_LIST_LIST_TYPE = new TypeToken<ArrayList<ArrayList<GeoPoint>>>() {}.getType();
+    private static final Type STRING_LIST_TYPE = new TypeToken<ArrayList<String>>() {}.getType();
+
+    @TypeConverter
+    public List<String> from_String_to_String_List(String value) {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        return gsonBuilder.create().fromJson(value, STRING_LIST_TYPE);
+    }
+
+    @TypeConverter
+    public String from_String_List_to_String(List<String> string_list) {
+        GsonBuilder gson_builder = new GsonBuilder();
+        return gson_builder.create().toJson(string_list);
+    }
 
     @TypeConverter
     public InetAddress from_String_to_InetAddress(String value){
@@ -189,11 +200,11 @@ public class TypeConverters {
         public Waypoint deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject waypoint_json = json.getAsJsonObject();
             GeoPoint position = context.deserialize(waypoint_json.getAsJsonObject("position"), GeoPoint.class);
-            int corresponding_route_id = waypoint_json.get("corresponding_route_id").getAsInt();
+            String corresponding_route_id = waypoint_json.get("corresponding_route_id").getAsString();
             boolean is_navigation_point = waypoint_json.get("is_navigation_point").getAsBoolean();
             boolean milestone_completed = waypoint_json.get("milestone_completed").getAsBoolean();
             int waypoint_number = waypoint_json.get("waypoint_number").getAsInt();
-            int mission_id = waypoint_json.get("mission_id").getAsInt();
+            String mission_id = waypoint_json.get("mission_id").getAsString();
 
             Waypoint waypoint = new Waypoint(corresponding_route_id, waypoint_number, position,is_navigation_point, mission_id);
             waypoint.milestone_completed = milestone_completed;

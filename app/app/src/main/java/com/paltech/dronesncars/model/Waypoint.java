@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class Waypoint {
 
-    public int corresponding_route_id;
+    public String corresponding_route_id;
 
     public int waypoint_number;
 
@@ -16,9 +16,9 @@ public class Waypoint {
 
     public boolean milestone_completed;
 
-    public int mission_id;
+    public String mission_id;
 
-    public Waypoint(int corresponding_route_id, int waypoint_number, GeoPoint position, boolean is_navigation_point, int mission_id) {
+    public Waypoint(String corresponding_route_id, int waypoint_number, GeoPoint position, boolean is_navigation_point, String mission_id) {
         this.corresponding_route_id = corresponding_route_id;
         this.waypoint_number = waypoint_number;
         this.position = position;

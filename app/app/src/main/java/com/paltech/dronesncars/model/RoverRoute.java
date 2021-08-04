@@ -1,5 +1,6 @@
 package com.paltech.dronesncars.model;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
@@ -18,7 +19,9 @@ public class RoverRoute {
 
     @PrimaryKey
     @ColumnInfo(name = "rover_route_id")
-    public int rover_route_id;
+    @NonNull
+    public String rover_route_id;
+    // TODO id = yyyy-mm-dd_hh-mm
 
     @ColumnInfo(name = "corresponding_rover_id")
     public int corresponding_rover_id;
@@ -29,7 +32,7 @@ public class RoverRoute {
     @ColumnInfo(name = "routine_id")
     public int routine_id;
 
-    public RoverRoute(int rover_route_id, int corresponding_rover_id, List<GeoPoint> route, int routine_id) {
+    public RoverRoute(String rover_route_id, int corresponding_rover_id, List<GeoPoint> route, int routine_id) {
         this.rover_route_id = rover_route_id;
         this.corresponding_rover_id = corresponding_rover_id;
         this.route = route;

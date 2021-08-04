@@ -19,6 +19,7 @@ import org.osmdroid.views.overlay.Polyline;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RoverMap extends MapFragment {
 
@@ -78,7 +79,8 @@ public class RoverMap extends MapFragment {
     private void compute_new_observed_route_overlay() {
         if (rover_routes != null && !rover_routes.isEmpty() && observed_rover != null) {
             RoverRoute observed_route = null;
-            for (RoverRoute route : rover_routes) {
+            List<RoverRoute> current_rover_routes = rover_routes.stream().filter(rover_route -> rover_route_ids_in_routine.contains(rover_route.rover_route_id)).collect(Collectors.toList());
+            for (RoverRoute route : current_rover_routes) {
                 if (route.corresponding_rover_id == observed_rover.rover_id) {
                     observed_route = route;
                     break;

@@ -39,7 +39,7 @@ public class Rover {
     public RoverStatus status;
 
     @ColumnInfo(name = "mission")
-    public int mission;
+    public String mission;
 
     @ColumnInfo(name = "waypoints")
     public List<Waypoint> waypoints;

@@ -4,17 +4,14 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.paltech.dronesncars.computing.FlightRouteGenerator;
 import com.paltech.dronesncars.computing.VRP_Wrapper;
 import com.paltech.dronesncars.computing.WeedDetectorInterface;
 import com.paltech.dronesncars.computing.WeedDetectorMock;
-import com.paltech.dronesncars.ui.RoverUpdateModel;
 import com.paltech.dronesncars.ui.ViewModelCallback;
 
 import org.osmdroid.bonuspack.kml.KmlDocument;
@@ -25,27 +22,22 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.qualifiers.ApplicationContext;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.GET;
 
 public class Repository {
 
@@ -313,8 +305,12 @@ public class Repository {
         return resultDAO.get_all_results_livedata();
     }
 
-    public LiveData<List<RoverRoute>> get_rover_routes() {
+    public LiveData<List<RoverRoute>> get_current_rover_routes() {
         return roverRouteDAO.get_all_rover_routes_livedata();
+    }
+
+    public LiveData<RoverRoutine> get_rover_routine_livedata() {
+        return roverRoutineDAO.get_rover_routine_by_id_livedata(ROUTINE_ID);
     }
 
     public void mock_results() {
@@ -356,10 +352,6 @@ public class Repository {
             if(!targets.isEmpty() && num_of_rovers > 0) {
                 List<List<GeoPoint>> routes = VRP_Wrapper.get_routes_for_vehicles(num_of_rovers, targets);
 
-                if (!routes.isEmpty()) {
-                    roverRouteDAO.delete_rover_routes_by_routine_id(ROUTINE_ID);
-                }
-
                 insert_rover_routes(routes);
             }
         });
@@ -387,11 +379,48 @@ public class Repository {
     }
 
     private void insert_rover_routes(List<List<GeoPoint>> rover_routes) {
-        for (int rover_route_id = 0; rover_route_id < rover_routes.size(); rover_route_id++) {
-            List<GeoPoint> current_route = rover_routes.get(rover_route_id);
-            RoverRoute new_rover_route = new RoverRoute(rover_route_id, -1, current_route, ROUTINE_ID);
+        List<Rover> usable_rovers = roverDAO.getUsedRovers();
+        int next_usable_rover = 0;
+        DateTimeFormatter dt_formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
+        String date_string = dt_formatter.format(LocalDateTime.now());
+        if(usable_rovers != null && usable_rovers.size() > 0) {
+            List<String> new_rover_route_ids = new ArrayList<>();
+            List<RoverRoute> new_rover_routes = new ArrayList<>();
+            for (int rover_route_id = 0; rover_route_id < rover_routes.size(); rover_route_id++) {
+                List<GeoPoint> current_route = rover_routes.get(rover_route_id);
+                RoverRoute new_rover_route = new RoverRoute(date_string + "_" +rover_route_id, -1, current_route, ROUTINE_ID);
+                new_rover_route.corresponding_rover_id = usable_rovers.get(next_usable_rover).rover_id;
+                usable_rovers.get(next_usable_rover).mission = new_rover_route.rover_route_id;
+                roverDAO.update(usable_rovers.get(next_usable_rover));
+                if (next_usable_rover < usable_rovers.size()) {
+                    next_usable_rover++;
+                } else {
+                    break;
+                }
 
-            roverRouteDAO.insertMultiple(new_rover_route);
+                new_rover_route_ids.add(new_rover_route.rover_route_id);
+                new_rover_routes.add(new_rover_route);
+            }
+
+            //save new computed routes as currently available ones in rover routine
+            RoverRoutine roverRoutine = roverRoutineDAO.getRoverRoutineByID(ROUTINE_ID);
+            if (roverRoutine != null) {
+                roverRoutine.rover_route_ids = new_rover_route_ids;
+                roverRoutineDAO.update(roverRoutine);
+            } else {
+                roverRoutine = new RoverRoutine(ROUTINE_ID);
+                roverRoutine.rover_route_ids = new_rover_route_ids;
+                roverRoutineDAO.insert(roverRoutine);
+            }
+
+            for (RoverRoute new_rover_route: new_rover_routes) {
+                // this means if we compute new routes multiple times per second we overwrite the older ones from the same second
+                if (roverRouteDAO.get_rover_route_by_id(new_rover_route.rover_route_id) == null) {
+                    roverRouteDAO.insertMultiple(new_rover_route);
+                } else {
+                    roverRouteDAO.update(new_rover_route);
+                }
+            }
         }
     }
 
@@ -418,7 +447,6 @@ public class Repository {
             final List<Integer> roverIds = roverDAO.get_all_ids_not_livedata();
             final List<InetAddress> ip_adresses= roverDAO.get_all_ip_addresses_not_livedata();
             if(!ip_adresses.contains(ip_address)) {
-                //if(roverIds.getValue() != null) {
                 for (int i = 0; i < roverIds.size() + 1; i++) {
                     if (!roverIds.contains(i)) {
                         Rover rover = new Rover(i, ip_address);
@@ -428,7 +456,6 @@ public class Repository {
                         break;
                     }
                 }
-                //}
             }else{
                 callback.onComplete(ip_address.getHostAddress()+" is already used for rover with name: "+roverDAO.getRoverByIpAddress(ip_address).roverName);
             }
@@ -449,36 +476,32 @@ public class Repository {
 
     public void associate_rovers_to_routes(ViewModelCallback<String> callback_for_toast) {
         executor.execute(() -> {
-            List<Rover> all_rovers = roverDAO.getAll();
-            List<RoverRoute> all_rover_routes = roverRouteDAO.getAllRoverRoutes();
+            Map<Integer, Rover> used_rovers_dict = roverDAO.getUsedRovers().stream().collect(Collectors.toMap(rover -> rover.rover_id, rover -> rover));
+            List<String> current_rover_route_ids = roverRoutineDAO.getRoverRoutineByID(ROUTINE_ID).rover_route_ids;
+            List<RoverRoute> current_rover_routes = current_rover_route_ids.stream().map(roverRouteDAO::get_rover_route_by_id).collect(Collectors.toList());
 
-            int index_of_todo_routes = 0;
-            int index_of_next_rover = 0;
-            while(index_of_todo_routes < all_rover_routes.size() && index_of_next_rover < all_rovers.size()) {
-                RoverRoute current_route = all_rover_routes.get(index_of_todo_routes);
-                Rover current_rover = all_rovers.get(index_of_next_rover);
-
-                if (current_rover.is_used && current_rover.status == RoverStatus.CONNECTED) {
-                    current_route.corresponding_rover_id = current_rover.rover_id;
-                    roverRouteDAO.update(current_route);
-                    current_rover.waypoints = new ArrayList<>();
-                    for(int i=0;i<current_route.route.size();i++){
-                        current_rover.waypoints.add(new Waypoint(current_route.rover_route_id, i+1, current_route.route.get(i), false, current_route.rover_route_id)); //is_navigation_point muss noch angepasst werden (nicht immer false)
+            for(RoverRoute rover_route : current_rover_routes) {
+                if (used_rovers_dict.containsKey(rover_route.corresponding_rover_id)) {
+                    Rover used_rover = used_rovers_dict.get(rover_route.corresponding_rover_id);
+                    if (used_rover.status != RoverStatus.CONNECTED) {
+                        callback_for_toast.onComplete("A Rover initially destined for a route was not available! Computing new routes is advised.");
+                        return;
+                    } else {
+                        // TODO send mission to rover!
+                        used_rover.waypoints = new ArrayList<>();
+                        for (int i = 0; i < rover_route.route.size(); i++) {
+                            //TODO is_navigation_point muss noch angepasst werden (nicht immer false)
+                            used_rover.waypoints.add(new Waypoint(rover_route.rover_route_id, i+1, rover_route.route.get(i), false, rover_route.rover_route_id));
+                        }
+                        used_rover.mission = rover_route.rover_route_id;
+                        used_rover.currentWaypoint = 0;
+                        roverConnection.uploadMissionFile(used_rover, rover_route.route);
+                        roverDAO.update(used_rover);
                     }
-                    roverConnection.uploadMissionFile(current_rover, current_route.route);
-                    current_rover.mission = current_route.rover_route_id;
-                    current_rover.currentWaypoint = 0;
-                    index_of_todo_routes++;
-                    roverDAO.update(current_rover);
-                } else if (current_rover.is_used) {
-                    current_rover.is_used = false;
-                    roverDAO.update(current_rover);
+                } else {
+                    callback_for_toast.onComplete("A Rover selected for Route Computation is not destined to be used anymore! Computing new routes is advised.");
+                    return;
                 }
-                index_of_next_rover++;
-            }
-
-            if (index_of_todo_routes < all_rover_routes.size()) {
-                callback_for_toast.onComplete("Not enough rovers selected & connected! This may result in not every target being reached...");
             }
         });
     }

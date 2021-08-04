@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.osmdroid.util.GeoPoint;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class RouteDatabaseTest {
 
     @Test
     public void routeDatabaseTest() {
-        Rover rover = new Rover(1);
+        Rover rover = new Rover(1, InetAddress.getLoopbackAddress());
         RoverRoutine roverRoutine = new RoverRoutine(3, 1);
 
         List<GeoPoint> route = new ArrayList<>();
@@ -57,7 +58,7 @@ public class RouteDatabaseTest {
         route.add(new GeoPoint(48.30841764645962, 11.917242405117028));
         route.add(new GeoPoint(48.312927380430466, 11.894068121549093));
 
-        RoverRoute expected_roverRoute = new RoverRoute(rover.rover_id, 1, route,
+        RoverRoute expected_roverRoute = new RoverRoute("1", 1, route,
                 roverRoutine.rover_routine_id);
 
         roverDAO.insertMultipleRovers(rover);
@@ -78,8 +79,12 @@ public class RouteDatabaseTest {
 
     @Test
     public void routeRoverRelationshipDatabaseTest() {
-        Rover rover_1 = new Rover(1);
-        Rover rover_2 = new Rover(32);
+        Rover rover_1;
+        Rover rover_2;
+        InetAddress inet_address = InetAddress.getLoopbackAddress();
+        rover_1 = new Rover(1, inet_address);
+        rover_2 = new Rover(32, inet_address);
+
         RoverRoutine roverRoutine = new RoverRoutine(3, 1);
 
         List<GeoPoint> route = new ArrayList<>();
@@ -87,7 +92,7 @@ public class RouteDatabaseTest {
         route.add(new GeoPoint(48.30841764645962, 11.917242405117028));
         route.add(new GeoPoint(48.312927380430466, 11.894068121549093));
 
-        RoverRoute expected_roverRoute = new RoverRoute(1, rover_1.rover_id, route,
+        RoverRoute expected_roverRoute = new RoverRoute("1", rover_1.rover_id, route,
                 roverRoutine.rover_routine_id);
 
         roverDAO.insertMultipleRovers(rover_1, rover_2);

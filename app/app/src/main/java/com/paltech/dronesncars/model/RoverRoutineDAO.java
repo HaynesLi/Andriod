@@ -1,5 +1,6 @@
 package com.paltech.dronesncars.model;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -25,5 +26,8 @@ public interface RoverRoutineDAO {
 
     @Query("SELECT * FROM RoverRoutine WHERE rover_routine_id = (:rover_routine_id)")
     RoverRoutine getRoverRoutineByID(int rover_routine_id);
+
+    @Query("SELECT * FROM RoverRoutine WHERE rover_routine_id = (:rover_routine_id)")
+    LiveData<RoverRoutine> get_rover_routine_by_id_livedata(int rover_routine_id);
 
 }

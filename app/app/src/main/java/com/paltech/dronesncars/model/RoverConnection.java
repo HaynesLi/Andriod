@@ -125,7 +125,7 @@ public class RoverConnection {
         });
     }
 
-    public void getWaypointPicPrevious(InetAddress ip_address, int mission, int waypoint){
+    public void getWaypointPicPrevious(InetAddress ip_address, String mission, int waypoint){
         final String BASE_URL = "http:/"+ip_address.getHostAddress() + ":5000";
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -148,7 +148,7 @@ public class RoverConnection {
         });
     }
 
-    public void getWaypointPicAfter(InetAddress ip_address, int mission, int waypoint){
+    public void getWaypointPicAfter(InetAddress ip_address, String mission, int waypoint){
         final String BASE_URL = "http:/"+ip_address.getHostAddress() + ":5000";
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -171,7 +171,7 @@ public class RoverConnection {
         });
     }
 
-    public void getWaypointInfo(InetAddress ip_address, int mission, int waypoint){
+    public void getWaypointInfo(InetAddress ip_address, String mission, int waypoint){
         final String BASE_URL = "http:/"+ip_address.getHostAddress() + ":5000";
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -201,15 +201,15 @@ public class RoverConnection {
 
     public interface IGetPreviousPic {
         @GET("/getWaypointPicPrevious/{missionId}/{waypointNumber}")
-        Call<ResponseBody> getPreviousPic(@Path("missionId")int missionId, @Path("waypointNumber")int waypointNumber);
+        Call<ResponseBody> getPreviousPic(@Path("missionId")String missionId, @Path("waypointNumber")int waypointNumber);
     }
     public interface IGetAfterPic {
         @GET("/getWaypointPicAfter/{missionId}/{waypointNumber}")
-        Call<ResponseBody> getAfterPic(@Path("missionId")int missionId, @Path("waypointNumber")int waypointNumber);
+        Call<ResponseBody> getAfterPic(@Path("missionId")String missionId, @Path("waypointNumber")int waypointNumber);
     }
     public interface IGetWaypointInfo {
         @GET("/getWaypointInfo/{missionId}/{waypointNumber}")
-        Call<ResponseBody> getWaypointInfo(@Path("missionId")int missionId, @Path("waypointNumber")int waypointNumber);
+        Call<ResponseBody> getWaypointInfo(@Path("missionId")String missionId, @Path("waypointNumber")int waypointNumber);
     }
 
     public void uploadMissionFile(Rover rover, List<GeoPoint> list) {
@@ -283,7 +283,7 @@ public class RoverConnection {
         );
     }
 
-    private void checkDirectories(int mission, int waypoint){
+    private void checkDirectories(String mission, int waypoint){
         String base_path = repository.getContext().getFilesDir()+"/Milestones/Mission_"+mission+"/Waypoint_"+waypoint;
         File file = new File(base_path);
         if(!file.exists()){
@@ -291,7 +291,7 @@ public class RoverConnection {
         }
     }
 
-    private boolean writeResponseBodyToDisk(int mission, int waypoint, String filename,ResponseBody body) {
+    private boolean writeResponseBodyToDisk(String mission, int waypoint, String filename,ResponseBody body) {
         try {
             checkDirectories(mission, waypoint);
             String path = repository.getContext().getFilesDir()+"/Milestones/Mission_"+mission+"/Waypoint_"+waypoint+"/"+filename;
