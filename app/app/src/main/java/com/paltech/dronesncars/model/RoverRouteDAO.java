@@ -31,6 +31,12 @@ public interface RoverRouteDAO {
     @Query("SELECT * FROM RoverRoute WHERE routine_id = (:routine_id)")
     List<RoverRoute> findRoverRoutesForRoutine(int routine_id);
 
+    @Query("SELECT * FROM RoverRoute WHERE rover_route_id = (:rover_route_id)")
+    RoverRoute get_rover_route_by_id(String rover_route_id);
+
+    @Query("SELECT * FROM RoverRoute WHERE rover_route_id = (:rover_route_id)")
+    LiveData<RoverRoute> get_rover_route_by_id_livedata(String rover_route_id);
+
     @Transaction
     @Query("SELECT * FROM Rover")
     List<RoverAndRoute> getRoversAndRoutes();
@@ -39,7 +45,7 @@ public interface RoverRouteDAO {
     // TODO does this work like this?
     @Transaction
     @Query("SELECT * FROM Rover, RoverRoute where rover_id = corresponding_rover_id AND rover_route_id = (:rover_route_id)")
-    Rover getRoverForRoute(int rover_route_id);
+    Rover getRoverForRoute(String rover_route_id);
 
     @Query("DELETE FROM RoverRoute WHERE routine_id == (:routine_id)")
     void delete_rover_routes_by_routine_id(int routine_id);
