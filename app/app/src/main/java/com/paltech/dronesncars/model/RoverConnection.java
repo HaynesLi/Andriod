@@ -1,8 +1,5 @@
 package com.paltech.dronesncars.model;
 
-import android.net.InetAddresses;
-import android.net.Uri;
-import android.os.FileUtils;
 import android.util.Log;
 
 import com.paltech.dronesncars.ui.RoverUpdateModel;
@@ -13,16 +10,12 @@ import org.json.JSONObject;
 import org.osmdroid.util.GeoPoint;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Writer;
 import java.net.InetAddress;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executor;
@@ -88,7 +81,6 @@ public class RoverConnection {
                 if(response.isSuccessful()){
                     rover.battery = response.body().getBattery();
                     rover.position = new GeoPoint(response.body().getLatitude(), response.body().getLongitude());
-                    rover.mission = response.body().getMission();
                     rover.status = RoverStatus.CONNECTED;
                     if(rover.waypoints != null && rover.waypoints.size() != 0) {
                         if (wasCalledInStatusFragment) {
@@ -138,7 +130,7 @@ public class RoverConnection {
                 if(response.isSuccessful()){
                     writeResponseBodyToDisk(mission,waypoint,"previous.jpeg", response.body());
                 }else{
-                    Log.d("RoverConnection", "Response was not successful");
+                    Log.d("RoverConnection", "Response was not successful: failed to download previous.jpeg");
                 }
             }
             @Override
@@ -159,9 +151,9 @@ public class RoverConnection {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if(response.isSuccessful()){
-                    writeResponseBodyToDisk(mission,waypoint,"after.jpeg", response.body());             //writeResponseBodyToDisk(path, response.body());
+                    writeResponseBodyToDisk(mission,waypoint,"after.jpeg", response.body());
                 }else{
-                    Log.d("RoverConnection", "Response was not successful");
+                    Log.d("RoverConnection", "Response was not successful: failed to download after.jpeg");
                 }
             }
             @Override
@@ -182,9 +174,9 @@ public class RoverConnection {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if(response.isSuccessful()){
-                    writeResponseBodyToDisk(mission,waypoint,"waypoint_data.json", response.body());                  //writeResponseBodyToDisk(path, response.body());
+                    writeResponseBodyToDisk(mission,waypoint,"waypoint_data.json", response.body());
                 }else{
-                    Log.d("RoverConnection", "Response was not successful");
+                    Log.d("RoverConnection", "Response was not successful: failed to download waypoint_data.json");
                 }
             }
             @Override
