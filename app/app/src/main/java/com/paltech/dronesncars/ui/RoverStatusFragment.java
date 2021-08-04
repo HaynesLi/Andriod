@@ -226,7 +226,7 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
             errorText.setText(jsonObject.getString("errors"));
 
         } catch (IOException | JSONException e) {
-            e.printStackTrace();
+            Log.d("RoverStatusFragment", "Json File not found or not correct");
         }
 
 
