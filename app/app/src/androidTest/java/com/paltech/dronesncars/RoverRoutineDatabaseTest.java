@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.osmdroid.util.GeoPoint;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -51,7 +52,7 @@ public class RoverRoutineDatabaseTest {
 
     @Test
     public void roverRoutineDatabaseTest() {
-        Rover rover = new Rover(1);
+        Rover rover = new Rover(1, InetAddress.getLoopbackAddress());
         RoverRoutine expected_roverRoutine = new RoverRoutine(3, 1);
 
         List<GeoPoint> route = new ArrayList<>();
@@ -59,9 +60,9 @@ public class RoverRoutineDatabaseTest {
         route.add(new GeoPoint(48.30841764645962, 11.917242405117028));
         route.add(new GeoPoint(48.312927380430466, 11.894068121549093));
 
-        RoverRoute roverRoute_1 = new RoverRoute(1, rover.rover_id, route,
+        RoverRoute roverRoute_1 = new RoverRoute("1",rover.rover_id, route,
                 expected_roverRoutine.rover_routine_id);
-        RoverRoute roverRoute_2 = new RoverRoute(2, rover.rover_id, route,
+        RoverRoute roverRoute_2 = new RoverRoute("2", rover.rover_id, route,
                 expected_roverRoutine.rover_routine_id);
 
         roverDAO.insertMultipleRovers(rover);
@@ -76,7 +77,7 @@ public class RoverRoutineDatabaseTest {
 
     @Test
     public void roverRoutineRouteRelationshipDatabaseTest() {
-        Rover rover = new Rover(1);
+        Rover rover = new Rover(1, InetAddress.getLoopbackAddress());
         RoverRoutine expected_roverRoutine = new RoverRoutine(3, 1);
 
         List<GeoPoint> route = new ArrayList<>();
@@ -84,9 +85,9 @@ public class RoverRoutineDatabaseTest {
         route.add(new GeoPoint(48.30841764645962, 11.917242405117028));
         route.add(new GeoPoint(48.312927380430466, 11.894068121549093));
 
-        RoverRoute roverRoute_1 = new RoverRoute(1, rover.rover_id, route,
+        RoverRoute roverRoute_1 = new RoverRoute("1", rover.rover_id, route,
                 expected_roverRoutine.rover_routine_id);
-        RoverRoute roverRoute_2 = new RoverRoute(2, rover.rover_id, route,
+        RoverRoute roverRoute_2 = new RoverRoute("2", rover.rover_id, route,
                 expected_roverRoutine.rover_routine_id);
         Set<RoverRoute> expected_routes = new ArraySet<>();
         expected_routes.add(roverRoute_1);

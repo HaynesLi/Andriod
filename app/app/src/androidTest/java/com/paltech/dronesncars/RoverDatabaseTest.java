@@ -44,10 +44,10 @@ public class RoverDatabaseTest {
     @Test
     public void test_get_ids() throws UnknownHostException {
 
-        Rover rover_1 = new Rover(111);
+        Rover rover_1 = new Rover(111, InetAddress.getLoopbackAddress());
         rover_1.ip_address = InetAddress.getByName("127.0.0.1");
         rover_1.roverName = "Hubert";
-        Rover rover_2 = new Rover(110);
+        Rover rover_2 = new Rover(110, InetAddress.getLoopbackAddress());
         rover_2.ip_address = InetAddress.getByName("127.0.0.1");
         rover_2.roverName = "Hubert";
 
@@ -61,8 +61,8 @@ public class RoverDatabaseTest {
 
 
     public void roverTest() {
-        Rover rover_1 = new Rover(111);
-        Rover rover_2 = new Rover(110);
+        Rover rover_1 = new Rover(111, InetAddress.getLoopbackAddress());
+        Rover rover_2 = new Rover(110, InetAddress.getLoopbackAddress());
 
         roverDAO.insertMultipleRovers(rover_1, rover_2);
 
