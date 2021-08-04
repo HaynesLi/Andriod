@@ -264,7 +264,7 @@ public class RoverConnection {
             @Override
             public void onResponse(Call<ResponseBody> call,
                                    Response<ResponseBody> response) {
-                Log.d("RoverConnection", "Upload success");
+                Log.d("RoverConnection", "Upload of Mission for Rover("+rover.rover_id+") success");
             }
 
             @Override
