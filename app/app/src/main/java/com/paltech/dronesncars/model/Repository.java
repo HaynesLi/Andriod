@@ -495,6 +495,7 @@ public class Repository {
                         }
                         used_rover.mission = rover_route.rover_route_id;
                         used_rover.currentWaypoint = 0;
+                        roverConnection.uploadMissionFile(used_rover, rover_route.route);
                         roverDAO.update(used_rover);
                     }
                 } else {
