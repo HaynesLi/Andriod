@@ -11,6 +11,7 @@ import com.paltech.dronesncars.model.FlightRoute;
 import com.paltech.dronesncars.model.Repository;
 import com.paltech.dronesncars.model.Rover;
 import com.paltech.dronesncars.model.RoverRoute;
+import com.paltech.dronesncars.model.RoverRoutine;
 
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polygon;
@@ -83,10 +84,8 @@ public class MapViewModel extends ViewModel {
         }
     }
 
-    public LiveData<List<RoverRoute>> get_rover_routes() { return this.repository.get_rover_routes();}
+    public LiveData<List<RoverRoute>> get_rover_routes() { return this.repository.get_current_rover_routes();}
 
-    /*private MutableLiveData<Rover> _status_observed_rover = new MutableLiveData<>();
-    public LiveData<Rover> status_observed_rover = _status_observed_rover;*/
 
     MediatorLiveData<Rover> status_observed_rover = new MediatorLiveData<>();
     private LiveData<Rover> observed_rover_source = null;
@@ -103,5 +102,9 @@ public class MapViewModel extends ViewModel {
         observed_rover_source = repository.get_livedata_observed_rover(clicked_rover);
         this.status_observed_rover.setValue(null);
         this.status_observed_rover.addSource(observed_rover_source, value -> status_observed_rover.setValue(value));
+    }
+
+    public LiveData<RoverRoutine> get_rover_routine_livedata() {
+        return repository.get_rover_routine_livedata();
     }
 }

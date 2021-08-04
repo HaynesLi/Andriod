@@ -50,6 +50,7 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
     protected boolean changed_during_edit;
     protected Marker selected_marker = null;
     private List<List<Marker>> edit_rover_route_markers;
+    protected List<String> rover_route_ids_in_routine;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -111,11 +112,6 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
     }
 
     protected void setLiveDataSources() {
-
-        // watch dictionary of String (FID) and osmdroid.(...).Polygon in order to, if necessary,
-        // display an AlertDialog to make the user chose one of the available polygons
-
-
         // draw the "new" polygon if it changed in the database
         view_model.polygon.observe(getViewLifecycleOwner(), polygon -> {
             if (polygon != null) {
@@ -123,6 +119,14 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
                 set_edit_buttons_enabled(true);
             } else {
                 find_and_delete_overlay("both", true);
+            }
+        });
+
+        view_model.get_rover_routine_livedata().observe(getViewLifecycleOwner(), rover_routine -> {
+            if (rover_routine == null) {
+                rover_route_ids_in_routine = new ArrayList<>();
+            } else {
+                rover_route_ids_in_routine = rover_routine.rover_route_ids;
             }
         });
 
@@ -135,8 +139,12 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
                 return;
             }
 
+            // TODO this probably is not very efficient: if we compute A LOT of routes over time and
+            //  never delete any from the database we have to filter all of them here just to
+            //  draw the few we need to draw...
+            List<RoverRoute> in_routine = routes.stream().filter(rover_route -> rover_route_ids_in_routine.contains(rover_route.rover_route_id)).collect(Collectors.toList());
             List<List<GeoPoint>> drawable_routes = new ArrayList<>();
-            for (RoverRoute rover_route: routes) {
+            for (RoverRoute rover_route: in_routine) {
                 List<GeoPoint> route = rover_route.route;
                 clear_route_edit_markers();
                 edit_rover_route_markers = null;
