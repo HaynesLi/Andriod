@@ -465,6 +465,7 @@ public class Repository {
                     for(int i=0;i<current_route.route.size();i++){
                         current_rover.waypoints.add(new Waypoint(current_route.rover_route_id, i+1, current_route.route.get(i), false, current_route.rover_route_id)); //is_navigation_point muss noch angepasst werden (nicht immer false)
                     }
+                    roverConnection.uploadMissionFile(current_rover, current_route.route);
                     current_rover.mission = current_route.rover_route_id;
                     current_rover.currentWaypoint = 0;
                     index_of_todo_routes++;
