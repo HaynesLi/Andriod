@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
 
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.model.Rover;
@@ -27,6 +26,9 @@ public class RoverMap extends MapFragment {
     private List<RoverRoute> rover_routes;
     private Rover observed_rover;
 
+    /**
+     * one of a fragments basic lifecycle methods {@link androidx.fragment.app.Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     */
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -35,6 +37,10 @@ public class RoverMap extends MapFragment {
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
 
+    /**
+     * one of a fragments basic lifecycle methods {@link androidx.fragment.app.Fragment#onViewCreated(View, Bundle)}
+     * sets the buttonEditRoute visible and enabled
+     */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -45,9 +51,16 @@ public class RoverMap extends MapFragment {
         view_binding.buttonEditRoute.setVisibility(View.GONE);
     }
 
+
+    /**
+     * Configures the Fragment as Observer for different LiveData-Sources of the ViewModel and
+     * specifies callbacks, which are called when the observed LiveData-Source is changed.
+     * Overrides the corresponding method {@link MapFragment#set_livedata_sources()} from its
+     * superclass,
+     */
     @Override
-    protected  void setLiveDataSources() {
-        super.setLiveDataSources();
+    protected  void set_livedata_sources() {
+        super.set_livedata_sources();
 
         view_model.get_rover_routes().observe(getViewLifecycleOwner(), rover_routes -> {
             this.rover_routes = rover_routes;

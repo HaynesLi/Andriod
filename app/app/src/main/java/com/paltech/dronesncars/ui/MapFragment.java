@@ -42,21 +42,49 @@ import java.util.stream.Stream;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
+/**
+ * The Fragment that holds an OSMDroid-Map and a set of buttons, some of which are only required by
+ * subclass of this fragment. Is a subclass of {@link LandscapeFragment}.
+ */
 @AndroidEntryPoint
 public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewModel> {
 
+    /**
+     * Defines the different edit states a MapFragment can be in.
+     * 1. NONE -> currently neither Polygon nor flight-/rover-route are being edited
+     * 2. EDIT_POLYGON -> currently the Polygon is being edited
+     * 3. EDIT_ROUTE -> currently the flight-/rover-route is being edited
+     */
     protected enum VIEW_STATE {NONE, EDIT_POLYGON, EDIT_ROUTE}
+
+    /**
+     * Represents the edit state this fragment is currently in
+     */
     protected VIEW_STATE current_state;
+
+    /**
+     * A Boolean used to determine whether the current route has to be updated in the database after
+     * exiting the EDIT_ROUTE state.
+     */
     protected boolean changed_during_edit;
+
+    /**
+     * The {@link Marker} currently selected by the User in the {@link org.osmdroid.views.MapView}
+     */
     protected Marker selected_marker = null;
+
+    /**
+     * A List of Lists of Markers which specify the nodes defining a list of routes
+     */
     private List<List<Marker>> edit_rover_route_markers;
+    /**
+     * A List of the most recently computed rover routes.
+     */
     protected List<String> rover_route_ids_in_routine;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
+    /**
+     * one of a fragments basic lifecycle methods {@link androidx.fragment.app.Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     */
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -65,6 +93,18 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         return view_binding.getRoot();
     }
 
+    /**
+     * one of a fragments basic lifecycle methods {@link androidx.fragment.app.Fragment#onViewCreated(View, Bundle)}
+     * 1. gets ViewBinding
+     * 2. gets ViewModel
+     * 3. sets the initial state ot NONE
+     * 4. triggers class specific configuration
+     * 5. triggers configuration of the view's buttons
+     * 6. triggers configuration of the view's Map
+     * 7. triggers configuration of the LiveData-Sources
+     * 8. triggers configuration of the listeners
+     * 9. makes sure the polygon currently saved in the database is displayed
+     */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -81,8 +121,8 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         different_inits();
         configure_buttons();
         configureMap();
-        setLiveDataSources();
-        set_click_listeners();
+        set_livedata_sources();
+        set_listeners();
         refresh_polygon();
     }
 
@@ -94,6 +134,9 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         view_model.getPolygon();
     }
 
+    /**
+     * configures the {@link org.osmdroid.views.MapView} inside the fragment
+     */
     protected void configureMap() {
         Context ctx = requireContext();
         // ATTENTION: this configuration is NOT part of android, but of osmdroid!
@@ -111,11 +154,15 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         view_binding.buttonEditRoute.setEnabled(enabled);
     }
 
-    protected void setLiveDataSources() {
+    /**
+     * Configures the Fragment as Observer for different LiveData-Sources of the ViewModel and
+     * specifies callbacks, which are called when the observed LiveData-Source is changed.
+     */
+    protected void set_livedata_sources() {
         // draw the "new" polygon if it changed in the database
         view_model.polygon.observe(getViewLifecycleOwner(), polygon -> {
             if (polygon != null) {
-                setPolygon(polygon);
+                set_polygon(polygon);
                 set_edit_buttons_enabled(true);
             } else {
                 find_and_delete_overlay("both", true);
@@ -133,6 +180,10 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         observe_rover_routes();
     }
 
+    /**
+     * configures the LiveData-Source for observing the rover-routes in a separate method to allow
+     * subclasses to override specifically this task
+     */
     protected void observe_rover_routes() {
         view_model.get_rover_routes().observe(getViewLifecycleOwner(), routes -> {
             if (routes == null || routes.isEmpty()) {
@@ -164,19 +215,19 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
 
     }
 
-    //TODO as soon as there is an own fragment for this add own view_binding
     protected FragmentMapBinding get_view_binding(View view) {
         return FragmentMapBinding.bind(view);
     }
 
-    // TODO add own view model for this class
-    //  (as soon as it is used for the map of the rover route)
     protected MapViewModel get_view_model() {
         return new ViewModelProvider(requireActivity()).get(MapViewModel.class);
     }
 
-    // TODO override in FlightMapFragment to make sure all the specific things are in there
-    protected void setPolygon(Polygon polygon) {
+    /**
+     * draws the given polygon in the map
+     * @param polygon the polygon overlay to draw
+     */
+    protected void set_polygon(Polygon polygon) {
 
         polygon.getFillPaint().setColor(Color.parseColor("#1EFFE70E"));
         if (check_for_proper_polygon(polygon)) {
@@ -194,6 +245,12 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         }
     }
 
+    /**
+     * a check for "proper polygon" required because the LiveData sometimes deliver polygons with
+     * a crash-causing-configuration
+     * @param polygon the polygon to check
+     * @return true if the polygon is usable, false else
+     */
     protected boolean check_for_proper_polygon(Polygon polygon) {
         if (polygon != null) {
             try {
@@ -209,6 +266,13 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
 
     protected void polygon_to_markers(Polygon polygon) {}
 
+    /**
+     * delete a certain overlay if you do not own a reference object of the overlay
+     * @param type "polyline", "polygon" or "both". (both deletes obviously both all polygons and
+     *             all polylines)
+     * @param multiple a boolean specifying whether to stop after deleting the first overlay of the
+     *                 type or not
+     */
     protected void find_and_delete_overlay(String type, boolean multiple) {
         List<Overlay> overlays = view_binding.map.getOverlayManager().overlays();
         label:
@@ -235,6 +299,16 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         }
     }
 
+    /**
+     * Build a Marker for the {@link org.osmdroid.views.MapView} following a specific frequently
+     * used pattern
+     * @param geoPoint the GPS GeoPoint where to place the marker
+     * @param changed_during_edit_on_drag whether to set the {@link #changed_during_edit}
+     *                                    "onDragEnd" or not
+     * @param draggable_default if draggable default is false the marker has to be clicked once to
+     *                          make it draggable
+     * @return the marker
+     */
     protected Marker build_edit_marker(GeoPoint geoPoint, boolean changed_during_edit_on_drag, boolean draggable_default) {
         Marker new_marker = new Marker(view_binding.map, requireContext());
         new_marker.setPosition(geoPoint);
@@ -272,6 +346,10 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         return new_marker;
     }
 
+    /**
+     * set a marker selected and change its icon to red
+     * @param new_selected the marker to select
+     */
     protected void set_marker_selected(Marker new_selected) {
         selected_marker = new_selected;
         new_selected.setDraggable(true);
@@ -281,6 +359,10 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         view_binding.map.invalidate();
     }
 
+    /**
+     * set a marker unselected and change its icon back to the default
+     * @param set_null the marker to set unselected
+     */
     protected void set_marker_unselected(boolean set_null) {
         Drawable default_marker_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.marker_default, null);
         if (selected_marker != null) {
@@ -294,6 +376,11 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         }
     }
 
+    /**
+     * add the {@link #edit_rover_route_markers} as overlay to the map
+     * @return true if the marker has been added, false if not due to missing
+     * edit_rover_route_markers list
+     */
     protected boolean add_route_edit_markers() {
         if(edit_rover_route_markers != null) {
             for (List<Marker> markers_current_route: edit_rover_route_markers) {
@@ -305,15 +392,20 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         }
     }
 
+    /**
+     * remove the {@link #edit_rover_route_markers} from the map
+     */
     protected void clear_route_edit_markers() {
         if (edit_rover_route_markers != null && !edit_rover_route_markers.isEmpty()) {
             for (List<Marker> marker_route: edit_rover_route_markers) {
                 view_binding.map.getOverlayManager().removeAll(marker_route);
             }
         }
-
     }
 
+    /**
+     * configure the different buttons when entering the EDIT_ROUTE state
+     */
     protected void edit_route_button_activate() {
         if (!add_route_edit_markers()) return;
 
@@ -325,6 +417,9 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         current_state = VIEW_STATE.EDIT_ROUTE;
     }
 
+    /**
+     * save changed route to the database
+     */
     protected void save_route_or_routes() {
         if (changed_during_edit) {
             changed_during_edit = false;
@@ -340,6 +435,9 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         }
     }
 
+    /**
+     * configure the different buttons when exiting the EDIT_ROUTE state
+     */
     protected void edit_route_button_deactivate() {
         clear_route_edit_markers();
         view_binding.buttonEditRoute.setText("Edit Route");
@@ -352,7 +450,15 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         set_marker_unselected(true);
     }
 
-    protected void set_click_listeners() {
+    /**
+     * set listeners for:
+     * 1. buttonEditRoute -> trigger the EDIT_ROUTE state
+     * 2. buttonDeleteMarker -> delete selected marker
+     * 3. buttonAddMarker -> add a marker between the selected marker and the next one
+     * 4. buttonExportPolygonToKml -> export the current polygon into a kml file saved in the
+     * tablet's storage
+     */
+    protected void set_listeners() {
         view_binding.buttonEditRoute.setOnClickListener(v -> {
             if (current_state == VIEW_STATE.NONE) {
                 edit_route_button_activate();
@@ -386,7 +492,9 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
     }
 
 
-
+    /**
+     * delete the selected marker from its route
+     */
     protected void delete_marker_route_edit() {
         for (List<Marker> marker_route: edit_rover_route_markers) {
             if (marker_route.contains(selected_marker)) {
@@ -402,6 +510,10 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
 
     protected void delete_marker_polygon_edit() {}
 
+    /**
+     * add a marker in the map center which is located in the current route right after the
+     * currently selected marker
+     */
     protected void add_marker_route_edit() {
         Marker new_marker = build_edit_marker((GeoPoint) view_binding.map.getMapCenter(),
                 true,
@@ -461,6 +573,9 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         });
     }
 
+    /**
+     * initial configuration if the buttonPolygonEdit and buttonExportPolygonToKml
+     */
     protected void configure_buttons() {
         view_binding.buttonPolygonEdit.setEnabled(false);
         view_binding.buttonPolygonEdit.setVisibility(View.INVISIBLE);
@@ -468,6 +583,11 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         view_binding.buttonExportPolygonToKml.setVisibility(View.INVISIBLE);
     }
 
+    /**
+     * generic method to draw a list of routes onto the {@link org.osmdroid.views.MapView}
+     * @param routes a list of routes, where each route is a list of geopoints
+     * @return the markers which maybe needed for editing the newly drawn routes later
+     */
     protected List<List<Marker>> draw_routes(List<List<GeoPoint>> routes) {
         find_and_delete_overlay("polyline", true);
         List<List<Marker>> multiple_routes_markers = new ArrayList<>();

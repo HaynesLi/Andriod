@@ -17,9 +17,7 @@ import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentMapBinding;
 
 import org.jetbrains.annotations.NotNull;
-import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polygon;
 
@@ -62,11 +60,9 @@ public class FlightMapFragment extends MapFragment {
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
+    /**
+     * one of a fragments basic lifecycle methods {@link androidx.fragment.app.Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     */
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -75,6 +71,11 @@ public class FlightMapFragment extends MapFragment {
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
 
+    /**
+     * one of a fragments basic lifecycle methods {@link androidx.fragment.app.Fragment#onViewCreated(View, Bundle)}
+     * 1. calls its superclasses {@link MapFragment#onViewCreated(View, Bundle)}
+     * 2. sets the buttons buttonImportKml, buttonPolygonEdit and buttonDeletePolygon visible
+     */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 
@@ -190,8 +191,8 @@ public class FlightMapFragment extends MapFragment {
     }
 
     @Override
-    protected void set_click_listeners() {
-        super.set_click_listeners();
+    protected void set_listeners() {
+        super.set_listeners();
         view_binding.buttonPolygonEdit.setOnClickListener(v -> {
             if (current_state == VIEW_STATE.EDIT_POLYGON) {
                 if (polygon_vertices != null && polygon_vertices.size() >= 3) {
@@ -264,9 +265,15 @@ public class FlightMapFragment extends MapFragment {
 
     }
 
+    /**
+     * Configures the Fragment as Observer for different LiveData-Sources of the ViewModel and
+     * specifies callbacks, which are called when the observed LiveData-Source is changed.
+     * Overrides the corresponding method {@link MapFragment#set_livedata_sources()} from its
+     * superclass,
+     */
     @Override
-    protected void setLiveDataSources() {
-        super.setLiveDataSources();
+    protected void set_livedata_sources() {
+        super.set_livedata_sources();
 
         view_model.choosePolygonFromKML.observe(getViewLifecycleOwner(), stringPolygonDictionary -> {
             if (!stringPolygonDictionary.isEmpty()) {

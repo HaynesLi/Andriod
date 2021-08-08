@@ -62,6 +62,9 @@ public class ScanResultsFragment extends LandscapeFragment<FragmentScanResultsBi
         return new ViewModelProvider(requireActivity()).get(ScanResultsViewModel.class);
     }
 
+    /**
+     * one of a fragments basic lifecycle methods {@link androidx.fragment.app.Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -69,6 +72,14 @@ public class ScanResultsFragment extends LandscapeFragment<FragmentScanResultsBi
         return inflater.inflate(R.layout.fragment_scan_results, container, false);
     }
 
+    /**
+     * one of a fragments basic lifecycle methods {@link androidx.fragment.app.Fragment#onViewCreated(View, Bundle)}
+     * 1. gets ViewBinding
+     * 2. gets ViewModel
+     * 3. triggers configuration of Listeners
+     * 4. triggers configuration of scan-result-recycler-view
+     * 5. triggers configuration of LiveData-Sources
+     */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -94,6 +105,10 @@ public class ScanResultsFragment extends LandscapeFragment<FragmentScanResultsBi
         view_model.mock_results();
     }
 
+    /**
+     * Configures the Fragment as Observer for different LiveData-Sources of the ViewModel and
+     * specifies callbacks, which are called when the observed LiveData-Source is changed.
+     */
     private void set_livedata_sources() {
         view_model.get_scan_results().observe(getViewLifecycleOwner(),
                 results -> result_recycler_adapter.set_local_scan_results(results));

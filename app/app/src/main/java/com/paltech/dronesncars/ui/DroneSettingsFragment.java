@@ -1,13 +1,11 @@
 package com.paltech.dronesncars.ui;
 
 import android.os.Bundle;
-import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
@@ -16,15 +14,14 @@ import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentDroneSettingsBinding;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link DroneSettingsFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * The Fragment which holds the UI for configuring different parameters for the Drone, such as the
+ * flight altitude. It is a subclass of {@link LandscapeFragment}.
  */
 public class DroneSettingsFragment extends LandscapeFragment<FragmentDroneSettingsBinding, DroneSettingsViewModel> {
 
-    private FragmentDroneSettingsBinding view_binding;
-    private DroneSettingsViewModel view_model;
-
+    /**
+     * A required empty public constructor
+     */
     public DroneSettingsFragment() {
         // Required empty public constructor
     }
@@ -35,7 +32,6 @@ public class DroneSettingsFragment extends LandscapeFragment<FragmentDroneSettin
      *
      * @return A new instance of fragment DroneSettingsFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static DroneSettingsFragment newInstance() {
         DroneSettingsFragment fragment = new DroneSettingsFragment();
         return fragment;
@@ -56,6 +52,9 @@ public class DroneSettingsFragment extends LandscapeFragment<FragmentDroneSettin
         return new ViewModelProvider(requireActivity()).get(DroneSettingsViewModel.class);
     }
 
+    /**
+     * one of a fragments basic lifecycle methods {@link androidx.fragment.app.Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -63,6 +62,13 @@ public class DroneSettingsFragment extends LandscapeFragment<FragmentDroneSettin
         return inflater.inflate(R.layout.fragment_drone_settings, container, false);
     }
 
+    /**
+     * one of a fragments basic lifecycle methods {@link androidx.fragment.app.Fragment#onViewCreated(View, Bundle)}
+     * 1. gets ViewBinding
+     * 2. gets ViewModel
+     * 3. triggers configuration of LiveData-Sources
+     * 4. triggers configuration of Listeners
+     */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -70,11 +76,18 @@ public class DroneSettingsFragment extends LandscapeFragment<FragmentDroneSettin
         view_binding = get_view_binding(view);
         view_model = get_view_model();
 
-        setLiveDataSources();
-        setListeners();
+        set_livedata_sources();
+        set_listeners();
     }
 
-    private void setLiveDataSources() {
+    /**
+     * Configures the Fragment as Observer for different LiveData-Sources of the ViewModel and
+     * specifies callbacks, which are called when the observed LiveData-Source is changed.
+     * LiveData-Sources:
+     * 1. flight_altitude -> if the altitude set in the database is different from the currently set
+     * altitude in the UI, change the UI's value
+     */
+    private void set_livedata_sources() {
         view_model.flight_altitude.observe(getViewLifecycleOwner(), altitude -> {
             if (altitude != 0) {
                 String current_altitude = String.valueOf(view_binding.editTextFlightAltitude.getText());
@@ -87,7 +100,13 @@ public class DroneSettingsFragment extends LandscapeFragment<FragmentDroneSettin
         });
     }
 
-    private void setListeners() {
+    /**
+     * Configure the ClickListeners for two buttons:
+     * 1. buttonStartFlight -> navigate to the {@link ScanResultsFragment}
+     * 2. buttonComputeRoute -> collect the currently set flight altitude and start computation of
+     * the currently best flight route
+     */
+    private void set_listeners() {
         view_binding.buttonStartFlight.setOnClickListener(v -> {
             NavDirections action = DroneScreenDirections.actionDroneScreenToScanResultsFragment();
             DroneScreen parentFragment = (DroneScreen) getParentFragment();

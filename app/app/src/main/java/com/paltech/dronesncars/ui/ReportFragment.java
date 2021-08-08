@@ -39,10 +39,6 @@ public class ReportFragment extends LandscapeFragment<FragmentReportBinding, Vie
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     FragmentReportBinding get_view_binding(View view) {
@@ -54,6 +50,9 @@ public class ReportFragment extends LandscapeFragment<FragmentReportBinding, Vie
         return null;
     }
 
+    /**
+     * one of a fragments basic lifecycle methods {@link androidx.fragment.app.Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -61,14 +60,11 @@ public class ReportFragment extends LandscapeFragment<FragmentReportBinding, Vie
         return inflater.inflate(R.layout.fragment_report, container, false);
     }
 
+    /**
+     * one of a fragments basic lifecycle methods {@link androidx.fragment.app.Fragment#onViewCreated(View, Bundle)}
+     */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        view_binding = get_view_binding(view);
-
-        setListeners();
     }
-
-    private void setListeners(){}
 }

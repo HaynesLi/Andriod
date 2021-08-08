@@ -84,6 +84,9 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
         return new ViewModelProvider(requireActivity()).get(RoverStatusViewModel.class);
     }
 
+    /**
+     * one of a fragments basic lifecycle methods {@link androidx.fragment.app.Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -92,6 +95,17 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
         return inflater.inflate(R.layout.fragment_rover_status, container, false);
     }
 
+
+    /**
+     * one of a fragments basic lifecycle methods {@link androidx.fragment.app.Fragment#onViewCreated(View, Bundle)}
+     * 1. gets ViewBinding
+     * 2. gets ViewModel
+     * 3. additionally retrieves the {@link MapViewModel}
+     * 4. triggers configuration of rover-status-recycler-view
+     * 5. triggers configuration of rover-milestone-recycler-view
+     * 6. triggers configuration of LiveData-Sources
+     * 7. triggers configuration of Listeners
+     */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -135,7 +149,10 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
         view_binding.roverMilestoneRecyclerView.setAdapter(roverMilestonesAdapter);
     }
 
-
+    /**
+     * Configures the Fragment as Observer for different LiveData-Sources of the ViewModel and
+     * specifies callbacks, which are called when the observed LiveData-Source is changed.
+     */
     private void setLiveDataSources() {
         view_model.getUsedRovers().observe(getViewLifecycleOwner(),
                 rovers -> roverStatusAdapter.setLocalRoverSet(rovers));

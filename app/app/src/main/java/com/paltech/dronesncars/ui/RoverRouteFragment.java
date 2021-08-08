@@ -53,6 +53,9 @@ public class RoverRouteFragment extends LandscapeFragment<FragmentRoverRouteBind
         return null;
     }
 
+    /**
+     * one of a fragments basic lifecycle methods {@link androidx.fragment.app.Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -60,6 +63,10 @@ public class RoverRouteFragment extends LandscapeFragment<FragmentRoverRouteBind
         return inflater.inflate(R.layout.fragment_rover_route, container, false);
     }
 
+    /**
+     * one of a fragments basic lifecycle methods {@link androidx.fragment.app.Fragment#onViewCreated(View, Bundle)}
+     * 1. gets ViewBinding
+     */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

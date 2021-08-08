@@ -52,17 +52,11 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
      *
      * @return A new instance of fragment RoverRoutineSettingsFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static RoverRoutineSettingsFragment newInstance(String param1, String param2) {
+    public static RoverRoutineSettingsFragment newInstance() {
         RoverRoutineSettingsFragment fragment = new RoverRoutineSettingsFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -75,6 +69,9 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
         return new ViewModelProvider(requireActivity()).get(RoverRoutineSettingsViewModel.class);
     }
 
+    /**
+     * one of a fragments basic lifecycle methods {@link androidx.fragment.app.Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -82,6 +79,14 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
         return inflater.inflate(R.layout.fragment_rover_routine_settings, container, false);
     }
 
+    /**
+     * one of a fragments basic lifecycle methods {@link androidx.fragment.app.Fragment#onViewCreated(View, Bundle)}
+     * 1. gets ViewBinding
+     * 2. gets ViewModel
+     * 3. triggers configuration of the rover configuration recycler view
+     * 4. triggers configuration of LiveData-Sources
+     * 5. triggers configuration of Listeners
+     */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -115,6 +120,10 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
         view_binding.roverConfigurationList.setAdapter(roverConfigurationRecyclerAdapter);
     }
 
+    /**
+     * Configures the Fragment as Observer for different LiveData-Sources of the ViewModel and
+     * specifies callbacks, which are called when the observed LiveData-Source is changed.
+     */
     private void setLiveDataSources() {
         view_model.get_all_rovers_livedata().observe(getViewLifecycleOwner(), rovers -> {
             allRovers = rovers;
