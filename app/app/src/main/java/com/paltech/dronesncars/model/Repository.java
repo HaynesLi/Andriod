@@ -491,11 +491,7 @@ public class Repository {
                         ArrayList<Waypoint> waypoints = new ArrayList<>();
                         for (int i = 0; i < rover_route.route.size(); i++) {
                             //TODO is_navigation_point muss noch angepasst werden (nicht immer false)
-                            if(i == 0){
-                                waypoints.add(new Waypoint(rover_route.rover_route_id, i+1, rover_route.route.get(i), true, rover_route.rover_route_id));
-                            }else{
                                 waypoints.add(new Waypoint(rover_route.rover_route_id, i+1, rover_route.route.get(i), false, rover_route.rover_route_id));
-                            }
                         }
                         used_rover.waypoints = waypoints;
                         used_rover.mission = rover_route.rover_route_id;
