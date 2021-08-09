@@ -12,6 +12,7 @@ import com.paltech.dronesncars.computing.FlightRouteGenerator;
 import com.paltech.dronesncars.computing.VRP_Wrapper;
 import com.paltech.dronesncars.computing.WeedDetectorInterface;
 import com.paltech.dronesncars.computing.WeedDetectorMock;
+import com.paltech.dronesncars.computing.WeedDetectorMock_Baldham;
 import com.paltech.dronesncars.ui.ViewModelCallback;
 
 import org.osmdroid.bonuspack.kml.KmlDocument;
@@ -320,7 +321,13 @@ public class Repository {
             if (current_polygon_model != null) {
                 Polygon current_polygon = current_polygon_model.polygon;
                 if (current_polygon != null) {
-                    WeedDetectorInterface weed_detector = new WeedDetectorMock(current_polygon);
+                    // replace this Mock with the actual CV thingy or with any Mock.
+                    // WeedDetectorMock_Baldham returns a very small route in the middle of the
+                    // Verkehrsubungsplatz Baldham
+                    // WeedDetectorMock returns max(10, polygon.getActualPoints().size()) random
+                    // GeoPoints inside the Polygon
+                    //WeedDetectorInterface weed_detector = new WeedDetectorMock(current_polygon);
+                    WeedDetectorInterface weed_detector = new WeedDetectorMock_Baldham(current_polygon);
                     List<Result> mock_results = weed_detector.get_results_from_pictures(
                             new ArrayList<>(),
                             new ArrayList<>()
