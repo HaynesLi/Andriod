@@ -204,16 +204,22 @@ public class RoverConnection {
         Call<ResponseBody> getWaypointInfo(@Path("missionId")String missionId, @Path("waypointNumber")int waypointNumber);
     }
 
-    public void uploadMissionFile(Rover rover, List<GeoPoint> list) {
-        JSONArray jsonArray = new JSONArray();
+    public void uploadMissionFile(Rover rover, List<Waypoint> list) {
+        JSONObject mission_file = new JSONObject();
         try {
-            jsonArray = new JSONArray();
+            mission_file.put("mission_id", rover.mission);
+            JSONArray waypoints = new JSONArray();
             for (int i = 0; i < list.size(); i++) {
+                Waypoint waypoint = list.get(i);
                 JSONObject geopoint = new JSONObject();
-                geopoint.put("latitude", list.get(i).getLatitude());
-                geopoint.put("longitude", list.get(i).getLongitude());
-                jsonArray.put(geopoint);
+                geopoint.put("latitude", waypoint.position.getLatitude());
+                geopoint.put("longitude", waypoint.position.getLongitude());
+                if(waypoint.is_navigation_point){
+                    geopoint.put("skip_work", true);
+                }
+                waypoints.put(geopoint);
             }
+            mission_file.put("route", waypoints);
         }catch (JSONException e){
             Log.d("RoverConnection", "Error creating the mission.json File: "+e.getMessage());
         }
@@ -223,7 +229,7 @@ public class RoverConnection {
         File file = new File(path);
         try {
             FileOutputStream fos = new FileOutputStream(file, false);
-            fos.write(jsonArray.toString().getBytes());
+            fos.write(mission_file.toString().getBytes());
             fos.close();
         }catch(IOException e){
             Log.d("RoverConnection", "Write to File error");
@@ -276,7 +282,7 @@ public class RoverConnection {
     }
 
     private void checkDirectories(String mission, int waypoint){
-        String base_path = repository.getContext().getFilesDir()+"/Milestones/Mission_"+mission+"/Waypoint_"+waypoint;
+        String base_path = repository.getContext().getFilesDir()+"/missions/mission_"+mission+"/waypoint_"+waypoint;
         File file = new File(base_path);
         if(!file.exists()){
             file.mkdirs();
@@ -286,7 +292,7 @@ public class RoverConnection {
     private boolean writeResponseBodyToDisk(String mission, int waypoint, String filename,ResponseBody body) {
         try {
             checkDirectories(mission, waypoint);
-            String path = repository.getContext().getFilesDir()+"/Milestones/Mission_"+mission+"/Waypoint_"+waypoint+"/"+filename;
+            String path = repository.getContext().getFilesDir()+"/missions/mission_"+mission+"/waypoint_"+waypoint+"/"+filename;
             // todo change the file location/name according to your need
             File file = new File(path);
 
