@@ -77,6 +77,13 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
      * A List of Lists of Markers which specify the nodes defining a list of routes
      */
     private List<List<Marker>> edit_rover_route_markers;
+
+    /**
+     * A List of Lists of Booleans which stores for each GeoPoint->Marker in the Rover-Routes whether
+     * it is a navigation point or not. It is necessary to store this info in order to correctly
+     * "label" the GeoPoints in the routes after editing them.
+     */
+    private List<List<Boolean>> edit_rover_route_is_navigation_point;
     /**
      * A List of the most recently computed rover routes.
      */
@@ -128,6 +135,7 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
 
     protected void different_inits() {
         edit_rover_route_markers = null;
+        edit_rover_route_is_navigation_point = null;
     }
 
     protected void refresh_polygon() {
@@ -195,21 +203,25 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
             //  draw the few we need to draw...
             List<RoverRoute> in_routine = routes.stream().filter(rover_route -> rover_route_ids_in_routine.contains(rover_route.rover_route_id)).collect(Collectors.toList());
             List<List<GeoPoint>> drawable_routes = new ArrayList<>();
+            List<List<Boolean>> is_navigation_point_list = new ArrayList<>();
             for (RoverRoute rover_route: in_routine) {
                 List<GeoPoint> route = rover_route.route;
                 clear_route_edit_markers();
                 edit_rover_route_markers = null;
+                edit_rover_route_is_navigation_point = null;
 
                 if (route != null && route.size() > 1) {
                     find_and_delete_overlay("polyline", true);
 
                     drawable_routes.add(route);
+                    is_navigation_point_list.add(rover_route.is_navigation_point);
                 }
             }
 
             List<List<Marker>> tmp = draw_routes(drawable_routes);
             if (tmp != null && !tmp.isEmpty()) {
                 edit_rover_route_markers = tmp;
+                edit_rover_route_is_navigation_point = is_navigation_point_list;
             }
         });
 
@@ -431,7 +443,7 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
                 );
             }
 
-            view_model.set_rover_routes(new_routes);
+            view_model.set_rover_routes(new_routes, edit_rover_route_is_navigation_point);
         }
     }
 
@@ -496,8 +508,11 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
      * delete the selected marker from its route
      */
     protected void delete_marker_route_edit() {
+        int index_of_corresponding_route = 0;
+        int index_in_corresponding_route = 0;
         for (List<Marker> marker_route: edit_rover_route_markers) {
             if (marker_route.contains(selected_marker)) {
+                index_in_corresponding_route = marker_route.indexOf(selected_marker);
                 marker_route.remove(selected_marker);
                 view_binding.map.getOverlayManager().remove(selected_marker);
                 set_marker_unselected(true);
@@ -505,7 +520,10 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
                 view_binding.map.invalidate();
                 break;
             }
+            index_of_corresponding_route++;
         }
+
+        edit_rover_route_is_navigation_point.get(index_of_corresponding_route).remove(index_in_corresponding_route);
     }
 
     protected void delete_marker_polygon_edit() {}
@@ -521,11 +539,15 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
 
         for (int i = 0; i < edit_rover_route_markers.size(); i++) {
             List<Marker> marker_route = edit_rover_route_markers.get(i);
+            List<Boolean> is_navigation_point = edit_rover_route_is_navigation_point.get(i);
             if (marker_route.contains(selected_marker)) {
                 edit_rover_route_markers.set(i,
                         insert_marker_at_index(marker_route,
                                 marker_route.indexOf(selected_marker),
                                 new_marker));
+                edit_rover_route_is_navigation_point.set(i,
+                        insert_bool_at_index(is_navigation_point,
+                                marker_route.indexOf(selected_marker), true));
                 set_marker_unselected(false);
                 set_marker_selected(new_marker);
                 view_binding.map.getOverlayManager().add(new_marker);
@@ -544,6 +566,17 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
             List<Marker> after = list.subList(index, list.size());
             List<Marker> insertion = new ArrayList<>();
             insertion.add(marker);
+            return Stream.of(before, insertion, after).flatMap(Collection::stream).collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    private List<Boolean> insert_bool_at_index(List<Boolean> list, int index, boolean bool) {
+        if (index >= 0 && index <= list.size()) {
+            List<Boolean> before = list.subList(0, index);
+            List<Boolean> after = list.subList(index, list.size());
+            List<Boolean> insertion = new ArrayList<>();
+            insertion.add(bool);
             return Stream.of(before, insertion, after).flatMap(Collection::stream).collect(Collectors.toList());
         }
         return null;

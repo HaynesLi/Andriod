@@ -27,6 +27,20 @@ public class TypeConverters {
     private static final Type WAYPOINT_LIST_TYPE = new TypeToken<ArrayList<Waypoint>>() {}.getType();
     private static final Type GEOPOINT_LIST_LIST_TYPE = new TypeToken<ArrayList<ArrayList<GeoPoint>>>() {}.getType();
     private static final Type STRING_LIST_TYPE = new TypeToken<ArrayList<String>>() {}.getType();
+    private static final Type BOOLEAN_LIST_TYPE = new TypeToken<ArrayList<Boolean>>() {}.getType();
+
+
+    @TypeConverter
+    public List<Boolean> from_String_to_Boolean_List(String value) {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        return gsonBuilder.create().fromJson(value, BOOLEAN_LIST_TYPE);
+    }
+
+    @TypeConverter
+    public String from_Boolean_List_to_String(List<Boolean> boolean_list) {
+        GsonBuilder gson_builder = new GsonBuilder();
+        return gson_builder.create().toJson(boolean_list);
+    }
 
     @TypeConverter
     public List<String> from_String_to_String_List(String value) {

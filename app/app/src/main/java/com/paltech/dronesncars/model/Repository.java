@@ -352,7 +352,7 @@ public class Repository {
             if(!targets.isEmpty() && num_of_rovers > 0) {
                 List<List<GeoPoint>> routes = VRP_Wrapper.get_routes_for_vehicles(num_of_rovers, targets);
 
-                insert_rover_routes(routes);
+                insert_rover_routes(routes, null);
             }
         });
     }
@@ -363,22 +363,24 @@ public class Repository {
         return rover_routine == null;
     }
 
-    // TODO maybe add the copying of corresponding rover id from old routes to new routes?
-    public void set_rover_routes(@NonNull List<List<GeoPoint>> rover_routes) {
+
+    public void set_rover_routes(@NonNull List<List<GeoPoint>> rover_routes, List<List<Boolean>> is_navigation_point_list) {
         executor.execute(() -> {
 
             if(check_for_missing_rover_routine()) create_rover_routine();
 
-            List<RoverRoute> current_rover_routes = roverRouteDAO.getAllRoverRoutes();
+            /*List<RoverRoute> current_rover_routes = roverRouteDAO.getAllRoverRoutes();
             if(current_rover_routes != null && !current_rover_routes.isEmpty() && !rover_routes.isEmpty()) {
                 roverRouteDAO.delete_rover_routes_by_routine_id(ROUTINE_ID);
-            }
+            }*/
 
-            insert_rover_routes(rover_routes);
+
+
+            insert_rover_routes(rover_routes, is_navigation_point_list);
         });
     }
 
-    private void insert_rover_routes(List<List<GeoPoint>> rover_routes) {
+    private void insert_rover_routes(List<List<GeoPoint>> rover_routes, List<List<Boolean>> is_navigation_point_list) {
         List<Rover> usable_rovers = roverDAO.getUsedRovers();
         int next_usable_rover = 0;
         DateTimeFormatter dt_formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
@@ -389,6 +391,11 @@ public class Repository {
             for (int rover_route_id = 0; rover_route_id < rover_routes.size(); rover_route_id++) {
                 List<GeoPoint> current_route = rover_routes.get(rover_route_id);
                 RoverRoute new_rover_route = new RoverRoute(date_string + "_" +rover_route_id, -1, current_route, ROUTINE_ID);
+
+                if (is_navigation_point_list != null && is_navigation_point_list.size() == rover_routes.size()) {
+                    new_rover_route.is_navigation_point = is_navigation_point_list.get(rover_route_id);
+                }
+
                 new_rover_route.corresponding_rover_id = usable_rovers.get(next_usable_rover).rover_id;
                 usable_rovers.get(next_usable_rover).mission = new_rover_route.rover_route_id;
                 roverDAO.update(usable_rovers.get(next_usable_rover));
@@ -490,8 +497,7 @@ public class Repository {
                         // TODO send mission to rover!
                         used_rover.waypoints = new ArrayList<>();
                         for (int i = 0; i < rover_route.route.size(); i++) {
-                            //TODO is_navigation_point muss noch angepasst werden (nicht immer false)
-                            used_rover.waypoints.add(new Waypoint(rover_route.rover_route_id, i+1, rover_route.route.get(i), false, rover_route.rover_route_id));
+                            used_rover.waypoints.add(new Waypoint(rover_route.rover_route_id, i+1, rover_route.route.get(i), rover_route.is_navigation_point.get(i), rover_route.rover_route_id));
                         }
                         used_rover.mission = rover_route.rover_route_id;
                         used_rover.currentWaypoint = 0;
