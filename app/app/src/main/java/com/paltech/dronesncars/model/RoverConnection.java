@@ -35,17 +35,34 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 
+/**
+ * RoverConnection is used for communication with the rovers on the filed.
+ * For this purpose the class is implementing multiple different server api calls.
+ */
 public class RoverConnection {
 
     private Repository repository;
     private Executor executor;
     private boolean wasCalledInStatusFragment;
 
+    /**
+     * The constructor is used to create this class and needs two main sources.
+     * @param repository Provides access to the database
+     * @param executor Provides the structure for asynchronous threads
+     */
     public RoverConnection(Repository repository, Executor executor){
         this.repository = repository;
         this.executor = executor;
     }
 
+    /**
+     * Is used to update the information from all rovers on the field in a loop using the {@link #updateAllRovers()} method.
+     * @param secondsBetweenUpdate Time used for a single loop
+     * @param wasCalledInStatusFragment Boolean value to determine the current fragment.
+     *                                  The selected but disconnected rovers are shown in the RoverStatusFragment, but not in the RoverRoutineSettingsFragment.
+     *                                  As this method is called first in both fragments the global variable is set here.
+     * @return the timer that has to be closed to stop the loop
+     */
     public Timer updateAllRoversContinuously(int secondsBetweenUpdate, boolean wasCalledInStatusFragment){
         this.wasCalledInStatusFragment = wasCalledInStatusFragment;
         int delay = 0;
