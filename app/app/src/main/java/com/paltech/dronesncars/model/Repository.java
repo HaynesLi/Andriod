@@ -512,7 +512,7 @@ public class Repository {
                             used_rover.mission = rover_route.rover_route_id;
                             Log.d("Mission_ID:", rover_route.rover_route_id);
                             used_rover.currentWaypoint = 0;
-                            roverConnection.uploadMissionFile(used_rover, waypoints);
+                            roverConnection.uploadMissionFile(used_rover);
                             roverDAO.update(used_rover);
                         }
                     } else {
