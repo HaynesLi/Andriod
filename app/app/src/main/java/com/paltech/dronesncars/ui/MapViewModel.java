@@ -67,8 +67,8 @@ public class MapViewModel extends ViewModel {
         repository.set_flight_route(route);
     }
 
-    public void set_rover_routes(List<List<GeoPoint>> routes) {
-        repository.set_rover_routes(routes);
+    public void set_rover_routes(List<List<GeoPoint>> routes, List<List<Boolean>> is_navigation_point_lists) {
+        repository.set_rover_routes(routes, is_navigation_point_lists);
     }
 
     @Inject
@@ -93,7 +93,7 @@ public class MapViewModel extends ViewModel {
     public void set_status_observed_rover(Rover clicked_rover) {
         if (observed_rover_source != null) {
             status_observed_rover.removeSource(observed_rover_source);
-            if (observed_rover_source.getValue().equals(clicked_rover)) {
+            if (clicked_rover.equals(observed_rover_source.getValue())) {
                 status_observed_rover.setValue(null);
                 observed_rover_source = null;
                 return;

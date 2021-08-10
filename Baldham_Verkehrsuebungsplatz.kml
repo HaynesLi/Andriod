@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<kml xmlns='http://www.opengis.net/kml/2.2' xmlns:gx='http://www.google.com/kml/ext/2.2'>
+<Document>
+<Folder>
+<name>Nutzung_0</name>
+<Placemark>
+<styleUrl>#org.osmdroid.bonuspack.kml.Style@6989ed6</styleUrl>
+<Polygon>
+<outerBoundaryIs>
+<LinearRing>
+<coordinates>11.778240416906641,48.10857360423275,0.0 11.778531227267166,48.10902449887817,0.0 11.778115193968631,48.10914990276593,0.0 11.777823515628057,48.1086911421566,0.0 </coordinates>
+</LinearRing>
+</outerBoundaryIs>
+</Polygon>
+<ExtendedData>
+<Data name="FID"><value>0</value></Data>
+<Data name="FSNr"><value>0</value></Data>
+<Data name="Flaeche"><value>0</value></Data>
+<Data name="Nutzung"><value>0</value></Data>
+<Data name="Betriebsnr"><value>0</value></Data>
+<Data name="BJS"><value>nein</value></Data>
+<Data name="GPS"><value>nein</value></Data>
+<Data name="Schlag"><value>0</value></Data>
+<Data name="Einstufung"><value>DG</value></Data>
+</ExtendedData>
+</Placemark>
+</Folder>
+</Document>
+</kml>
