@@ -14,9 +14,8 @@ import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentReportBinding;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link ReportFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * A Fragment which Is supposed to show interesting data after finishing the weed picking, but does
+ * not show anything yet. It is a subclass of {@link LandscapeFragment}.
  */
 public class ReportFragment extends LandscapeFragment<FragmentReportBinding, ViewModel> {
 

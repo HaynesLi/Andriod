@@ -39,19 +39,39 @@ import java.util.List;
 import java.util.Timer;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link RoverStatusFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * A Fragment which displays all the information of the currently used rovers. Holds a
+ * {@link RoverMap} and two RecyclerViews: one to display the general status of all used rovers and
+ * one to display the status info on different already reached waypoints of a rover, which was
+ * selected in the other recycler view. A subclass of {@link LandscapeFragment}
  */
 public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBinding, RoverStatusViewModel> implements RoverStatusRecyclerAdapter.OnRoverStatusItemClickedListener, RoverMilestonesRecyclerAdapter.OnRoverMilestonesItemClickedListener {
 
     FragmentRoverStatusBinding view_binding;
     RoverStatusViewModel view_model;
+    /**
+     * the ViewModel of a MapFragment, additionally to the own ViewModel, in order to allow the
+     * fragment to introduce direct changes to the included {@link RoverMap}
+     */
     MapViewModel map_view_model;
+
+    /**
+     * The timer used to schedule connection updates with the rovers.
+     */
     Timer timer;
+
+    /**
+     * The currently selected rover
+     */
     Rover selected_rover;
 
+    /**
+     * The RecyclerAdapter used to configure the RoverStatus-RecyclerView
+     */
     private RoverStatusRecyclerAdapter roverStatusAdapter;
+
+    /**
+     * The RecyclerAdapter used to configure the RoverMilestone-RecyclerView
+     */
     private RoverMilestonesRecyclerAdapter roverMilestonesAdapter;
 
     public RoverStatusFragment() {
@@ -64,7 +84,7 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
      *
      * @return A new instance of fragment RoverStatusFragment.
      */
-    public static RoverStatusFragment newInstance(String param1, String param2) {
+    public static RoverStatusFragment newInstance() {
         RoverStatusFragment fragment = new RoverStatusFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
@@ -121,18 +141,28 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
         setListeners();
     }
 
+    /**
+     * A basic lifecycle method of an android fragment, used to additionally stop the {@link #timer}
+     */
     @Override
     public void onPause() {
         timer.cancel();
         super.onPause();
     }
 
+    /**
+     * A basic lifecycle method of an android fragment, used to additionally resume the
+     * {@link #timer}
+     */
     @Override
     public void onResume() {
         super.onResume();
         timer = view_model.startRoverUpdates();
     }
 
+    /**
+     * initial configuration of the RoverStatus-Recycler-View
+     */
     private void init_rover_status_recycler_view() {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         view_binding.roverStatusRecyclerView.setLayoutManager(mLayoutManager);
@@ -142,6 +172,9 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
         view_binding.roverStatusRecyclerView.setAdapter(roverStatusAdapter);
     }
 
+    /**
+     * initial configuration of the RoverMilestone-Recycler-View
+     */
     private void init_rover_milestones_recycler_view() {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         view_binding.roverMilestoneRecyclerView.setLayoutManager(mLayoutManager);
@@ -154,12 +187,20 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
     /**
      * Configures the Fragment as Observer for different LiveData-Sources of the ViewModel and
      * specifies callbacks, which are called when the observed LiveData-Source is changed.
+     * 1. getUsedRovers -> display all used rovers in the RoverStatus-Recycler-View
      */
     private void setLiveDataSources() {
         view_model.getUsedRovers().observe(getViewLifecycleOwner(),
                 rovers -> roverStatusAdapter.setLocalRoverSet(rovers));
     }
 
+    /**
+     * configure the listeners:
+     * 1. buttonAssumeFinished -> change the view to the next Fragment {@link ReportFragment}
+     * 2. buttonMockProgressUpdate -> mock a progress update of the first rover TODO delete this
+     */
+    // TODO do we still have the buttonMockProgressUpdate?!? If not, delete the part corresponding
+    //  to it
     private void setListeners(){
         view_binding.buttonAssumeFinished.setOnClickListener(v -> {
             NavDirections action = RoverStatusFragmentDirections.actionRoverStatusFragmentToReportFragment();
@@ -168,6 +209,13 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
         view_binding.buttonMockProgressUpdate.setOnClickListener(v -> view_model.mock_progress_update());
     }
 
+    /**
+     * the onClickListener()-method for a rover-status-item in the RoverStatus-Recycler-View
+     * clicked. make the clicked rover the observed one, display its route in the RoverMap and
+     * add its waypoints to the RoverMilestone-Recycler-View. If the same rover is clicked again,
+     * remove all the waypoints from the list and its route from the map.
+     * @param clicked_rover the clicked rover
+     */
     @Override
     public void onRoverStatusItemClicked(Rover clicked_rover) {
         if (clicked_rover != null) {
@@ -191,6 +239,11 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
         }
     }
 
+    /**
+     * the onClickListener()-method for a rover-milestone-item in the RoverMilestone-Recycler-View
+     * clicked. Display a popup with different interesting info regarding the waypoint.
+     * @param clicked_waypoint the clicked waypoint
+     */
     @Override
     public void onRoverMilestonesItemClicked(Waypoint clicked_waypoint) {
         if (clicked_waypoint != null) {
@@ -198,6 +251,11 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
         }
     }
 
+    /**
+     * show a popup for a clicked waypoint which e.g. displays the previous- and after-picture for
+     * the waypoint downloaded from the corresponding rover.
+     * @param clicked_waypoint the clicked waypoint
+     */
     private void show_milestone_popUp(Waypoint clicked_waypoint) {
         LayoutInflater inflater = LayoutInflater.from(requireContext());
         final View my_dialog_view = inflater.inflate(R.layout.milestone_popup, null);

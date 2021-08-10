@@ -13,9 +13,9 @@ import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentRoverRouteBinding;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link RoverRouteFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * A Fragment which generally shows the content needed for configuring the rovers. Holds the two
+ * fragments {@link RoverRoutineSettingsFragment} and {@link MapFragment}. It is a subclass of
+ * {@link LandscapeFragment}.
  */
 public class RoverRouteFragment extends LandscapeFragment<FragmentRoverRouteBinding, ViewModel> {
 
@@ -36,11 +36,6 @@ public class RoverRouteFragment extends LandscapeFragment<FragmentRoverRouteBind
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     @Override

@@ -20,14 +20,19 @@ import com.paltech.dronesncars.databinding.FragmentScanResultsBinding;
 import java.util.ArrayList;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link ScanResultsFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * A Fragment displaying the results of the Computer-Vision-Pipeline e.g. which unwanted
+ * plants were found and where. (Computer-Vision-Pipeline currently completely mocked) A subclass
+ * of {@link LandscapeFragment}.
  */
 public class ScanResultsFragment extends LandscapeFragment<FragmentScanResultsBinding, ScanResultsViewModel> {
 
     private FragmentScanResultsBinding view_binding;
+
+    /**
+     * the RecyclerAdapter used to configure the Results-Recycler-View
+     */
     private ScanResultRecyclerAdapter result_recycler_adapter;
+
     private ScanResultsViewModel view_model;
 
     public ScanResultsFragment() {
@@ -40,7 +45,7 @@ public class ScanResultsFragment extends LandscapeFragment<FragmentScanResultsBi
      *
      * @return A new instance of fragment ScanResultsFragment.
      */
-    public static ScanResultsFragment newInstance(String param1, String param2) {
+    public static ScanResultsFragment newInstance() {
         ScanResultsFragment fragment = new ScanResultsFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
@@ -92,6 +97,9 @@ public class ScanResultsFragment extends LandscapeFragment<FragmentScanResultsBi
         set_livedata_sources();
     }
 
+    /**
+     * initial configuration of the Result-Recycler-View
+     */
     private void init_result_recycler_view() {
         RecyclerView.LayoutManager layout_manager = new LinearLayoutManager(getActivity());
         view_binding.recyclerViewResults.setLayoutManager(layout_manager);
@@ -101,6 +109,10 @@ public class ScanResultsFragment extends LandscapeFragment<FragmentScanResultsBi
         view_binding.recyclerViewResults.setAdapter(result_recycler_adapter);
     }
 
+    /**
+     * trigger the view model to mock some results (has to be replaced/removed as soon as there is a
+     * real Computer-Vision-Pipeline)
+     */
     private void mock_results() {
         view_model.mock_results();
     }
@@ -108,12 +120,21 @@ public class ScanResultsFragment extends LandscapeFragment<FragmentScanResultsBi
     /**
      * Configures the Fragment as Observer for different LiveData-Sources of the ViewModel and
      * specifies callbacks, which are called when the observed LiveData-Source is changed.
+     * 1. get_scan_results() -> update the results displayed in the Results-Recycler-View
      */
     private void set_livedata_sources() {
         view_model.get_scan_results().observe(getViewLifecycleOwner(),
                 results -> result_recycler_adapter.set_local_scan_results(results));
     }
 
+    /**
+     * configure the listeners:
+     * 1. buttonConfigureRovers -> change the view to the next fragment {@link RoverRouteFragment}
+     * 2. buttonOpenGallery -> opens the Gallery where in theory pictures of the results could be
+     * found
+     * 3. buttonMockResults -> trigger the mocking of some results. Can/has to be removed as soon as
+     * there is a real Computer-Vision-Pipeline
+     */
     private void setListeners() {
         view_binding.buttonConfigureRovers.setOnClickListener(v -> {
             NavDirections action = ScanResultsFragmentDirections.actionScanResultsFragmentToRoverRouteFragment();

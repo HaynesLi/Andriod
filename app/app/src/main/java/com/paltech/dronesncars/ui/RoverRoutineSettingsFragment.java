@@ -29,17 +29,35 @@ import java.util.List;
 import java.util.Timer;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link RoverRoutineSettingsFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * A Fragment used to configure the different rovers for weed picking. Allows the user to register
+ * new rovers, delete them, select connected ones for work and compute routes for them. Is a
+ * subclass of {@link LandscapeFragment}.
  */
 public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRoverRoutineSettingsBinding, RoverRoutineSettingsViewModel> {
 
     private FragmentRoverRoutineSettingsBinding view_binding;
     private RoverRoutineSettingsViewModel view_model;
+
+    /**
+     * The RecyclerAdapter used to configure the RoverConfiguration-Recycler-View
+     */
     RoverConfigurationRecyclerAdapter roverConfigurationRecyclerAdapter;
+
+    /**
+     * A boolean used to determine  whether the RoverConfiguration-Recycler-View is supposed to show
+     * all rovers or only the ones currently connected
+     */
     private boolean displayAllRovers;
+
+    /**
+     * The timer used to schedule connection updates with the rovers.
+     */
     private Timer timer;
+
+    /**
+     * A list of all rovers used to filter the ones out that are not supposed to be shown in the
+     * RoverConfiguration-Recycler-View
+     */
     private List<Rover> allRovers;
 
     public RoverRoutineSettingsFragment() {
@@ -100,18 +118,28 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
         displayAllRovers = false;
     }
 
+    /**
+     * A basic lifecycle method of an android fragment, used to additionally stop the {@link #timer}
+     */
     @Override
     public void onPause() {
         timer.cancel();
         super.onPause();
     }
 
+    /**
+     * A basic lifecycle method of an android fragment, used to additionally resume the
+     * {@link #timer}
+     */
     @Override
     public void onResume() {
         super.onResume();
         timer = view_model.startRoverUpdates();
     }
 
+    /**
+     * configure the RoverConfiguration-Recycler-View (for the first time)
+     */
     private void init_rover_configuration_recycler_view() {
         RecyclerView.LayoutManager my_layout_manager = new LinearLayoutManager(requireActivity());
         view_binding.roverConfigurationList.setLayoutManager(my_layout_manager);
@@ -123,6 +151,11 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
     /**
      * Configures the Fragment as Observer for different LiveData-Sources of the ViewModel and
      * specifies callbacks, which are called when the observed LiveData-Source is changed.
+     * 1. get_all_rovers_livedata() -> update the {@link #allRovers} variable and filter the
+     * not connected ones out
+     * 2. get_num_of_used_rovers() -> update the corresponding UI TextView
+     * 3. get_num_of_connected_rovers() -> update the corresponding UI TextView
+     * 4. get_num_of_rovers() -> update the corresponding UI TextView
      */
     private void setLiveDataSources() {
         view_model.get_all_rovers_livedata().observe(getViewLifecycleOwner(), rovers -> {
@@ -145,6 +178,17 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
         });
     }
 
+    /**
+     * configure the listeners
+     * 1. computeRoutineButton -> trigger asynchronous rover-route computation. results will be
+     * saved in the database
+     * 2. acceptRoverRoutineButton -> associate the currently used rovers to routes and trigger a
+     * view-change to the next fragment {@link RoverStatusFragment}
+     * 3. buttonEditRoversConfigure -> display all rovers or only the connected ones, depending on
+     * the current state of the RoverConfiguration-Recycler-View
+     * 4. buttonAddRover -> display a dialog which allows the user to specify a rover name and ip
+     * address for a new rover to add
+     */
     private void setListeners() {
         view_binding.computeRoutineButton.setOnClickListener(v -> view_model.start_rover_routes_computation());
 
@@ -175,6 +219,11 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
         view_binding.buttonAddRover.setOnClickListener(v -> show_name_and_ip_alert_dialog());
     }
 
+    /**
+     * set the displayed rovers in the RoverConfiguration-Recycler-View to either all rovers or
+     * only the connected ones depending on {@link #displayAllRovers}.
+     * @param displayAllRovers all rovers to consider
+     */
     public void get_active_rovers(boolean displayAllRovers){
         if(displayAllRovers) {
             roverConfigurationRecyclerAdapter.set_local_rover_set(allRovers);
@@ -188,6 +237,11 @@ public class RoverRoutineSettingsFragment extends LandscapeFragment<FragmentRove
             roverConfigurationRecyclerAdapter.set_local_rover_set(activeRovers);
         }
     }
+
+    /**
+     * display the dialog which allows the user to specify the name and ip address of a new rover
+     * and add it to the database
+     */
     private void show_name_and_ip_alert_dialog() {
         LayoutInflater inflater = LayoutInflater.from(requireContext());
         final View my_dialog_view = inflater.inflate(R.layout.rover_configuration_alert_dialog, null);
