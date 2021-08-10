@@ -35,17 +35,34 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 
+/**
+ * RoverConnection is used for communication with the rovers on the filed.
+ * For this purpose the class is implementing multiple different server api calls.
+ */
 public class RoverConnection {
 
     private Repository repository;
     private Executor executor;
     private boolean wasCalledInStatusFragment;
 
+    /**
+     * The constructor is used to create this class and needs two main sources.
+     * @param repository Provides access to the database
+     * @param executor Provides the structure for asynchronous threads
+     */
     public RoverConnection(Repository repository, Executor executor){
         this.repository = repository;
         this.executor = executor;
     }
 
+    /**
+     * Is used to update the information from all rovers on the field in a loop using the {@link #updateAllRovers()} method.
+     * @param secondsBetweenUpdate Time used for a single loop
+     * @param wasCalledInStatusFragment Boolean value to determine the current fragment.
+     *                                  The selected but disconnected rovers are shown in the RoverStatusFragment, but not in the RoverRoutineSettingsFragment.
+     *                                  As this method is called first in both fragments the global variable is set here.
+     * @return the timer that has to be closed to stop the loop
+     */
     public Timer updateAllRoversContinuously(int secondsBetweenUpdate, boolean wasCalledInStatusFragment){
         this.wasCalledInStatusFragment = wasCalledInStatusFragment;
         int delay = 0;
@@ -204,16 +221,22 @@ public class RoverConnection {
         Call<ResponseBody> getWaypointInfo(@Path("missionId")String missionId, @Path("waypointNumber")int waypointNumber);
     }
 
-    public void uploadMissionFile(Rover rover, List<GeoPoint> list) {
-        JSONArray jsonArray = new JSONArray();
+    public void uploadMissionFile(Rover rover, List<Waypoint> list) {
+        JSONObject mission_file = new JSONObject();
         try {
-            jsonArray = new JSONArray();
+            mission_file.put("mission_id", rover.mission);
+            JSONArray waypoints = new JSONArray();
             for (int i = 0; i < list.size(); i++) {
+                Waypoint waypoint = list.get(i);
                 JSONObject geopoint = new JSONObject();
-                geopoint.put("latitude", list.get(i).getLatitude());
-                geopoint.put("longitude", list.get(i).getLongitude());
-                jsonArray.put(geopoint);
+                geopoint.put("latitude", waypoint.position.getLatitude());
+                geopoint.put("longitude", waypoint.position.getLongitude());
+                if(waypoint.is_navigation_point){
+                    geopoint.put("skip_work", true);
+                }
+                waypoints.put(geopoint);
             }
+            mission_file.put("route", waypoints);
         }catch (JSONException e){
             Log.d("RoverConnection", "Error creating the mission.json File: "+e.getMessage());
         }
@@ -223,7 +246,7 @@ public class RoverConnection {
         File file = new File(path);
         try {
             FileOutputStream fos = new FileOutputStream(file, false);
-            fos.write(jsonArray.toString().getBytes());
+            fos.write(mission_file.toString().getBytes());
             fos.close();
         }catch(IOException e){
             Log.d("RoverConnection", "Write to File error");
@@ -276,7 +299,7 @@ public class RoverConnection {
     }
 
     private void checkDirectories(String mission, int waypoint){
-        String base_path = repository.getContext().getFilesDir()+"/Milestones/Mission_"+mission+"/Waypoint_"+waypoint;
+        String base_path = repository.getContext().getFilesDir()+"/missions/mission_"+mission+"/waypoint_"+waypoint;
         File file = new File(base_path);
         if(!file.exists()){
             file.mkdirs();
@@ -286,7 +309,7 @@ public class RoverConnection {
     private boolean writeResponseBodyToDisk(String mission, int waypoint, String filename,ResponseBody body) {
         try {
             checkDirectories(mission, waypoint);
-            String path = repository.getContext().getFilesDir()+"/Milestones/Mission_"+mission+"/Waypoint_"+waypoint+"/"+filename;
+            String path = repository.getContext().getFilesDir()+"/missions/mission_"+mission+"/waypoint_"+waypoint+"/"+filename;
             // todo change the file location/name according to your need
             File file = new File(path);
 

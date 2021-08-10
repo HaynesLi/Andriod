@@ -502,13 +502,15 @@ public class Repository {
                         return;
                     } else {
                         // TODO send mission to rover!
-                        used_rover.waypoints = new ArrayList<>();
+                        ArrayList<Waypoint> waypoints = new ArrayList<>();
                         for (int i = 0; i < rover_route.route.size(); i++) {
                             used_rover.waypoints.add(new Waypoint(rover_route.rover_route_id, i+1, rover_route.route.get(i), rover_route.is_navigation_point.get(i), rover_route.rover_route_id));
                         }
+                        used_rover.waypoints = waypoints;
                         used_rover.mission = rover_route.rover_route_id;
+                        Log.d("Mission_ID:", rover_route.rover_route_id);
                         used_rover.currentWaypoint = 0;
-                        roverConnection.uploadMissionFile(used_rover, rover_route.route);
+                        roverConnection.uploadMissionFile(used_rover, waypoints);
                         roverDAO.update(used_rover);
                     }
                 } else {

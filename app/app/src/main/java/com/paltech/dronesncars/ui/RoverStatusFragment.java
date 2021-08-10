@@ -4,10 +4,12 @@ import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -200,7 +202,9 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
         final AlertDialog my_dialog = new AlertDialog.Builder(requireContext()).create();
         my_dialog.setView(my_dialog_view);
 
-        String pathPicPrevious = requireContext().getFilesDir()+"/Milestones/Mission_"+clicked_waypoint.mission_id+"/Waypoint_"+clicked_waypoint.waypoint_number+"/previous.jpeg";
+        String base_path = requireContext().getFilesDir()+"/missions/mission_"+clicked_waypoint.mission_id+"/waypoint_"+clicked_waypoint.waypoint_number;
+
+        String pathPicPrevious = base_path+"/previous.jpeg";
         File imgFilePrevious = new  File(pathPicPrevious);
         if(imgFilePrevious.exists()){
             ImageView image = my_dialog_view.findViewById(R.id.picPrevious);
@@ -210,7 +214,7 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
             Log.d("RoverStatusFragment", "File PicPrevious not found");
         }
 
-        String pathPicAfter = requireContext().getFilesDir()+"/Milestones/Mission_"+clicked_waypoint.mission_id+"/Waypoint_"+clicked_waypoint.waypoint_number+"/after.jpeg";
+        String pathPicAfter = base_path+"/after.jpeg";
         File imgFileAfter = new  File(pathPicAfter);
         if(imgFileAfter.exists()){
             ImageView image = my_dialog_view.findViewById(R.id.picAfter);
@@ -220,19 +224,21 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
             Log.d("RoverStatusFragment", "File PicAfter not found");
         }
 
-        TextView timeText = my_dialog_view.findViewById(R.id.timeText);
+        TextView timeAtWaypointText = my_dialog_view.findViewById(R.id.timeAtWaypointText);
+        TextView timeToWaypointText = my_dialog_view.findViewById(R.id.timeToWaypointText);
         TextView confidenceText = my_dialog_view.findViewById(R.id.confidenceText);
         TextView depthText = my_dialog_view.findViewById(R.id.depthText);
         TextView errorText = my_dialog_view.findViewById(R.id.errorText);
 
-        String pathWaypointData = requireContext().getFilesDir()+"/Milestones/Mission_"+clicked_waypoint.mission_id+"/Waypoint_"+clicked_waypoint.waypoint_number+"/waypoint_data.json";
+        String pathWaypointData = base_path+"/waypoint_data.json";
         try {
             byte[] encoded = Files.readAllBytes(Paths.get(pathWaypointData));
             String jsonString = new String(encoded, StandardCharsets.UTF_8);
             JSONObject jsonObject = new JSONObject(jsonString);
-            timeText.setText(jsonObject.getString("time_in_seconds"));
+            timeAtWaypointText.setText(jsonObject.getString("time_spent"));
+            timeToWaypointText.setText(jsonObject.getString("navigation_time"));
             confidenceText.setText(jsonObject.getString("confidence"));
-            depthText.setText(jsonObject.getString("depth_in_cm"));
+            depthText.setText(jsonObject.getString("depth"));
             errorText.setText(jsonObject.getString("errors"));
 
         } catch (IOException | JSONException e) {
@@ -246,6 +252,16 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
         missionText.setText("Mission "+clicked_waypoint.mission_id);
 
         my_dialog.show();
-        my_dialog.getWindow().setLayout(832, 388);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        requireActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int displayWidth = displayMetrics.widthPixels;
+        int displayHeight = displayMetrics.heightPixels;
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        layoutParams.copyFrom(my_dialog.getWindow().getAttributes());
+        int dialogWindowWidth = (int) (displayWidth * 0.7f);
+        int dialogWindowHeight = (int) (displayHeight * 0.7f);
+        layoutParams.width = dialogWindowWidth;
+        layoutParams.height = dialogWindowHeight;
+        my_dialog.getWindow().setAttributes(layoutParams);
     }
 }

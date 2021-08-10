@@ -80,7 +80,7 @@ public class RoverMilestonesRecyclerAdapter extends RecyclerView.Adapter<RoverMi
         holder.getMilestoneLatitudeText().setText("Latitude:\t\t\t"+String.format("%.9g%n", waypoint.position.getLatitude()));
         holder.getMilestoneLongitudeText().setText("Longitude:\t\t"+String.format("%.9g%n", waypoint.position.getLongitude()));
         holder.setWaypoint(waypoint);
-        String pathToWaypointData = holder.getLayoutMilestoneItem().getContext().getFilesDir()+"/Milestones/Mission_"+waypoint.mission_id+"/Waypoint_"+waypoint.waypoint_number+"/waypoint_data.json";
+        String pathToWaypointData = holder.getLayoutMilestoneItem().getContext().getFilesDir()+"/missions/mission_"+waypoint.mission_id+"/waypoint_"+waypoint.waypoint_number+"/waypoint_data.json";
         try {
             byte[] encoded = Files.readAllBytes(Paths.get(pathToWaypointData));
             String jsonString = new String(encoded, StandardCharsets.UTF_8);
