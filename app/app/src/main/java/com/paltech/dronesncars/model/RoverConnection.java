@@ -38,6 +38,8 @@ import retrofit2.http.Path;
 /**
  * RoverConnection is used for communication with the rovers on the filed.
  * For this purpose the class is implementing multiple different server api calls.
+ * When trying to implement a communication technology different from REST this class has to be
+ * replaced.
  */
 public class RoverConnection {
 

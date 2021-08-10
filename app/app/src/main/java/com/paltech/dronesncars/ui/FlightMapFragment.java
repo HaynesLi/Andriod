@@ -28,16 +28,28 @@ import java.util.List;
 import dagger.hilt.android.AndroidEntryPoint;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link FlightMapFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * A subclass of {@link MapFragment}, which adds functionality to import, select, display and modify
+ * Polygons (e.g. from a KML-File) as well as modify a computed flight-rote for the drone.
  */
 @AndroidEntryPoint
 public class FlightMapFragment extends MapFragment {
 
+    /**
+     * List of Markers which are used for editing the outline of the selected polygon
+     */
     private List<Marker> polygon_vertices;
+
+    /**
+     * List of List of Markers, where each List of Markers represents the outline for one hole in a
+     * polygon and can be used to edit the shape of the corresponding hole.
+     */
     private List<List<Marker>> polygon_holes;
+
+    /**
+     * List of Markers which are used for editing the flight-route for the drone
+     */
     private List<Marker> edit_route_markers;
+
 
     private final ActivityResultLauncher<String> getKML = registerForActivityResult(new ActivityResultContracts.GetContent(),
             this::use_kml_result);
@@ -88,11 +100,13 @@ public class FlightMapFragment extends MapFragment {
         view_binding.buttonDeletePolygon.setVisibility(View.VISIBLE);
 
         view_binding.buttonPolygonEdit.setText("Edit Polygon");
-
-        //getArgsFromParent();
-
     }
 
+    /**
+     * add the {@link #edit_route_markers} as overlay to the map
+     * @return true if the markers have been added, false if not due to missing
+     * edit_route_markers list
+     */
     @Override
     protected boolean add_route_edit_markers() {
         if(edit_route_markers != null) {
@@ -103,6 +117,9 @@ public class FlightMapFragment extends MapFragment {
         }
     }
 
+    /**
+     * remove the {@link #edit_route_markers} from the map
+     */
     @Override
     protected void clear_route_edit_markers() {
         if (edit_route_markers != null && !edit_route_markers.isEmpty()) {
@@ -110,6 +127,9 @@ public class FlightMapFragment extends MapFragment {
         }
     }
 
+    /**
+     * save changed flight route to the database
+     */
     @Override
     protected void save_route_or_routes() {
         if (changed_during_edit) {
@@ -123,6 +143,7 @@ public class FlightMapFragment extends MapFragment {
         }
     }
 
+
     @Override
     protected void different_inits() {
         edit_route_markers = null;
@@ -133,6 +154,11 @@ public class FlightMapFragment extends MapFragment {
         return FragmentMapBinding.bind(view);
     }
 
+    /**
+     * get the used ViewModel as usual, but in this case it uses the same ViewModel as its
+     * superclass and not an own one.
+     * @return the ViewModel
+     */
     @Override
     protected MapViewModel get_view_model() {
         return new ViewModelProvider(requireActivity()).get(MapViewModel.class);
@@ -143,7 +169,10 @@ public class FlightMapFragment extends MapFragment {
         view_binding.buttonPolygonEdit.setEnabled(enabled);
     }
 
-
+    /**
+     * configure the fragment for editing the polygon by enabling/disabling a bunch of buttons and
+     * changing the state to EDIT_POLYGON
+     */
     private void start_polygon_edit() {
         view_binding.buttonExportPolygonToKml.setVisibility(View.INVISIBLE);
         view_binding.buttonEditRoute.setEnabled(false);
@@ -155,6 +184,10 @@ public class FlightMapFragment extends MapFragment {
         current_state = VIEW_STATE.EDIT_POLYGON;
     }
 
+    /**
+     * configure the fragment for finishing the polygon edit by enabling/disabling a bunch of
+     * buttons, removing the displayed markers from the map and changing the state to NONE
+     */
     private void stop_polygon_edit() {
         if (polygon_vertices != null) {view_binding.map.getOverlayManager().removeAll(polygon_vertices);}
         if (polygon_holes != null) {
@@ -173,23 +206,42 @@ public class FlightMapFragment extends MapFragment {
         current_state = VIEW_STATE.NONE;
     }
 
+    /**
+     * trigger the parsing of the KML file. Does not return anything as the contents as storage
+     * access has to be done asynchronous and cannot be done from the main UI thread. Instead the
+     * results will be forwarded to an observed LiveData-Source in the {@link MapViewModel}
+     * @param kml_file_uri the Uri (Android specific implementation) of the kml file to parse
+     */
     private void parseKMLFile(Uri kml_file_uri) {
         view_model.parseKMLFile(kml_file_uri);
     }
 
-
+    /**
+     * required by osmdroid for the map configuration
+     */
     @Override
     public void onResume() {
         super.onResume();
         view_binding.map.onResume();
     }
 
+    /**
+     * required by osmdroid for the map configuration
+     */
     @Override
     public void onPause() {
         super.onPause();
         view_binding.map.onPause();
     }
 
+    /**
+     * set the listeners:
+     * 1. buttonPolygonEdit -> if in EDIT_POLYGON state, collect the GeoPoint data from the
+     * different Marker-Lists and save the resulting polygon in the database. Else if in NONE state,
+     * add the Markers for the currently displayed polygon to the map
+     * 2. buttonImportKml -> trigger selection of KML-file by user from storage and its parsing
+     * 3. buttonDeletePolygon -> delete the current polygon completely (from the database and map)
+     */
     @Override
     protected void set_listeners() {
         super.set_listeners();
@@ -250,12 +302,9 @@ public class FlightMapFragment extends MapFragment {
         });
     }
 
-
-
-
-
-
-
+    /**
+     * additional tasks of map configuration specific to this fragment
+     */
     @Override
     protected void configureMap() {
         super.configureMap();
@@ -269,7 +318,10 @@ public class FlightMapFragment extends MapFragment {
      * Configures the Fragment as Observer for different LiveData-Sources of the ViewModel and
      * specifies callbacks, which are called when the observed LiveData-Source is changed.
      * Overrides the corresponding method {@link MapFragment#set_livedata_sources()} from its
-     * superclass,
+     * superclass in order to add additional LiveData-Sources:
+     * 1. choosePolygonFromKML -> if the number of selectable polygons (acquired from a kml file) is
+     * bigger than one, display a popup prompting the user to choose one of them
+     * 2. view_model.getRoute() -> display/remove a new or changed drone flight route in the map
      */
     @Override
     protected void set_livedata_sources() {
@@ -315,6 +367,9 @@ public class FlightMapFragment extends MapFragment {
         });
     }
 
+    /**
+     * delete the selected marker from its place in the polygon outline or one of its holes
+     */
     @Override
     protected void delete_marker_polygon_edit() {
         if (!polygon_vertices.remove(selected_marker)) {
@@ -329,6 +384,10 @@ public class FlightMapFragment extends MapFragment {
         view_binding.map.invalidate();
     }
 
+    /**
+     * add a marker in the outline of the polygon or in the outline of one of its holes right after
+     * the selected marker
+     */
     @Override
     protected void add_marker_polygon_edit() {
         if (polygon_vertices == null) {
@@ -357,6 +416,11 @@ public class FlightMapFragment extends MapFragment {
             view_binding.map.invalidate();
     }
 
+    /**
+     * turn a polygon including its holes into markers that can be used for editing sad polygon.
+     * The result will be saved in {@link #polygon_vertices} and {@link #polygon_holes}.
+     * @param polygon the polygon to turn into markers
+     */
     @Override
     protected void polygon_to_markers(Polygon polygon) {
         polygon_vertices = new ArrayList<>();
@@ -388,9 +452,16 @@ public class FlightMapFragment extends MapFragment {
         view_binding.buttonPolygonEdit.setEnabled(true);
     }
 
+    /**
+     * DO NOTHING to observe the rover routes in the view_model. this fragment is not concerned with
+     * rover routes (as opposed to its superclass)
+     */
     @Override
     protected void observe_rover_routes(){}
 
+    /**
+     * delete the selected marker from its place in the flight route.
+     */
     @Override
     protected void delete_marker_route_edit() {
         edit_route_markers.remove(selected_marker);
@@ -402,6 +473,9 @@ public class FlightMapFragment extends MapFragment {
         view_binding.map.invalidate();
     }
 
+    /**
+     * add a marker into the flight route right after the selected marker
+     */
     @Override
     protected void add_marker_route_edit() {
         Marker new_marker = build_edit_marker((GeoPoint) view_binding.map.getMapCenter(),

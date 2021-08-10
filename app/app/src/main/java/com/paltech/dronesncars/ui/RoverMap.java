@@ -20,10 +20,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * A subclass of {@link MapFragment}, which adds functionality to display and modify pre-computed
+ * rover routes.
+ */
 public class RoverMap extends MapFragment {
 
+    /**
+     * List of Polylines, the overlays that are used to display a rover route on the map. List
+     * instead of a single polyline, because a rover's route is split into two different colored
+     * parts, one where it already was and one where it still has to go.
+     */
     private List<Polyline> observed_rover_route;
+
+    /**
+     * List of RoverRoutes
+     */
     private List<RoverRoute> rover_routes;
+
+    /**
+     * the currently observed rover (has been selected by the user in the RoverStatusFragment) which
+     * is used to determine which route to display.
+     */
     private Rover observed_rover;
 
     /**
@@ -39,7 +57,7 @@ public class RoverMap extends MapFragment {
 
     /**
      * one of a fragments basic lifecycle methods {@link androidx.fragment.app.Fragment#onViewCreated(View, Bundle)}
-     * sets the buttonEditRoute visible and enabled
+     * sets the buttonEditRoute visible and enabled.
      */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -56,7 +74,11 @@ public class RoverMap extends MapFragment {
      * Configures the Fragment as Observer for different LiveData-Sources of the ViewModel and
      * specifies callbacks, which are called when the observed LiveData-Source is changed.
      * Overrides the corresponding method {@link MapFragment#set_livedata_sources()} from its
-     * superclass,
+     * superclass in order to add additional LiveData-Sources:
+     * 1. get_rover_routes() -> (re-)compute the rover route overlay for the currently observed
+     * route when the route has changed
+     * 2. status_observed_rover -> (re-)compute the rover route overlay for the currently observed
+     * rover status has changed, e.g. the position or last waypoint has been updated.
      */
     @Override
     protected  void set_livedata_sources() {
@@ -77,10 +99,18 @@ public class RoverMap extends MapFragment {
         });
     }
 
+    /**
+     * DO NOTHING to observe the rover routes in the view_model. this fragment is not concerned with
+     * all rover routes (as opposed to its superclass) but only the one of the currently selected
+     * rover.
+     */
     @Override
     protected void observe_rover_routes() {
     }
 
+    /**
+     * remove the currently displayed rover route from the map (not from the database!)
+     */
     private void clear_current_observed_route() {
         if (observed_rover_route != null && !observed_rover_route.isEmpty()) {
             view_binding.map.getOverlayManager().removeAll(observed_rover_route);
@@ -89,6 +119,12 @@ public class RoverMap extends MapFragment {
         }
     }
 
+    /**
+     * compute a new overlay for currently observed rover. Split the rover route at the current
+     * position of the rover into two different colored polylines: green for places it already
+     * visited and red for places it still has to visit. The result will be saved in
+     * {@link #observe_rover_routes} and displayed on the map.
+     */
     private void compute_new_observed_route_overlay() {
         if (rover_routes != null && !rover_routes.isEmpty() && observed_rover != null) {
             RoverRoute observed_route = null;
@@ -172,6 +208,11 @@ public class RoverMap extends MapFragment {
         }
     }
 
+    /**
+     * check if it is necessary to compute a new overlay for the given rover
+     * @param new_rover the rover to check for
+     * @return true if observed_rover is different from new_rover
+     */
     private boolean route_overlay_computation_required(Rover new_rover) {
         if (observed_rover == null && new_rover != null) {
             return true;

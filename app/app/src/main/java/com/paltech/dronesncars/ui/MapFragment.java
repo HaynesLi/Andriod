@@ -227,6 +227,7 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
 
     }
 
+
     protected FragmentMapBinding get_view_binding(View view) {
         return FragmentMapBinding.bind(view);
     }
@@ -390,7 +391,7 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
 
     /**
      * add the {@link #edit_rover_route_markers} as overlay to the map
-     * @return true if the marker has been added, false if not due to missing
+     * @return true if the markers have been added, false if not due to missing
      * edit_rover_route_markers list
      */
     protected boolean add_route_edit_markers() {
@@ -430,7 +431,7 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
     }
 
     /**
-     * save changed route to the database
+     * save changed rover routes to the database
      */
     protected void save_route_or_routes() {
         if (changed_during_edit) {
@@ -560,6 +561,13 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
 
     protected void add_marker_polygon_edit() {}
 
+    /**
+     * insert a Marker at the given index+1 into the given list
+     * @param list the list to insert into
+     * @param index the index to insert after
+     * @param marker the marker to insert
+     * @return the list with the marker inserted
+     */
     protected List<Marker> insert_marker_at_index(List<Marker> list, int index, Marker marker) {
         if (index >= 0 && index <= list.size()) {
             List<Marker> before = list.subList(0, index);
@@ -571,6 +579,13 @@ public class MapFragment extends LandscapeFragment<FragmentMapBinding, MapViewMo
         return null;
     }
 
+    /**
+     * insert a boolean at the given index+1 into the given list
+     * @param list the list to insert into
+     * @param index the index to insert after
+     * @param bool the boolean to insert
+     * @return the list with the boolean inserted
+     */
     private List<Boolean> insert_bool_at_index(List<Boolean> list, int index, boolean bool) {
         if (index >= 0 && index <= list.size()) {
             List<Boolean> before = list.subList(0, index);
