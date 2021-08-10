@@ -504,7 +504,7 @@ public class Repository {
                         // TODO send mission to rover!
                         ArrayList<Waypoint> waypoints = new ArrayList<>();
                         for (int i = 0; i < rover_route.route.size(); i++) {
-                            used_rover.waypoints.add(new Waypoint(rover_route.rover_route_id, i+1, rover_route.route.get(i), rover_route.is_navigation_point.get(i), rover_route.rover_route_id));
+                            waypoints.add(new Waypoint(rover_route.rover_route_id, i+1, rover_route.route.get(i), rover_route.is_navigation_point.get(i), rover_route.rover_route_id));
                         }
                         used_rover.waypoints = waypoints;
                         used_rover.mission = rover_route.rover_route_id;
