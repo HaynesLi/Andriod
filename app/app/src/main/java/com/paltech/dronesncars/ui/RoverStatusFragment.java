@@ -173,19 +173,21 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
         if (clicked_rover != null) {
             map_view_model.set_status_observed_rover(clicked_rover);
             List<Waypoint> waypoint_list = new ArrayList<>();
-            if(clicked_rover.equals(selected_rover)){
+            if (clicked_rover.equals(selected_rover)){
                 selected_rover = null;
-                roverMilestonesAdapter.setLocalWaypointSet(waypoint_list);
             }else {
                 this.selected_rover = clicked_rover;
-                for (int i = 0; i < clicked_rover.waypoints.size(); i++) {
-                    Waypoint waypoint = clicked_rover.waypoints.get(i);
-                    if (waypoint.milestone_completed && !waypoint.is_navigation_point) {
-                        waypoint_list.add(waypoint);
+                if (clicked_rover.waypoints != null) {
+                    for (int i = 0; i < clicked_rover.waypoints.size(); i++) {
+                        Waypoint waypoint = clicked_rover.waypoints.get(i);
+                        if (waypoint.milestone_completed && !waypoint.is_navigation_point) {
+                            waypoint_list.add(waypoint);
+                        }
                     }
+
                 }
-                roverMilestonesAdapter.setLocalWaypointSet(waypoint_list);
             }
+            roverMilestonesAdapter.setLocalWaypointSet(waypoint_list);
         }
     }
 

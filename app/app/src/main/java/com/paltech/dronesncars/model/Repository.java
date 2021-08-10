@@ -490,32 +490,35 @@ public class Repository {
 
     public void associate_rovers_to_routes(ViewModelCallback<String> callback_for_toast) {
         executor.execute(() -> {
-            Map<Integer, Rover> used_rovers_dict = roverDAO.getUsedRovers().stream().collect(Collectors.toMap(rover -> rover.rover_id, rover -> rover));
-            List<String> current_rover_route_ids = roverRoutineDAO.getRoverRoutineByID(ROUTINE_ID).rover_route_ids;
-            List<RoverRoute> current_rover_routes = current_rover_route_ids.stream().map(roverRouteDAO::get_rover_route_by_id).collect(Collectors.toList());
+            RoverRoutine current_routine = roverRoutineDAO.getRoverRoutineByID(ROUTINE_ID);
+            if (current_routine != null) {
+                Map<Integer, Rover> used_rovers_dict = roverDAO.getUsedRovers().stream().collect(Collectors.toMap(rover -> rover.rover_id, rover -> rover));
+                List<String> current_rover_route_ids = current_routine.rover_route_ids;
+                List<RoverRoute> current_rover_routes = current_rover_route_ids.stream().map(roverRouteDAO::get_rover_route_by_id).collect(Collectors.toList());
 
-            for(RoverRoute rover_route : current_rover_routes) {
-                if (used_rovers_dict.containsKey(rover_route.corresponding_rover_id)) {
-                    Rover used_rover = used_rovers_dict.get(rover_route.corresponding_rover_id);
-                    if (used_rover.status != RoverStatus.CONNECTED) {
-                        callback_for_toast.onComplete("A Rover initially destined for a route was not available! Computing new routes is advised.");
-                        return;
-                    } else {
-                        // TODO send mission to rover!
-                        ArrayList<Waypoint> waypoints = new ArrayList<>();
-                        for (int i = 0; i < rover_route.route.size(); i++) {
-                            waypoints.add(new Waypoint(rover_route.rover_route_id, i+1, rover_route.route.get(i), rover_route.is_navigation_point.get(i), rover_route.rover_route_id));
+                for (RoverRoute rover_route : current_rover_routes) {
+                    if (used_rovers_dict.containsKey(rover_route.corresponding_rover_id)) {
+                        Rover used_rover = used_rovers_dict.get(rover_route.corresponding_rover_id);
+                        if (used_rover.status != RoverStatus.CONNECTED) {
+                            callback_for_toast.onComplete("A Rover initially destined for a route was not available! Computing new routes is advised.");
+                            return;
+                        } else {
+                            // TODO send mission to rover!
+                            ArrayList<Waypoint> waypoints = new ArrayList<>();
+                            for (int i = 0; i < rover_route.route.size(); i++) {
+                                waypoints.add(new Waypoint(rover_route.rover_route_id, i + 1, rover_route.route.get(i), rover_route.is_navigation_point.get(i), rover_route.rover_route_id));
+                            }
+                            used_rover.waypoints = waypoints;
+                            used_rover.mission = rover_route.rover_route_id;
+                            Log.d("Mission_ID:", rover_route.rover_route_id);
+                            used_rover.currentWaypoint = 0;
+                            roverConnection.uploadMissionFile(used_rover, waypoints);
+                            roverDAO.update(used_rover);
                         }
-                        used_rover.waypoints = waypoints;
-                        used_rover.mission = rover_route.rover_route_id;
-                        Log.d("Mission_ID:", rover_route.rover_route_id);
-                        used_rover.currentWaypoint = 0;
-                        roverConnection.uploadMissionFile(used_rover, waypoints);
-                        roverDAO.update(used_rover);
+                    } else {
+                        callback_for_toast.onComplete("A Rover selected for Route Computation is not destined to be used anymore! Computing new routes is advised.");
+                        return;
                     }
-                } else {
-                    callback_for_toast.onComplete("A Rover selected for Route Computation is not destined to be used anymore! Computing new routes is advised.");
-                    return;
                 }
             }
         });
