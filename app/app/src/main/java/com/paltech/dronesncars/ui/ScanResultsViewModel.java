@@ -12,9 +12,17 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 
+/**
+ * The ViewModel used by {@link ScanResultsFragment}, which holds all the LiveData necessary to
+ * update and display Computer-Vision-Scan results (which currently are completely mocked). A
+ * subclass of {@link ViewModel}.
+ */
 @HiltViewModel
 public class ScanResultsViewModel extends ViewModel {
 
+    /**
+     * The repository
+     */
     private final Repository repository;
 
     @Inject
@@ -22,10 +30,17 @@ public class ScanResultsViewModel extends ViewModel {
         this.repository = repository;
     }
 
+    /**
+     * get a list of the scan results as LiveData
+     * @return the list of scan results as LiveData
+     */
     public LiveData<List<Result>> get_scan_results() {
         return this.repository.get_scan_results();
     }
 
+    /**
+     * mock results by directly and asynchronously writing results into the database
+     */
     public void mock_results() {
         this.repository.mock_results();
     }
