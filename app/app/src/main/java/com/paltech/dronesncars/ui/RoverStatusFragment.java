@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
@@ -191,7 +190,7 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
      */
     private void setLiveDataSources() {
         view_model.getUsedRovers().observe(getViewLifecycleOwner(),
-                rovers -> roverStatusAdapter.setLocalRoverSet(rovers));
+                rovers -> roverStatusAdapter.set_local_rover_set(rovers));
     }
 
     /**
@@ -235,7 +234,7 @@ public class RoverStatusFragment extends LandscapeFragment<FragmentRoverStatusBi
 
                 }
             }
-            roverMilestonesAdapter.setLocalWaypointSet(waypoint_list);
+            roverMilestonesAdapter.set_local_waypoint_set(waypoint_list);
         }
     }
 
