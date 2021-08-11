@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * A Mock of the Computer-Vision-Pipeline
+ */
 public class WeedDetectorMock implements WeedDetectorInterface {
 
     private Polygon polygon;

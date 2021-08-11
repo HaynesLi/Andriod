@@ -22,7 +22,7 @@ import java.util.List;
 
 public class KMLParser {
     /**
-     *
+     * get an InputStream for a specific Uri
      * @param context - the applications context
      * @param uri - the Uri (Android) to open an input stream to
      * @return - an InputStream to the given Uri
@@ -36,6 +36,16 @@ public class KMLParser {
         }
     }
 
+    /**
+     * parse a KML File at the given Uri and return a dictionary that contains polygons and their
+     * FIDs, which were found inside the KML file.
+     * The current implementation of this method is very static and specific for our example file,
+     * but of course could be replaced with a more sophisticated, general method
+     * @param kml_file_uri the uri of the KML file to parse
+     * @param context the applications context
+     * @return dictionary that contains polygons and their FIDs, which were found inside the KML
+     * file
+     */
     public static Dictionary<String, Polygon> parseKMLFile(Uri kml_file_uri, Context context) {
         KmlDocument kmlDocument = new KmlDocument();
         kmlDocument.parseKMLStream(getInputStreamByUri(context, kml_file_uri), null);
@@ -65,6 +75,13 @@ public class KMLParser {
         return polygonDictionary;
     }
 
+    /**
+     * get the KMLDocument for a given polygon, which can be saved in its own file
+     * the current implementation tries to copy the given example-files structure, but does not
+     * enter meaningful values into the different extended-data fields.
+     * @param polygon the polygon to get the kml file for
+     * @return the KmlDocument
+     */
     public static KmlDocument polygon_to_kml(Polygon polygon) {
         KmlDocument kmlDocument = new KmlDocument();
         KmlFolder new_folder = new KmlFolder();
@@ -95,7 +112,7 @@ public class KMLParser {
 
         kmlPolygon.mCoordinates = new ArrayList<>(polygon.getActualPoints());
         if (polygon.getHoles() != null && !polygon.getHoles().isEmpty()) {
-            ArrayList<ArrayList<GeoPoint>> holes = new ArrayList<>(); // TODO stream().map() might come in handy here in theory
+            ArrayList<ArrayList<GeoPoint>> holes = new ArrayList<>();
 
             for (List<GeoPoint> hole: polygon.getHoles()) {
                 holes.add(new ArrayList<>(hole));
@@ -107,7 +124,6 @@ public class KMLParser {
         kmlPlacemark.mGeometry = kmlPolygon;
 
         new_folder.add(kmlPlacemark);
-
 
         kmlDocument.mKmlRoot.add(new_folder);
 

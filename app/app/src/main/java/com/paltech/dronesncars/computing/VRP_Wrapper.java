@@ -12,6 +12,10 @@ import org.osmdroid.util.GeoPoint;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A wrapper class for the Vehicle Routing Problem Library/Framework in {@link com.vrp}
+ * TODO does this link work like this?
+ */
 public class VRP_Wrapper {
 
     /**
@@ -28,7 +32,6 @@ public class VRP_Wrapper {
 
     /**
      * compute the best routes for a certain number of vehicles to visit a number of GeoPoints
-     *
      * @param num_of_vehicles the number of vehicles to use (e.g. drones, rovers)
      * @param targets the locations to visit
      * @param index_of_depot the index of the start location inside targets
@@ -46,7 +49,6 @@ public class VRP_Wrapper {
 
     /**
      * Run a specified problem instance
-     *
      * @param problem_instance the problem instance
      * @return returns the Solution to the problem
      */
@@ -72,7 +74,6 @@ public class VRP_Wrapper {
 
     /**
      * Translate the solution to a problem instance into a list of routes (= lists of GeoPoints)
-     *
      * @param solution the solution to translate
      * @param targets the GeoPoints which are part of the solution = all GeoPoints to visit
      * @return a list of routes (= lists of GeoPoints)
@@ -99,7 +100,6 @@ public class VRP_Wrapper {
     /**
      * build and prepare the problem instance for a vehicle routing problem with the given number
      * of vehicles and the given targets
-     *
      * @param num_of_vehicles the number of vehicles
      * @param targets the GeoPoints to visit
      * @return returns the resulting ProblemInstance, which is ready to be solved by
@@ -122,17 +122,11 @@ public class VRP_Wrapper {
 
         problem_instance.setInfo(true);
 
-        //Log.d("DEBUG_VRP", problem_instance.toString());
-
         return problem_instance;
-
-        //return InstanceHandler.createRandom(num_of_vehicles, 10);
-
     }
 
     /**
      * calculate the distances between a set of GeoPoints
-     *
      * @param geo_points the geopoints to calculate the distances for
      * @return returns a NxN matrix of distances, where N = geo_points.size() and
      *  distances[i][j] is the distance between geo_points.get(i) and geo_points.get(j)
@@ -154,7 +148,6 @@ public class VRP_Wrapper {
 
     /**
      * create the corresponding Nodes for a set of GeoPoints
-     *
      * @param geo_points the GeoPoints to create the Nodes for
      * @return returns an array of the corresponding Nodes
      */
@@ -169,7 +162,4 @@ public class VRP_Wrapper {
 
         return nodes;
     }
-
-
-
 }

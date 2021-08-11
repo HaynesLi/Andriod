@@ -12,16 +12,17 @@ import java.util.List;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+/**
+ * The class implementing the raycasting algorithm to allow us to check whether a GeoPoint is inside
+ * our Polygon and computing the flight route for the drone.
+ */
 public class FlightRouteGenerator {
 
     private static final double STD_DIST_LAT = 111.3;
     private static final double STD_DIST_LONG = 71.5;
 
     /**
-     * Checks whether a ??? line from the point P intersects the line between the points A and B
-     * TODO where does the assumed line from point P go? vertical? horizontal?
-     * TODO is this the correct explanation for the RuntimeException?
-     *
+     * Checks whether a line from the point P intersects the line between the points A and B
      * @param A first point limiting the line
      * @param B second point limiting the line
      * @param P the origin of the line which is tested for "crossing" the line between A and B
@@ -33,7 +34,7 @@ public class FlightRouteGenerator {
             return intersects(B, A, P);
 
         if (P.getLongitude() == A.getLongitude() || P.getLongitude() == B.getLongitude())
-            throw new RuntimeException("P lies on the shapes outline?"); // TODO what is this?!
+            throw new RuntimeException("P lies on the shapes outline");
 
         if (P.getLongitude() > B.getLongitude() || P.getLongitude() < A.getLongitude() || P.getLatitude() >= max(A.getLatitude(), B.getLatitude()))
             return false;
@@ -49,7 +50,6 @@ public class FlightRouteGenerator {
     /**
      * Method to test whether a GeoPoint is inside the given shape, while considering holes in the
      * polygon
-     *
      * @param shapes List of Lists of GeoPoints corresponding to the outline of our polygon.
      *               For example first shape is the polygon's outline, second is a hole's outline
      *               inside the polygon
@@ -69,10 +69,20 @@ public class FlightRouteGenerator {
         return inside;
     }
 
+    /**
+     * turn a distance in meters to a distance in latitude degrees
+     * @param meters the number of meters
+     * @return the number of latitude degrees
+     */
     public static double meter_to_latitude_distance(double meters) {
         return meters*0.001/STD_DIST_LAT;
     }
 
+    /**
+     * turn a distance in meters to a distance in longitude degrees
+     * @param meters the number of meters
+     * @return the number of longitude degrees
+     */
     public static double meter_to_longitude_distance(double meters) {
         return meters*0.001/STD_DIST_LONG;
     }
@@ -80,7 +90,6 @@ public class FlightRouteGenerator {
     /**
      * Method can be used to compute all the GeoPoints inside a Polygon which need to be visited for
      * a certain set of settings of the drone
-     *
      * @param polygon  The polygon which has to be considered (osmdroid.Polygon)
      * @param distance the distance in the grid of squares between different points
      * @return a 2-dimensional array that contains Null if the point in the grid is outside of the
@@ -126,7 +135,6 @@ public class FlightRouteGenerator {
     /**
      * Method can be used to compute the order in which the target points will be visited by the
      * drone
-     *
      * @param targets a 2-dimensional array representing a grid of squares with GeoPoints (the
      *                targets) at the intersections. Contains Null if the corresponding GeoPoint is
      *                outside of the target polygon
@@ -144,6 +152,13 @@ public class FlightRouteGenerator {
         return route;
     }
 
+    /**
+     * compute the flight route for the drone for a given polygon with the given distance between
+     * each target point
+     * @param polygon the polygon to compute the route for
+     * @param distance the distance between target points to compute the route for
+     * @return a List of GeoPoints that have to be visited in order (the flight route)
+     */
     public static List<GeoPoint> compute_flight_route(Polygon polygon, int distance) {
         GeoPoint[][] targets = get_targets_for_polygon(polygon, distance);
         List<GeoPoint> flightroute = compute_route_from_targets(targets);

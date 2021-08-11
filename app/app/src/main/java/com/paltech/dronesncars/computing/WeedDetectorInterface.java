@@ -6,10 +6,14 @@ import android.net.Uri;
 import com.paltech.dronesncars.model.Result;
 
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.overlay.Polygon;
 
 import java.util.List;
 
+/**
+ * The interface which specifies the how a WeedDetector, or Computer-Vision-Pipeline has to interact
+ * with the current implementation, or how a Mock has to look like. We only implemented mocks for
+ * this part of the problem so it is of course possible to change this up if necessary
+ */
 public interface WeedDetectorInterface {
     /**
      * Method which takes a list if GPS-locations and a list of picture Uris, and returns a List of
