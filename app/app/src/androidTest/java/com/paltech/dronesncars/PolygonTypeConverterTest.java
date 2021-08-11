@@ -29,9 +29,9 @@ public class PolygonTypeConverterTest {
     public void empty_polygon_test() {
         Polygon expected_polygon = new Polygon();
 
-        String json_polygon = type_converter.fromPolygon(expected_polygon);
+        String json_polygon = type_converter.from_Polygon_to_String(expected_polygon);
 
-        Polygon actual_polygon = type_converter.fromPolygonString(json_polygon);
+        Polygon actual_polygon = type_converter.from_Polygon_String_to_Polygon(json_polygon);
 
         assertEquals(actual_polygon.getActualPoints(), expected_polygon.getActualPoints());
         assertEquals(actual_polygon.getHoles(), expected_polygon.getHoles());
@@ -48,9 +48,9 @@ public class PolygonTypeConverterTest {
         expected_polygon.addPoint(new GeoPoint(48.312927380430466,
                 11.894068121549093));
 
-        String json_polygon = type_converter.fromPolygon(expected_polygon);
+        String json_polygon = type_converter.from_Polygon_to_String(expected_polygon);
 
-        Polygon actual_polygon = type_converter.fromPolygonString(json_polygon);
+        Polygon actual_polygon = type_converter.from_Polygon_String_to_Polygon(json_polygon);
 
         assertEquals(actual_polygon.getActualPoints(), expected_polygon.getActualPoints());
         assertEquals(actual_polygon.getHoles(), expected_polygon.getHoles());
@@ -89,9 +89,9 @@ public class PolygonTypeConverterTest {
 
         expected_polygon.setHoles(holes);
 
-        String json_polygon = type_converter.fromPolygon(expected_polygon);
+        String json_polygon = type_converter.from_Polygon_to_String(expected_polygon);
 
-        Polygon actual_polygon = type_converter.fromPolygonString(json_polygon);
+        Polygon actual_polygon = type_converter.from_Polygon_String_to_Polygon(json_polygon);
 
         assertEquals(actual_polygon.getActualPoints(), expected_polygon.getActualPoints());
         assertEquals(actual_polygon.getHoles(), expected_polygon.getHoles());

@@ -12,6 +12,9 @@ import androidx.room.Update;
 import java.net.InetAddress;
 import java.util.List;
 
+/**
+ * The Dao for {@link Rover}
+ */
 @Dao
 public interface RoverDAO {
 

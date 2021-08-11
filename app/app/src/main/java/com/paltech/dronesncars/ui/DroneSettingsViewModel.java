@@ -52,6 +52,6 @@ public class DroneSettingsViewModel extends ViewModel {
      * result will be saved directly into the database and used from there, hence no return value.
      */
     public void computeRoute() {
-        repository.computeRoute();
+        repository.compute_FlightRoute();
     }
 }

@@ -6,6 +6,9 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+/**
+ * The Dao for {@link DroneSetting}
+ */
 @Dao
 public interface DroneSettingDAO {
 
@@ -21,8 +24,6 @@ public interface DroneSettingDAO {
     @Update
     void updateSetting(DroneSetting setting);
 
-    // TODO: does it work like this (return exactly one value,
-    //  even though in theory there could be multiple?)
     @Query("SELECT flight_altitude FROM dronesetting where settings_id = (:settings_id)")
     int getFlightAltitude(int settings_id);
 }

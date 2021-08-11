@@ -17,6 +17,11 @@ import javax.inject.Singleton;
 
 import dagger.hilt.android.qualifiers.ApplicationContext;
 
+/**
+ * The class we use to save a polygon we for example modified into its own KML-File, but it can be
+ * used to store any String into any File where you own an Uri that is accessible to this
+ * application (android has many storage restrictions)
+ */
 @Singleton
 public class StorageManager {
 
@@ -27,8 +32,13 @@ public class StorageManager {
         this.content_resolver = context.getContentResolver();
     }
 
-
-
+    /**
+     * Save a String into a file with the file name file_name. The file will be placed in
+     * Download/DronesNCars/* and will be accessible via the ContentManager and by the user and all
+     * apps that have the permission to use the content manager
+     * @param file_name the file_name
+     * @param content the string to save
+     */
     public void save_string_to_file(String file_name, String content) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             Uri downloads = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
@@ -50,6 +60,11 @@ public class StorageManager {
         }
     }
 
+    /**
+     * Fill a file with the given string
+     * @param destination_content_uri the destination uri of the file to write into
+     * @param string_to_write the string to write into the file
+     */
     private void copy_file_data(Uri destination_content_uri, String string_to_write) {
         ParcelFileDescriptor file_descriptor;
         try {

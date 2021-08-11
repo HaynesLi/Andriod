@@ -10,6 +10,9 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * The table that is used to store rovers and all their status information.
+ */
 @Entity
 public class Rover {
 

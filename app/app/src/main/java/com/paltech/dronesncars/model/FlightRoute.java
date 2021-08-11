@@ -9,6 +9,10 @@ import org.osmdroid.util.GeoPoint;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * The table used to save the one drone flight route. Similar to {@link DroneSetting} we currently only save one
+ * route instead of storing multiple and selecting the newest one.
+ */
 @Entity
 public class FlightRoute {
     @PrimaryKey

@@ -9,6 +9,9 @@ import androidx.room.Update;
 
 import java.util.List;
 
+/**
+ * The Dao for {@link FlightRoute}
+ */
 @Dao
 public interface FlightRouteDAO {
 

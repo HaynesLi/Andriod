@@ -9,6 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * The table we use to store which rover routes are the currently used ones. Similar to
+ * {@link DroneSetting} we keep only one entry in this database and change its content when new
+ * routes are computed, but it could be used in the future to select from a number of pre-computed
+ * route-sets or something like that.
+ */
 @Entity
 public class RoverRoutine {
 

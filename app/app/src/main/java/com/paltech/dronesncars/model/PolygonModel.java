@@ -8,6 +8,11 @@ import org.osmdroid.views.overlay.Polygon;
 
 import java.util.Objects;
 
+/**
+ * The table we use to save the one polygon we display on the map. Similar to {@link DroneSetting}
+ * we only save one and replace it when necessary instedd of saving multiple and selecting the
+ * newest one.
+ */
 @Entity
 public class PolygonModel {
     @PrimaryKey

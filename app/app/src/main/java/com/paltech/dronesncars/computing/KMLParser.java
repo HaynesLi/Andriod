@@ -1,4 +1,4 @@
-package com.paltech.dronesncars.model;
+package com.paltech.dronesncars.computing;
 
 import android.content.Context;
 import android.net.Uri;

@@ -5,6 +5,9 @@ import androidx.room.Relation;
 
 import java.util.List;
 
+/**
+ * The table we use to associate rovers with routes
+ */
 public class RoverAndRoute {
     @Embedded public Rover rover;
     @Relation(

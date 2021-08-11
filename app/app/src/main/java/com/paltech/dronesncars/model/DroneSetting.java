@@ -6,14 +6,19 @@ import androidx.room.PrimaryKey;
 
 import java.util.Objects;
 
+/**
+ * The Table for different DroneSettings. currently we only have 1 line in this table where we
+ * switch the contents when necessary instead of inserting multiple "settings configurations" but
+ * that could be changed
+ */
 @Entity
 public class DroneSetting {
     @PrimaryKey
     @ColumnInfo(name = "settings_id")
-    public int settings_id; // TODO: find something more reasonable (e.g. timestamp?)
+    public int settings_id;
 
     @ColumnInfo(name = "flight_altitude")
-    public int flight_altitude; // TODO: find & add additional reasonable parameters (e.g. overlap?)
+    public int flight_altitude;
 
     public DroneSetting(int settings_id, int flight_altitude) {
         this.settings_id = settings_id;

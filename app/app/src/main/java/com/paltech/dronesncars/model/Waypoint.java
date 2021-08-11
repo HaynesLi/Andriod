@@ -4,6 +4,16 @@ import org.osmdroid.util.GeoPoint;
 
 import java.util.Objects;
 
+// TODO @Paul
+//  1. ist das korrekt was ich geschrieben habe
+//  2. wenn du glaubst da muss noch was mit nem eigenen Kommentar versehen werden tu dir
+//  keinen Zwang an xD
+/**
+ * The class we use to represent one Waypoint/Milestone of a rover on a route.
+ * THIS IS NOT A TABLE IN THE ROOM DATABASE
+ * currently Waypoints are not stored permanently on the tablet, similar to their previous- & after-
+ * pictures
+ */
 public class Waypoint {
 
     public String corresponding_route_id;

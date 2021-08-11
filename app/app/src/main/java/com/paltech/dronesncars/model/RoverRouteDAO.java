@@ -10,6 +10,9 @@ import androidx.room.Update;
 
 import java.util.List;
 
+/**
+ * The Dao for {@link RoverRoute}
+ */
 @Dao
 public interface RoverRouteDAO {
 

@@ -9,6 +9,11 @@ import org.osmdroid.util.GeoPoint;
 
 import java.util.Objects;
 
+/**
+ * The table we use to save results of the (mocked) Computer-Vision-Pipeline. Currently we store
+ * multiple results, but only the current ones. This means that computing/mocking/getting new
+ * results will overwrite all older ones.
+ */
 @Entity
 public class Result {
 

@@ -16,6 +16,9 @@ import java.util.Objects;
 
 import static androidx.room.ForeignKey.CASCADE;
 
+/**
+ * The Table used to store routes for rovers.
+ */
 @Entity(foreignKeys = @ForeignKey(entity = RoverRoutine.class, parentColumns = "rover_routine_id",
         childColumns = "routine_id", onDelete = CASCADE))
 public class RoverRoute {
@@ -24,7 +27,6 @@ public class RoverRoute {
     @ColumnInfo(name = "rover_route_id")
     @NonNull
     public String rover_route_id;
-    // TODO id = yyyy-mm-dd_hh-mm
 
     @ColumnInfo(name = "corresponding_rover_id")
     public int corresponding_rover_id;

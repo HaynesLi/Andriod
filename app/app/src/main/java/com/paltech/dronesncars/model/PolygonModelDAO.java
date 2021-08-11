@@ -7,6 +7,9 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
+/**
+ * The Dao for {@link PolygonModel}
+ */
 @Dao
 public interface PolygonModelDAO {
     @Query("SELECT * FROM PolygonModel WHERE polygon_id = (:polygon_id)")
