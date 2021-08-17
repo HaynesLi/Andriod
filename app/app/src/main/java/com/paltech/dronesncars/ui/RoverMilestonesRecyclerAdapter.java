@@ -73,26 +73,27 @@ public class RoverMilestonesRecyclerAdapter extends RecyclerView.Adapter<RoverMi
         }
 
         /**
-         * get the LinearLayout for TODO @Paul
-         * @return the LinearLayout for TODO @Paul
+         * get the LinearLayout for the Milestone-Row-Item.
+         * Used for changing the color of the item based on the waypoint information
+         * @return the LinearLayout
          */
         public LinearLayout getLayoutMilestoneItem() { return view_binding.layoutMilestonesRowItem; }
 
         /**
-         * get the TextView for TODO @Paul
-         * @return the TextView for TODO @Paul
+         * get the TextView to display the waypoint number of the corresponding item
+         * @return the TextView
          */
         public TextView getMilestoneWaypointText() { return view_binding.milestoneWaypointContent; }
 
         /**
-         * get the TextView for TODO @Paul
-         * @return the TextView for TODO @Paul
+         * get the TextView to display the latitude of the corresponding waypoint
+         * @return the TextView
          */
         public TextView getMilestoneLatitudeText() { return view_binding.milestoneLatitudeContent; }
 
         /**
-         * get the TextView for TODO @Paul
-         * @return the TextView for TODO @Paul
+         * get the TextView to display the longitude of the corresponding waypoint
+         * @return the TextView
          */
         public TextView getMilestoneLongitudeText() { return view_binding.milestoneLongitudeContent; }
 
@@ -121,7 +122,8 @@ public class RoverMilestonesRecyclerAdapter extends RecyclerView.Adapter<RoverMi
     /**
      * one of androids standard method called everytime the list changes and a Waypoint has to be
      * bound to a View item
-     * TODO @Paul
+     * Sets the text input of every View item based on the corresponding waypoint.
+     * Reads the waypoint_info file to check if the file exists and the error message is empty (in this case the item has color green, otherwise red)
      * @param holder the view item to bind the rover to
      * @param position the index of the holder, which equals the index of the rover in the
      * {@link #local_waypoint_set}

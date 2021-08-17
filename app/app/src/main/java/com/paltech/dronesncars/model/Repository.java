@@ -111,7 +111,8 @@ public class Repository {
     /**
      * begin updating the all rovers continuously
      * @param secondsBetweenUpdate the interval in seconds for the update
-     * @param wasCalledInStatusFragment TODO @Paul kein Ahnung wozu das gut ist
+     * @param wasCalledInStatusFragment boolean value that is set to true if the method is called in the StatusFragment and false when it is called in the RoutineSettingsFragment.
+     *                                  Is used to either display disconnected Rovers as this is required in the StatusFragment but not in the RoutineSettingsFragment
      * @return the Timer used to schedule the updates, which can be paused & resumed
      */
     public Timer updateAllRoversContinuously(int secondsBetweenUpdate, boolean wasCalledInStatusFragment){
