@@ -12,6 +12,7 @@ import com.paltech.dronesncars.computing.FlightRouteGenerator;
 import com.paltech.dronesncars.computing.KMLParser;
 import com.paltech.dronesncars.computing.VRP_Wrapper;
 import com.paltech.dronesncars.computing.WeedDetectorInterface;
+import com.paltech.dronesncars.computing.WeedDetectorMock;
 import com.paltech.dronesncars.computing.WeedDetectorMock_Baldham;
 import com.paltech.dronesncars.ui.ViewModelCallback;
 
@@ -375,7 +376,6 @@ public class Repository {
     public void compute_FlightRoute() {
         executor.execute(() -> {
             PolygonModel polygon_model = polygonModelDAO.getPolygonModelByID(POLYGON_ID);
-            // TODO: add distance (in meters) between photos as setting
             DroneSetting currentSetting = droneSettingDAO.getDroneSettingByID(DRONE_SETTING_ID);
 
             if (polygon_model != null && polygon_model.polygon != null && currentSetting != null) {
@@ -411,7 +411,7 @@ public class Repository {
     /**
      * save a polygon into its own KML-File
      * the KML-Files name will be "HH-mm_dd-MM-yyyy_saved_polygon.kml"
-     * @param polygon
+     * @param polygon the polygon to save in a KML-File
      */
     public void save_kml_doc_from_polygon(Polygon polygon) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -480,8 +480,8 @@ public class Repository {
                     // Verkehrsubungsplatz Baldham
                     // WeedDetectorMock returns max(10, polygon.getActualPoints().size()) random
                     // GeoPoints inside the Polygon
-                    //WeedDetectorInterface weed_detector = new WeedDetectorMock(current_polygon);
-                    WeedDetectorInterface weed_detector = new WeedDetectorMock_Baldham(current_polygon);
+                    WeedDetectorInterface weed_detector = new WeedDetectorMock(current_polygon);
+                    //WeedDetectorInterface weed_detector = new WeedDetectorMock_Baldham(current_polygon);
                     List<Result> mock_results = weed_detector.get_results_from_pictures(
                             new ArrayList<>(),
                             new ArrayList<>()
