@@ -45,4 +45,9 @@ public class ScanResultsViewModel extends ViewModel {
         this.repository.mock_results();
     }
 
+
+    public void set_xml(String xml) {
+
+    }
+
 }

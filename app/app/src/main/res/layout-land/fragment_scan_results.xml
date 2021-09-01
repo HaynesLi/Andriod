@@ -10,35 +10,152 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/scan_results_fragment_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/scan_results"
-            android:textAppearance="@style/fragment_title"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/imageView_stitched_image"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="5dp"
-            android:src="@android:drawable/ic_menu_report_image"
-            android:contentDescription="@string/description_stitched_image_viewer"
-            app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_bottom_stitch_image"
-            app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_right_margin"
-            app:layout_constraintStart_toStartOf="@+id/guideline_vertical_left_margin"
-            app:layout_constraintTop_toBottomOf="@+id/scan_results_fragment_title"
-            />
+            app:layout_constraintBottom_toTopOf="@id/guideline_horizontal_button"
+            app:layout_constraintLeft_toRightOf="@id/guideline_vertical_left_margin"
+            app:layout_constraintRight_toLeftOf="@id/guideline_vertical_pic_results"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_horizontal_bottom_stitch_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            <TextView
+                android:id="@+id/scan_results_fragment_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/scan_results"
+                android:textAppearance="@style/fragment_title"
+                android:padding="15dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imageView_stitched_image"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="35dp"
+                android:contentDescription="@string/description_stitched_image_viewer"
+                android:src="@android:drawable/ic_menu_report_image"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/scan_results_fragment_title"
+                app:layout_constraintVertical_bias="0.0" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/guideline_horizontal_button"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toRightOf="@id/guideline_vertical_pic_results"
+            app:layout_constraintRight_toLeftOf="@id/guideline_vertical_right_margin"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteY="0dp">
+
+
+            <LinearLayout
+                android:id="@+id/linear_layout_nr_of_results"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/label_nr_of_results"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:labelFor="@+id/content_nr_of_results"
+                    android:text="@string/label_number_of_results"
+                    android:textAppearance="@style/input_label"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                    android:id="@+id/content_nr_of_results"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:paddingRight="10dp"
+                    android:text="" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_results"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linear_layout_nr_of_results"
+                app:layout_constraintVertical_bias="1.0" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.5" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/guideline_vertical_left_margin"
+            app:layout_constraintRight_toLeftOf="@id/guideline_vertical_right_margin"
+            app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_button">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/button_open_gallery"
+                android:layout_width="200dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/button_open_gallery_label" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+
+            <Button
+                android:id="@+id/button_mock_results"
+                android:layout_width="200dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/button_mock_results_label" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/button_configure_rovers"
+                android:layout_width="200dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/configure_rovers" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+        </LinearLayout>
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_vertical_left_margin"
@@ -48,79 +165,155 @@
             app:layout_constraintGuide_percent="0.05" />
 
         <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_vertical_pic_results"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.70" />
+
+        <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_vertical_right_margin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.95" />
 
-        <LinearLayout
-            android:id="@+id/linear_layout_nr_of_results"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_horizontal_button"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            tools:layout_editor_absoluteX="32dp"
-            tools:layout_editor_absoluteY="482dp"
-            app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_right_margin"
-            app:layout_constraintStart_toEndOf="@+id/guideline_vertical_left_margin"
-            app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_bottom_stitch_image">
+            app:layout_constraintGuide_percent="0.9" />
 
-
-            <TextView
-                android:id="@+id/label_nr_of_results"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/label_number_of_results"
-                android:textAppearance="@style/input_label"
-                android:labelFor="@+id/content_nr_of_results" />
-
-            <TextView
-                android:id="@+id/content_nr_of_results"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="" />
-        </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_results"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@+id/linear_layout_nr_of_results"
-            app:layout_constraintBottom_toTopOf="@+id/button_configure_rovers"
-            app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_right_margin"
-            app:layout_constraintStart_toEndOf="@+id/guideline_vertical_left_margin" />
-
-        <Button
-            android:id="@+id/button_configure_rovers"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:text="@string/configure_rovers"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button_mock_results"
-            app:layout_constraintStart_toEndOf="@+id/button_open_gallery"
-            app:layout_constraintHorizontal_chainStyle="spread" />
-
-        <Button
-            android:id="@+id/button_open_gallery"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_open_gallery_label"
-            app:layout_constraintEnd_toStartOf="@+id/button_configure_rovers"
-            app:layout_constraintStart_toStartOf="@+id/guideline_vertical_left_margin"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_chainStyle="spread" />
-
-        <Button
-            android:id="@+id/button_mock_results"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_right_margin"
-            app:layout_constraintStart_toEndOf="@+id/button_configure_rovers"
-            android:text="@string/button_mock_results_label"
-            app:layout_constraintHorizontal_chainStyle="spread" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    tools:context=".ui.ScanResultsFragment">-->
+
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent">-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/scan_results_fragment_title"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@string/scan_results"-->
+<!--            android:textAppearance="@style/fragment_title"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/imageView_stitched_image"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_marginTop="5dp"-->
+<!--            android:src="@android:drawable/ic_menu_report_image"-->
+<!--            android:contentDescription="@string/description_stitched_image_viewer"-->
+<!--            app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_bottom_stitch_image"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_right_margin"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/guideline_vertical_left_margin"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/scan_results_fragment_title"-->
+<!--            />-->
+
+<!--        <androidx.constraintlayout.widget.Guideline-->
+<!--            android:id="@+id/guideline_horizontal_bottom_stitch_image"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            app:layout_constraintGuide_percent="0.5" />-->
+
+<!--        <androidx.constraintlayout.widget.Guideline-->
+<!--            android:id="@+id/guideline_vertical_left_margin"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            app:layout_constraintGuide_percent="0.05" />-->
+
+<!--        <androidx.constraintlayout.widget.Guideline-->
+<!--            android:id="@+id/guideline_vertical_right_margin"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            app:layout_constraintGuide_percent="0.95" />-->
+
+<!--        <LinearLayout-->
+<!--            android:id="@+id/linear_layout_nr_of_results"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            tools:layout_editor_absoluteX="32dp"-->
+<!--            tools:layout_editor_absoluteY="482dp"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_right_margin"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/guideline_vertical_left_margin"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_bottom_stitch_image">-->
+
+
+<!--            <TextView-->
+<!--                android:id="@+id/label_nr_of_results"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:text="@string/label_number_of_results"-->
+<!--                android:textAppearance="@style/input_label"-->
+<!--                android:labelFor="@+id/content_nr_of_results" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/content_nr_of_results"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:text="" />-->
+<!--        </LinearLayout>-->
+
+<!--        <androidx.recyclerview.widget.RecyclerView-->
+<!--            android:id="@+id/recycler_view_results"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="0dp"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/linear_layout_nr_of_results"-->
+<!--            app:layout_constraintBottom_toTopOf="@+id/button_configure_rovers"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_right_margin"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/guideline_vertical_left_margin" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/button_configure_rovers"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginBottom="4dp"-->
+<!--            android:text="@string/configure_rovers"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/button_mock_results"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/button_open_gallery"-->
+<!--            app:layout_constraintHorizontal_chainStyle="spread" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/button_open_gallery"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@string/button_open_gallery_label"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/button_configure_rovers"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/guideline_vertical_left_margin"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintHorizontal_chainStyle="spread" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/button_mock_results"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_right_margin"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/button_configure_rovers"-->
+<!--            android:text="@string/button_mock_results_label"-->
+<!--            app:layout_constraintHorizontal_chainStyle="spread" />-->
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
+<!--</FrameLayout>-->
+
+
+
+

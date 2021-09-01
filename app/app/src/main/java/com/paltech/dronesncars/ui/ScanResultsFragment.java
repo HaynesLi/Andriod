@@ -1,12 +1,22 @@
 package com.paltech.dronesncars.ui;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.content.Intent;
+import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
@@ -17,6 +27,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paltech.dronesncars.R;
 import com.paltech.dronesncars.databinding.FragmentScanResultsBinding;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
@@ -141,13 +153,40 @@ public class ScanResultsFragment extends LandscapeFragment<FragmentScanResultsBi
             NavHostFragment.findNavController(this).navigate(action);
         });
         view_binding.buttonOpenGallery.setOnClickListener(v -> {
-            Intent open_gallery_intent = new Intent();
-            open_gallery_intent.setAction(Intent.ACTION_VIEW);
+//            Intent open_gallery_intent = new Intent();
+//            open_gallery_intent.setAction(Intent.ACTION_PICK); /*change from action_view to ACTION_PICK*/
+            Intent open_gallery_intent = new Intent(Intent.ACTION_GET_CONTENT);
             open_gallery_intent.setType("image/*");
-            open_gallery_intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(open_gallery_intent);
+//            open_gallery_intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            startActivity(open_gallery_intent);
+            getPicFromGallery.launch(open_gallery_intent);
         });
         view_binding.buttonMockResults.setOnClickListener(v -> mock_results());
     }
+
+    /**
+     * select one picture from gallery and return as a intent to imageview
+     * better way is to move this block into scanresultsviewmodel or repository
+     */
+    ActivityResultLauncher<Intent> getPicFromGallery = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Intent data = result.getData();
+                        Uri uri = data.getData();
+                        Log.e("uri","data"+uri.toString());
+                        String xmlPath = uri.getPath();
+                        xmlPath = xmlPath + ".xml";
+                        String xml = (Paths.get(xmlPath)).toString();
+                        Log.e("","xml: "+xml);
+                        view_binding.imageViewStitchedImage.setImageURI(uri);
+
+                    }
+                }
+            }
+    );
+
 
 }

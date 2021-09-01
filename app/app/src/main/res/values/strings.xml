@@ -42,6 +42,7 @@
     <string name="delete_marker">delete marker</string>
     <string name="export_polygon_to_kml">export Polygon to KML</string>
     <string name="description_stitched_image_viewer">Displays the stitched image</string>
+    <string name="description_mocked_results_viewer">Displays the mocked results of the stitched image</string>
     <string name="label_number_of_results">Number of results:</string>
     <string name="scan_result_id_label">Scan Result ID:</string>
     <string name="scan_result_certainty_label">Certainty:</string>
