@@ -13,7 +13,7 @@ import com.paltech.dronesncars.computing.KMLParser;
 import com.paltech.dronesncars.computing.VRP_Wrapper;
 import com.paltech.dronesncars.computing.WeedDetectorInterface;
 import com.paltech.dronesncars.computing.WeedDetectorMock;
-import com.paltech.dronesncars.computing.WeedDetectorMock_Baldham;
+import com.paltech.dronesncars.computing.XMLParser;
 import com.paltech.dronesncars.ui.ViewModelCallback;
 
 import org.osmdroid.bonuspack.kml.KmlDocument;
@@ -60,6 +60,18 @@ public class Repository {
      * the user choose one of the polygons to display.
      */
     private Dictionary<String, Polygon> polygonsToChoose;
+
+    /**
+     * A pair of strings used to store the xml file path and the name for the scan results of weed detection corresponding to the selected picture
+     */
+    private String path_for_scan_result_xml_file;
+    private String name_for_scan_result_xml_file;
+
+
+    /**
+     * A list to save bound boxes that display the scan results for the weed and that can be edited manually.
+     */
+    private ArrayList<double[]> bBoxList;
 
     private final RoverDAO roverDAO;
     private final ResultDAO resultDAO;
@@ -498,6 +510,12 @@ public class Repository {
         });
     }
 
+
+    public void store_xml_file(String path, String file) {
+        this.path_for_scan_result_xml_file = path;
+        this.name_for_scan_result_xml_file = file;
+    }
+
     /**
      * create a RoverRoutine in the database
      */
@@ -747,4 +765,16 @@ public class Repository {
     public Context getContext(){
         return this.context;
     }
+
+    /**
+     * display the scan results of the picture and bound the weed with rectangles and a cross to delete and a number of possibility
+     */
+//    public void show_scan_results_xml() {
+//        bBoxList = XMLParser.parseXMLFile(this.path_for_scan_result_xml_file,this.name_for_scan_result_xml_file,this.context);
+//
+//
+//    }
+
+
+
 }

@@ -45,9 +45,15 @@ public class ScanResultsViewModel extends ViewModel {
         this.repository.mock_results();
     }
 
+    /**
+     * save file name and path of the xml file into the repository
+     */
 
-    public void set_xml(String xml) {
-
+    public void store_xml(String path, String file) {
+        this.repository.store_xml_file(path, file);
     }
 
+//    public void show_xml() {
+//        this.repository.show_scan_results_xml();
+//    }
 }

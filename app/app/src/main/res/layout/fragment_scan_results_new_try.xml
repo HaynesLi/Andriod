@@ -37,7 +37,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="5dp"
-            android:contentDescription="@string/description_mocked_results_viewer"
+            android:contentDescription="@string/description_scan_results_viewer"
             app:layout_constraintTop_toTopOf="@+id/imageView_stitched_image"
             app:layout_constraintEnd_toEndOf="@+id/imageView_stitched_image"
             app:layout_constraintStart_toStartOf="@+id/imageView_stitched_image"

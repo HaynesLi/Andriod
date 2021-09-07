@@ -36,6 +36,7 @@ dependencies {
 
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'org.jetbrains:annotations:15.0'
+    implementation 'org.chromium.net:cronet-embedded:76.3809.111'
     def room_version= "2.3.0"
     def osm_droid_version = "6.1.10"
     def activity_version = "1.2.3"

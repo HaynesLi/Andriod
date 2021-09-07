@@ -2,14 +2,20 @@ package com.paltech.dronesncars.ui;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.Manifest;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -17,6 +23,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
@@ -25,11 +32,24 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.paltech.dronesncars.R;
+import com.paltech.dronesncars.computing.XMLParser;
 import com.paltech.dronesncars.databinding.FragmentScanResultsBinding;
 
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Objects;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * A Fragment displaying the results of the Computer-Vision-Pipeline e.g. which unwanted
@@ -46,6 +66,8 @@ public class ScanResultsFragment extends LandscapeFragment<FragmentScanResultsBi
     private ScanResultRecyclerAdapter result_recycler_adapter;
 
     private ScanResultsViewModel view_model;
+
+
 
     public ScanResultsFragment() {
         // Required empty public constructor
@@ -100,6 +122,7 @@ public class ScanResultsFragment extends LandscapeFragment<FragmentScanResultsBi
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
 
         view_binding = get_view_binding(view);
         view_model = get_view_model();
@@ -156,10 +179,11 @@ public class ScanResultsFragment extends LandscapeFragment<FragmentScanResultsBi
 //            Intent open_gallery_intent = new Intent();
 //            open_gallery_intent.setAction(Intent.ACTION_PICK); /*change from action_view to ACTION_PICK*/
             Intent open_gallery_intent = new Intent(Intent.ACTION_GET_CONTENT);
-            open_gallery_intent.setType("image/*");
+            open_gallery_intent.setType("*/*");
 //            open_gallery_intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //            startActivity(open_gallery_intent);
             getPicFromGallery.launch(open_gallery_intent);
+            show_toast("Please select from left drawer");
         });
         view_binding.buttonMockResults.setOnClickListener(v -> mock_results());
     }
@@ -176,12 +200,95 @@ public class ScanResultsFragment extends LandscapeFragment<FragmentScanResultsBi
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Intent data = result.getData();
                         Uri uri = data.getData();
-                        Log.e("uri","data"+uri.toString());
-                        String xmlPath = uri.getPath();
-                        xmlPath = xmlPath + ".xml";
-                        String xml = (Paths.get(xmlPath)).toString();
-                        Log.e("","xml: "+xml);
-                        view_binding.imageViewStitchedImage.setImageURI(uri);
+                        String uri_Path = uri.getPath();
+                        String uri_jpg_Path = uri_Path.substring(uri_Path.indexOf(":") + 1);
+                        String uri_xml_path = uri_jpg_Path.substring(0, uri_jpg_Path.lastIndexOf(".")) + ".xml";
+                        uri_xml_path = uri_xml_path.trim();
+                        String xmlPath = uri_xml_path.substring(0, uri_xml_path.lastIndexOf("/"));
+                        String xmlName = uri_xml_path.substring(xmlPath.lastIndexOf("/") + 1);
+//                        String xmlPath3 ="Download";
+//                        String xmlPath4 = "VID_20201007_134751.mp4_frame33.xml";
+                        Log.e("uripath",""+uri.getPath());
+                        Log.e("uri_xml_path",""+uri_xml_path);
+//                        Log.e("xmlpath",""+xmlPath);
+////                        Log.e("xml",""+xmlStr);
+//                        FileInputStream fileInputStream = null;
+                        File xmlFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),xmlPath);
+////                        File xmlFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+xmlPath3, xmlPath4);
+                        Log.e("xmlfile",""+xmlFile.exists());
+//                        byte[] buff = new byte[1024];
+//                        try {
+//                            fileInputStream = new FileInputStream(xmlFile);
+//                            StringBuilder sb = new StringBuilder("");
+//                            int len = 0;
+//                            while ((len = fileInputStream.read(buff)) > 0) {
+//                                sb.append(new String(buff,0,len));
+//                            }
+//                            Log.e("xml",""+sb.toString());
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        } finally {
+//                            if (fileInputStream != null) {
+//                                try {
+//                                    fileInputStream.close();
+//                                } catch (IOException e) {
+//                                    e.printStackTrace();
+//                                }
+//                            }
+//
+//                        }
+//
+
+                        Bitmap bitmap = null;
+                        try {
+                            InputStream inputStream = getContext().getContentResolver().openInputStream(uri);
+                            bitmap = BitmapFactory.decodeStream(inputStream);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+//                        ArrayList<double[]> bListMock = XMLParser.parseXMLFile(uri_xml_path,getContext());
+                        ScanResultsView scanResultsView = (ScanResultsView) view_binding.viewScanResults;
+                        ArrayList<double[]> blist = new ArrayList<>();
+                        double[] box1 = new double[4];
+                        box1[0] = 0.3;
+                        box1[1] = 0.17;
+                        box1[2] = 0.45;
+                        box1[3] = 0.32;
+                        double[] box2 = new double[4];
+                        box2[0] = 0.89;
+                        box2[1] = 0.26;
+                        box2[2] = 0.99;
+                        box2[3] = 0.39;
+                        double[] box3 = new double[4];
+                        box3[0] = 0.42;
+                        box3[1] = 0.92;
+                        box3[2] = 0.49;
+                        box3[3] = 0.999;
+                        double[] box4 = new double[4];
+                        box4[0] = 0.145;
+                        box4[1] = 0.792;
+                        box4[2] = 0.271;
+                        box4[3] = 0.999;
+                        double[] box5 = new double[4];
+                        box5[0] = 0.518;
+                        box5[1] = 0.0;
+                        box5[2] = 0.548;
+                        box5[3] = 0.0917;
+                        blist.add(box1);
+                        blist.add(box2);
+                        blist.add(box3);
+                        blist.add(box4);
+                        blist.add(box5);
+                        scanResultsView.setBgAndBBL(bitmap,blist);
+                        scanResultsView.postInvalidate();
+                        view_binding.imageViewStitchedImage.setImageBitmap(bitmap);
+
+//                        view_binding.imageViewStitchedImage.setImageURI(uri);
+//                        view_binding.imageViewMockedResults.setImageURI(uri);
+                        view_model.store_xml(xmlPath, xmlName);
+//                        view_model.show_xml();
+
+
 
                     }
                 }

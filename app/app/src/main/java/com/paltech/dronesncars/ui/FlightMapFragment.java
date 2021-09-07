@@ -3,6 +3,7 @@ package com.paltech.dronesncars.ui;
 import android.app.AlertDialog;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -213,6 +214,7 @@ public class FlightMapFragment extends MapFragment {
      * @param kml_file_uri the Uri (Android specific implementation) of the kml file to parse
      */
     private void parseKMLFile(Uri kml_file_uri) {
+        Log.e("kml_uri",kml_file_uri.toString());
         view_model.parseKMLFile(kml_file_uri);
     }
 
