@@ -88,6 +88,10 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$retrofit_2_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_2_version"
 
+    //pytorch for yolo
+    implementation 'org.pytorch:pytorch_android_lite:1.9.0'
+    implementation 'org.pytorch:pytorch_android_torchvision:1.9.0'
+
     apply plugin: "androidx.navigation.safeargs"
     apply plugin: 'dagger.hilt.android.plugin'
 

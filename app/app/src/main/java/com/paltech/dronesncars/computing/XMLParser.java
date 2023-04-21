@@ -1,19 +1,19 @@
 package com.paltech.dronesncars.computing;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.util.Log;
 
-import org.osmdroid.bonuspack.kml.KmlDocument;
-import org.osmdroid.bonuspack.kml.KmlFeature;
-import org.osmdroid.bonuspack.kml.KmlFolder;
-import org.osmdroid.bonuspack.kml.KmlPlacemark;
-import org.osmdroid.bonuspack.kml.KmlPolygon;
-import org.osmdroid.bonuspack.kml.LineStyle;
-import org.osmdroid.bonuspack.kml.Style;
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.overlay.Polygon;
+import com.google.android.gms.common.util.IOUtils;
+import com.paltech.dronesncars.R;
+
+import org.w3c.dom.Document;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -23,17 +23,35 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
+
 
 public class XMLParser {
+
+    static int width_result_view, height_result_view, width_image, height_image;
+    static float scale_width_image_result, scale_height_image_result;
+
+    public static void setResultViewWidth(int width) {
+        width_result_view = width;
+    }
+    public static void setResultViewHeight(int height) {
+        height_result_view = height;
+    }
+
+    public static float getScale_width_image_result() {
+        return scale_width_image_result;
+    }
+
+    public static float getScale_height_image_result() {
+        return scale_height_image_result;
+    }
+
     /**
      * get an InputStream for a specific Uri
+     *
      * @param context - the applications context
-     * @param uri - the Uri (Android) to open an input stream to
+     * @param uri     - the Uri (Android) to open an input stream to
      * @return - an InputStream to the given Uri
      */
     private static InputStream getInputStreamByUri(Context context, Uri uri) {
@@ -45,29 +63,93 @@ public class XMLParser {
         }
     }
 
+    public static OutputStream getOutputStreamByUri(Context context, Uri uri) {
+        try {
+            return context.getContentResolver().openOutputStream(uri);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static String parseFullXml(Context context, Uri uri_xml) {
+        FileInputStream fileInputStream = (FileInputStream) getInputStreamByUri(context, uri_xml);
+        try {
+//            byte[] b = new byte[fileInputStream.available()];
+//            fileInputStream.read();
+//            fileInputStream.close();
+//            String str = new String(b,"UTF-8");
+//            Log.e("","str" + str);
+//            return str;
+            byte[] buff = new byte[1024];
+            StringBuilder sb = new StringBuilder();
+            int len = 0;
+            while ((len = fileInputStream.read(buff)) > 0) {
+                sb.append(new String(buff, 0, len));
+            }
+            return sb.toString();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Cursor cursor = context.getContentResolver().query(uri_xml, null, null, null, null);
+
+        return "";
+//        return fileInputStream.toString();
+    }
+
+
     /**
      * parse a KML File at the given Uri and return a dictionary that contains polygons and their
      * FIDs, which were found inside the KML file.
      * The current implementation of this method is very static and specific for our example file,
      * but of course could be replaced with a more sophisticated, general method
-     * @param xml_file_uri the uri of the KML file to parse
+     *
+     * @param uri_xml the uri of the XML file to parse
      * @param context the applications context
      * @return dictionary that contains polygons and their FIDs, which were found inside the KML
      * file
      */
-    public static ArrayList<double[]> parseXMLFile(String xml_file_uri, Context context) {
+    public static ArrayList<ScanResult> parseXMLFile(Uri uri_xml, Context context) {
 
-        String uriPath_Name =xml_file_uri.toString();
-        String xmlPath = uriPath_Name.substring(0, uriPath_Name.lastIndexOf("/"));
-        String xmlName = uriPath_Name.substring(xmlPath.lastIndexOf("/") + 1);
-        File xmlFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),uriPath_Name);
-        FileInputStream fileInputStream = null;
-        try {
-            fileInputStream = new FileInputStream(xmlFile);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+//        String path_uri_xml = uri_xml.toString();
+//        String xmlPath = path_uri_xml.substring(0, path_uri_xml.lastIndexOf("/"));
+//        String xmlName = path_uri_xml.substring(xmlPath.lastIndexOf("/") + 1);
+//        File xmlFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), path_uri_xml);
+//        InputStream fis = null;
+//        InputStream inputStreamByUri = getInputStreamByUri(context, uri_xml);
+//        try {
+////            fis =context.getContentResolver().openInputStream(Uri.parse(path_uri_xml));
+//            fis =context.getContentResolver().openInputStream(uri_xml);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        Log.e("xmlparser", "xmlfile" + xmlFile.exists());
+//        FileInputStream fileInputStream = null;
+//        try {
+//            fileInputStream = new FileInputStream(xmlFile);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//
+//        XmlPullParserFactory parserFactory;
+//        try {
+//            parserFactory = XmlPullParserFactory.newInstance();
+//            XmlPullParser parser = parserFactory.newPullParser();
+////            Log.e("xml", "" + fileInputStream.toString());
+//
+//            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+//            parser.setInput(inputStreamByUri, null);
+//            processParsing(parser);
+//            fileInputStream.close();
+//        } catch (IOException | XmlPullParserException e) {
+//            e.printStackTrace();
+//        }
 
+
+        ArrayList<ScanResult> scanResultList = new ArrayList<>();
+        FileInputStream fileInputStream = (FileInputStream) getInputStreamByUri(context, uri_xml);
         XmlPullParserFactory parserFactory;
         try {
             parserFactory = XmlPullParserFactory.newInstance();
@@ -76,32 +158,23 @@ public class XMLParser {
 
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
             parser.setInput(fileInputStream, null);
-            processParsing(parser);
+            scanResultList = processParsing(parser);
             fileInputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (XmlPullParserException e) {
+        } catch (IOException | XmlPullParserException e) {
             e.printStackTrace();
         }
 
-        double[] bBox1 = new double[4];
-        bBox1[0] = 0.3;
-        bBox1[1] = 0.16;
-        bBox1[2] = 0.44;
-        bBox1[3] = 0.32;
-        ArrayList<double[]> bBoxList = new ArrayList<>();
-        bBoxList.add(bBox1);
-
-        return bBoxList;
+        return scanResultList;
     }
 
 
-
-    private static ArrayList<double[]> processParsing(XmlPullParser parser) throws IOException, XmlPullParserException {
-        ArrayList<double[]> bBoxList = new ArrayList<>();
+    private static ArrayList<ScanResult> processParsing(XmlPullParser parser) throws IOException, XmlPullParserException {
+        ArrayList<ScanResult> scanResultList = new ArrayList<>();
         int eventType = parser.getEventType();
-        double[] current = null;
-        double wid = 0, hgh = 0;
+        int left = 0, top = 0, right = 0, bottom = 0;
+        String className = "Weed";
+        float confidence = 1f;
+
 
         while (eventType != XmlPullParser.END_DOCUMENT) {
             String eltName = null;
@@ -109,41 +182,34 @@ public class XMLParser {
                 case XmlPullParser.START_TAG:
                     eltName = parser.getName();
                     if (eltName.equals("width")) {
-                        wid = Double.parseDouble(parser.nextText());
-
+                        width_image = Integer.parseInt((parser.nextText()));
+                        scale_width_image_result = ((float) width_result_view) / ((float) width_image);
                     } else if (eltName.equals("height")) {
-                        hgh = Double.parseDouble(parser.nextText());
+                        height_image = Integer.parseInt(parser.nextText());
+                        scale_height_image_result = ((float) height_result_view) / ((float) height_image);
                     } else if (eltName.equals("bndbox")) {
-                        current = new double[4];
-                    } else if (eltName.equals("xmin")) {
-                        current[0] = Integer.parseInt(parser.nextText()) / wid;
-                    } else if (eltName.equals("ymin")) {
-                        current[1] = Integer.parseInt(parser.nextText()) / hgh;
-                    } else if (eltName.equals("xmax")) {
-                        current[2] = Integer.parseInt(parser.nextText()) / wid;
-                    } else if (eltName.equals("ymax")) {
-                        current[3] = Integer.parseInt(parser.nextText()) / hgh;
-                        bBoxList.add(current);
-                    }
 
+                    } else if (eltName.equals("className")) {
+                        className = parser.nextText();
+                    } else if (eltName.equals("confidence")) {
+                        confidence = Float.parseFloat(parser.nextText());
+                    } else if (eltName.equals("xmin")) {
+                        left = (int) (Integer.parseInt(parser.nextText()) * scale_width_image_result);
+                    } else if (eltName.equals("ymin")) {
+                        top = (int) (Integer.parseInt(parser.nextText()) * scale_height_image_result);
+                    } else if (eltName.equals("xmax")) {
+                        right = (int) (Integer.parseInt(parser.nextText()) * scale_width_image_result);
+                    } else if (eltName.equals("ymax")) {
+                        bottom = (int) (Integer.parseInt(parser.nextText()) * scale_height_image_result);
+                        ScanResult currentResult = new ScanResult(className,confidence,new Rect(left,top,right,bottom));
+                        scanResultList.add(currentResult);
+                    }
                     break;
             }
             eventType = parser.next();
         }
-        Log.e("width", "" + (wid == 0 ? "" : wid));
-
-        Log.e("height", "" + (hgh == 0 ? "" : hgh));
-        Log.e("bboxlist", "" + bBoxList.toString());
-        return bBoxList;
+        return scanResultList;
     }
-
-    /**
-     * get the KMLDocument for a given polygon, which can be saved in its own file
-     * the current implementation tries to copy the given example-files structure, but does not
-     * enter meaningful values into the different extended-data fields.
-     * @param polygon the polygon to get the kml file for
-     * @return the KmlDocument
-     */
 
 }
 

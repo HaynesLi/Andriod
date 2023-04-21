@@ -3,6 +3,7 @@ package com.paltech.dronesncars.model;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -10,6 +11,7 @@ import androidx.lifecycle.LiveData;
 
 import com.paltech.dronesncars.computing.FlightRouteGenerator;
 import com.paltech.dronesncars.computing.KMLParser;
+import com.paltech.dronesncars.computing.ScanResult;
 import com.paltech.dronesncars.computing.VRP_Wrapper;
 import com.paltech.dronesncars.computing.WeedDetectorInterface;
 import com.paltech.dronesncars.computing.WeedDetectorMock;
@@ -46,7 +48,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
  * Repository is a bit of a God-Class and it might be wise to split it into different "repositories"
  * for different purposes.
  */
-public class Repository {
+public class Repository{
 
     private final Context context;
 
@@ -61,17 +63,20 @@ public class Repository {
      */
     private Dictionary<String, Polygon> polygonsToChoose;
 
-    /**
-     * A pair of strings used to store the xml file path and the name for the scan results of weed detection corresponding to the selected picture
-     */
-    private String path_for_scan_result_xml_file;
-    private String name_for_scan_result_xml_file;
-
 
     /**
      * A list to save bound boxes that display the scan results for the weed and that can be edited manually.
      */
-    private ArrayList<double[]> bBoxList;
+    private ArrayList<int[]> bBoxList;
+
+    private ArrayList<Uri> list_uri_jpg, list_uri_xml;
+
+    private ArrayList<int[]> pair_jpg_xml;
+
+    private Uri uri_scan_results_xml;
+
+    private ArrayList<ScanResult> scanResults;
+
 
     private final RoverDAO roverDAO;
     private final ResultDAO resultDAO;
@@ -92,8 +97,9 @@ public class Repository {
 
     /**
      * The Repository Constructor
-     * @param context context required to get the database
-     * @param executor the executor required to allow the usage of background threads
+     *
+     * @param context        context required to get the database
+     * @param executor       the executor required to allow the usage of background threads
      * @param storageManager the storageManager to used to write polygons into their own kml files
      */
     @Inject
@@ -114,25 +120,28 @@ public class Repository {
 
     /**
      * update the given rover in the database. Needs to be called from a background-thread!
+     *
      * @param rover the rover to update
      */
-    public void updateRover(Rover rover){
+    public void updateRover(Rover rover) {
         roverDAO.update(rover);
     }
 
     /**
      * begin updating the all rovers continuously
-     * @param secondsBetweenUpdate the interval in seconds for the update
+     *
+     * @param secondsBetweenUpdate      the interval in seconds for the update
      * @param wasCalledInStatusFragment boolean value that is set to true if the method is called in the StatusFragment and false when it is called in the RoutineSettingsFragment.
      *                                  Is used to either display disconnected Rovers as this is required in the StatusFragment but not in the RoutineSettingsFragment
      * @return the Timer used to schedule the updates, which can be paused & resumed
      */
-    public Timer updateAllRoversContinuously(int secondsBetweenUpdate, boolean wasCalledInStatusFragment){
-       return roverConnection.updateAllRoversContinuously(secondsBetweenUpdate, wasCalledInStatusFragment);
+    public Timer updateAllRoversContinuously(int secondsBetweenUpdate, boolean wasCalledInStatusFragment) {
+        return roverConnection.updateAllRoversContinuously(secondsBetweenUpdate, wasCalledInStatusFragment);
     }
 
     /**
      * get all rovers from the database. Has to be called from a background-thread!
+     *
      * @return List of all rovers
      */
     public List<Rover> getRovers() {
@@ -141,6 +150,7 @@ public class Repository {
 
     /**
      * get all results from the database. Has to be called from a background-thread!
+     *
      * @return List of all results
      */
     public List<Result> getResults() {
@@ -149,6 +159,7 @@ public class Repository {
 
     /**
      * get all RoverRoutes from the database. Has to be called from a background-thread!
+     *
      * @return List of all RoverRoutes
      */
     public List<RoverRoute> getRoutes() {
@@ -157,6 +168,7 @@ public class Repository {
 
     /**
      * get all RoverRoutines from the database. Has to be called from a background-thread!
+     *
      * @return List of all RoverRoutines
      */
     public List<RoverRoutine> getRoutines() {
@@ -165,6 +177,7 @@ public class Repository {
 
     /**
      * get the current (& only) routine from the database
+     *
      * @return the current RoverRoutine
      */
     public RoverRoutine getCurrentRoutine() {
@@ -175,7 +188,8 @@ public class Repository {
      * In a background-thread: parse the given kml file and call the callback which triggers a the
      * change in the {@link com.paltech.dronesncars.ui.MapViewModel}
      * result is asynchronous, hence there is no return value
-     * @param kml_file_uri the Uri of the KML file which has to be parsed
+     *
+     * @param kml_file_uri         the Uri of the KML file which has to be parsed
      * @param mapViewModelCallback the callback specifying how to update the corresponding ViewModel
      */
     public void parseKMLFile(Uri kml_file_uri, ViewModelCallback<Dictionary<String, Polygon>> mapViewModelCallback) {
@@ -187,6 +201,7 @@ public class Repository {
 
     /**
      * delete all selectable polygons from {@link #polygonsToChoose}
+     *
      * @param mapViewModelCallback the callback used to notify the {@link com.paltech.dronesncars.ui.MapViewModel}
      *                             of the change
      */
@@ -197,6 +212,7 @@ public class Repository {
 
     /**
      * get the Polygons to choose from
+     *
      * @return a Dictionary with FIDs -> Polygons to choose from
      */
     public Dictionary<String, Polygon> getPolygonsToChoose() {
@@ -209,9 +225,10 @@ public class Repository {
     /**
      * set the polygon in the database (in background thread) and use the given callback to notify
      * the {@link com.paltech.dronesncars.ui.MapViewModel} of the change
-     * @param polygon polygon to save in the database
+     *
+     * @param polygon              polygon to save in the database
      * @param mapViewModelCallback the callback to notify the
-     *        {@link com.paltech.dronesncars.ui.MapViewModel}
+     *                             {@link com.paltech.dronesncars.ui.MapViewModel}
      */
     public void setPolygon(Polygon polygon, ViewModelCallback<Polygon> mapViewModelCallback) {
         executor.execute(() -> {
@@ -223,6 +240,7 @@ public class Repository {
     /**
      * asynchronous refreshing of the polygon from the database into the
      * {@link com.paltech.dronesncars.ui.MapViewModel} using the callback
+     *
      * @param mapViewModelCallback callback used to notify the {@link com.paltech.dronesncars.ui.MapViewModel}
      */
     public void getPolygon(ViewModelCallback<Polygon> mapViewModelCallback) {
@@ -238,6 +256,7 @@ public class Repository {
 
     /**
      * delete the polygon from the database and notify the {@link com.paltech.dronesncars.ui.MapViewModel}
+     *
      * @param mapViewModelCallback the callback used to notify the {@link com.paltech.dronesncars.ui.MapViewModel}
      */
     public void clearPolygon(ViewModelCallback<Polygon> mapViewModelCallback) {
@@ -250,7 +269,8 @@ public class Repository {
 
     /**
      * set the flight altitude in the database and notify the {@link com.paltech.dronesncars.ui.DroneSettingsViewModel}
-     * @param altitude the altitude to save in the database
+     *
+     * @param altitude             the altitude to save in the database
      * @param droneSettingCallback the callback used to notify the {@link com.paltech.dronesncars.ui.DroneSettingsViewModel}
      */
     public void setFlightAltitude(int altitude, ViewModelCallback<Integer> droneSettingCallback) {
@@ -270,6 +290,7 @@ public class Repository {
     /**
      * asynchronous refresh the flight altitude in the {@link com.paltech.dronesncars.ui.DroneSettingsViewModel}
      * using the callback
+     *
      * @param droneSettingCallback callback used to notify the {@link com.paltech.dronesncars.ui.DroneSettingsViewModel}
      */
     public void getFlightAltitude(ViewModelCallback<Integer> droneSettingCallback) {
@@ -286,7 +307,8 @@ public class Repository {
     /**
      * set the number of rovers in the database and notify the {@link com.paltech.dronesncars.ui.RoverRoutineSettingsViewModel}
      * using the callback
-     * @param numOfRovers the number of rovers to save in the database
+     *
+     * @param numOfRovers          the number of rovers to save in the database
      * @param roverSettingCallback the callback used to notify the {@link com.paltech.dronesncars.ui.RoverRoutineSettingsViewModel}
      */
     public void setNumOfRovers(int numOfRovers, ViewModelCallback<Integer> roverSettingCallback) {
@@ -305,6 +327,7 @@ public class Repository {
 
     /**
      * asynchronous refresh the number of rovers in {@link com.paltech.dronesncars.ui.RoverRoutineSettingsViewModel}
+     *
      * @param roverSettingCallback the callback used to nofity the {@link com.paltech.dronesncars.ui.RoverRoutineSettingsViewModel}
      */
     public void getNumOfRovers(ViewModelCallback<Integer> roverSettingCallback) {
@@ -320,6 +343,7 @@ public class Repository {
 
     /**
      * get LiveData of all Rovers currently saved in the database
+     *
      * @return LiveData of Rover-List
      */
     public LiveData<List<Rover>> getCurrentRovers() {
@@ -328,14 +352,16 @@ public class Repository {
 
     /**
      * get LiveData of all used Rovers currently saved in the database
+     *
      * @return LiveData of Rover-List
      */
-    public LiveData<List<Rover>> getUsedRovers(){
+    public LiveData<List<Rover>> getUsedRovers() {
         return roverDAO.getUsedRoversLiveData();
     }
 
     /**
      * set the List of Rovers in the database to a new list
+     *
      * @param currentRovers the list to save in the database
      */
     public void setCurrentRovers(List<Rover> currentRovers) {
@@ -349,7 +375,8 @@ public class Repository {
 
     /**
      * save the progress of a rover in the database
-     * @param rover the rover to save progress in
+     *
+     * @param rover    the rover to save progress in
      * @param progress the new progress value
      */
     public void save_rover_progress(Rover rover, double progress) {
@@ -377,6 +404,7 @@ public class Repository {
 
     /**
      * get LiveData of the current FlightRoute
+     *
      * @return the LiveData of FlightRoute
      */
     public LiveData<FlightRoute> get_current_flightroute() {
@@ -402,6 +430,7 @@ public class Repository {
 
     /**
      * set the FlightRoute in the database to a new value
+     *
      * @param route the new FlightRoute
      */
     public void set_flight_route(List<GeoPoint> route) {
@@ -424,6 +453,7 @@ public class Repository {
     /**
      * save a polygon into its own KML-File
      * the KML-Files name will be "HH-mm_dd-MM-yyyy_saved_polygon.kml"
+     *
      * @param polygon the polygon to save in a KML-File
      */
     public void save_kml_doc_from_polygon(Polygon polygon) {
@@ -453,6 +483,7 @@ public class Repository {
 
     /**
      * get LiveData of all Results in the Database
+     *
      * @return LiveData of all Results in the Database
      */
     public LiveData<List<Result>> get_scan_results() {
@@ -461,6 +492,7 @@ public class Repository {
 
     /**
      * get LiveData of all RoveRoutes in the Database
+     *
      * @return LiveData of all RoveRoutes in the Database
      */
     public LiveData<List<RoverRoute>> get_current_rover_routes() {
@@ -469,6 +501,7 @@ public class Repository {
 
     /**
      * get LiveData of the current (& only) RoverRoutine in the database
+     *
      * @return LiveData of the current (& only) RoverRoutine in the database
      */
     public LiveData<RoverRoutine> get_rover_routine_livedata() {
@@ -511,11 +544,6 @@ public class Repository {
     }
 
 
-    public void store_xml_file(String path, String file) {
-        this.path_for_scan_result_xml_file = path;
-        this.name_for_scan_result_xml_file = file;
-    }
-
     /**
      * create a RoverRoutine in the database
      */
@@ -533,9 +561,9 @@ public class Repository {
             List<GeoPoint> targets = current_results.stream().map(result -> result.location).collect(Collectors.toList());
             int num_of_rovers = roverDAO.get_num_of_used_rovers();
 
-            if(check_for_missing_rover_routine()) create_rover_routine();
+            if (check_for_missing_rover_routine()) create_rover_routine();
 
-            if(!targets.isEmpty() && num_of_rovers > 0) {
+            if (!targets.isEmpty() && num_of_rovers > 0) {
                 List<List<GeoPoint>> routes = VRP_Wrapper.get_routes_for_vehicles(num_of_rovers, targets);
 
                 insert_rover_routes(routes, null);
@@ -546,6 +574,7 @@ public class Repository {
 
     /**
      * check if we do not have a RoverRoutine in the database yet
+     *
      * @return true: we do not have a RoverRoutine in the database, false: else
      */
     private boolean check_for_missing_rover_routine() {
@@ -558,7 +587,8 @@ public class Repository {
     /**
      * save a set of new routes for rovers in the database
      * the set will be saved in RoverRoutine as the most up to date
-     * @param rover_routes the new rover routes represented by a list of GeoPoints to visit
+     *
+     * @param rover_routes             the new rover routes represented by a list of GeoPoints to visit
      * @param is_navigation_point_list a list which allows us to determine whether the a GeoPoint in
      *                                 a route is only there for navigational purposes or if there
      *                                 is some weed to drill out
@@ -566,7 +596,7 @@ public class Repository {
     public void set_rover_routes(@NonNull List<List<GeoPoint>> rover_routes, List<List<Boolean>> is_navigation_point_list) {
         executor.execute(() -> {
 
-            if(check_for_missing_rover_routine()) create_rover_routine();
+            if (check_for_missing_rover_routine()) create_rover_routine();
             insert_rover_routes(rover_routes, is_navigation_point_list);
         });
     }
@@ -578,7 +608,8 @@ public class Repository {
      * where the date is the time of its insertion into the database.
      * This also means that we overwrite old routes if we compute new routes multiple times per
      * minute.
-     * @param rover_routes the new rover routes represented by a list of GeoPoints to visit
+     *
+     * @param rover_routes             the new rover routes represented by a list of GeoPoints to visit
      * @param is_navigation_point_list a list which allows us to determine whether the a GeoPoint in
      *                                 a route is only there for navigational purposes or if there
      *                                 is some weed to drill out
@@ -588,12 +619,12 @@ public class Repository {
         int next_usable_rover = 0;
         DateTimeFormatter dt_formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
         String date_string = dt_formatter.format(LocalDateTime.now());
-        if(usable_rovers != null && usable_rovers.size() > 0) {
+        if (usable_rovers != null && usable_rovers.size() > 0) {
             List<String> new_rover_route_ids = new ArrayList<>();
             List<RoverRoute> new_rover_routes = new ArrayList<>();
             for (int rover_route_id = 0; rover_route_id < rover_routes.size(); rover_route_id++) {
                 List<GeoPoint> current_route = rover_routes.get(rover_route_id);
-                RoverRoute new_rover_route = new RoverRoute(date_string + "_" +rover_route_id, -1, current_route, ROUTINE_ID);
+                RoverRoute new_rover_route = new RoverRoute(date_string + "_" + rover_route_id, -1, current_route, ROUTINE_ID);
 
                 if (is_navigation_point_list != null && is_navigation_point_list.size() == rover_routes.size()) {
                     new_rover_route.is_navigation_point = is_navigation_point_list.get(rover_route_id);
@@ -623,7 +654,7 @@ public class Repository {
                 roverRoutineDAO.insert(roverRoutine);
             }
 
-            for (RoverRoute new_rover_route: new_rover_routes) {
+            for (RoverRoute new_rover_route : new_rover_routes) {
                 // this means if we compute new routes multiple times per second we overwrite the older ones from the same second
                 if (roverRouteDAO.get_rover_route_by_id(new_rover_route.rover_route_id) == null) {
                     roverRouteDAO.insertMultiple(new_rover_route);
@@ -636,6 +667,7 @@ public class Repository {
 
     /**
      * delete a rover from the database
+     *
      * @param rover the rover to delete
      */
     public void delete_rover(Rover rover) {
@@ -645,7 +677,8 @@ public class Repository {
     /**
      * set a rover used in the database and create the rover in the database if it is not present
      * already
-     * @param rover the rover to set used
+     *
+     * @param rover    the rover to set used
      * @param set_used the value to set {@link Rover#is_used} to
      */
     public void set_rover_used(Rover rover, boolean set_used) {
@@ -664,16 +697,17 @@ public class Repository {
 
     /**
      * create a new rover and save it into the database
-     * @param roverName the rover name
+     *
+     * @param roverName  the rover name
      * @param ip_address the rover's InetAddress
-     * @param callback the callback used to display an error message if necessary, e.g. because
-     *                 there already exists a rover with the same InetAddress
+     * @param callback   the callback used to display an error message if necessary, e.g. because
+     *                   there already exists a rover with the same InetAddress
      */
-    public void create_new_rover(String roverName, InetAddress ip_address, ViewModelCallback<String> callback ){
-        executor.execute(()->{
+    public void create_new_rover(String roverName, InetAddress ip_address, ViewModelCallback<String> callback) {
+        executor.execute(() -> {
             final List<Integer> roverIds = roverDAO.get_all_ids_not_livedata();
-            final List<InetAddress> ip_adresses= roverDAO.get_all_ip_addresses_not_livedata();
-            if(!ip_adresses.contains(ip_address)) {
+            final List<InetAddress> ip_adresses = roverDAO.get_all_ip_addresses_not_livedata();
+            if (!ip_adresses.contains(ip_address)) {
                 for (int i = 0; i < roverIds.size() + 1; i++) {
                     if (!roverIds.contains(i)) {
                         Rover rover = new Rover(i, ip_address);
@@ -683,14 +717,15 @@ public class Repository {
                         break;
                     }
                 }
-            }else{
-                callback.onComplete(ip_address.getHostAddress()+" is already used for rover with name: "+roverDAO.getRoverByIpAddress(ip_address).roverName);
+            } else {
+                callback.onComplete(ip_address.getHostAddress() + " is already used for rover with name: " + roverDAO.getRoverByIpAddress(ip_address).roverName);
             }
         });
     }
 
     /**
      * get LiveData of the number of used rovers in the database
+     *
      * @return LiveData of the number of used rovers in the database
      */
     public LiveData<Integer> get_num_of_used_rovers_livedata() {
@@ -699,6 +734,7 @@ public class Repository {
 
     /**
      * get LiveData of the number of connected rovers in the database
+     *
      * @return LiveData of the number of connected rovers in the database
      */
     public LiveData<Integer> get_num_of_connected_rovers_livedata() {
@@ -707,6 +743,7 @@ public class Repository {
 
     /**
      * get LiveData of the number of rovers in the database
+     *
      * @return LiveData of the number of rovers in the database
      */
     public LiveData<Integer> get_num_of_rovers_livedata() {
@@ -717,6 +754,7 @@ public class Repository {
      * associate rovers with routes they should complete and send them their mission plan.
      * will show an error message to the user if a rover that was supposed to be used for a route
      * is not available anymore (== is disconnected).
+     *
      * @param callback_for_toast the callback to show the error message if necessary
      */
     public void associate_rovers_to_routes(ViewModelCallback<String> callback_for_toast) {
@@ -756,25 +794,77 @@ public class Repository {
 
     /**
      * get LiveData of the currently observed rover in the database
+     *
      * @return LiveData of the currently observed rover in the database
      */
     public LiveData<Rover> get_livedata_observed_rover(Rover observed_rover) {
         return roverDAO.get_rover_by_id_mutable_livedata(observed_rover.rover_id);
     }
 
-    public Context getContext(){
+    public Context getContext() {
         return this.context;
     }
 
-    /**
-     * display the scan results of the picture and bound the weed with rectangles and a cross to delete and a number of possibility
-     */
-//    public void show_scan_results_xml() {
-//        bBoxList = XMLParser.parseXMLFile(this.path_for_scan_result_xml_file,this.name_for_scan_result_xml_file,this.context);
-//
-//
-//    }
+    public void storeBBoxList(ArrayList<int[]> bBoxList) {
+        this.bBoxList = bBoxList;
+    }
+
+    public void store_xml(Uri uri_xml) {
+        uri_scan_results_xml = uri_xml;
+    }
+
+    public void export_xml(String str_box_list) {
+//        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), String.valueOf(uri_scan_results_xml));
+//        try {
+//            FileInputStream fileInputStream = new FileInputStream(file);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+
+        String original = XMLParser.parseFullXml(this.context, uri_scan_results_xml);
+//        Log.e("","ori: " + original);
+
+        String head = original.substring(0, original.indexOf("</segmented>") + 12);
+        String end = "</annotation>";
+        String current = head + str_box_list + end;
 
 
+        ParcelFileDescriptor file_descriptor;
+        try {
+            file_descriptor = context.getContentResolver().openFileDescriptor(uri_scan_results_xml, "wt");
+//            OutputStream outputStream = context.getContentResolver().openOutputStream(uri_scan_results_xml,"w");
+//            outputStream.flush();
+//            outputStream.write(current.getBytes());
+//            outputStream.close();
+            ParcelFileDescriptor.AutoCloseOutputStream autoCloseOutputStream = new ParcelFileDescriptor.AutoCloseOutputStream(file_descriptor);
+//            autoCloseOutputStream.write(current.getBytes());
+            new ParcelFileDescriptor.AutoCloseOutputStream(file_descriptor).write(current.getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
+
+    public void store_list_and_pair(ArrayList<Uri> list_uri_jpg, ArrayList<Uri> list_uri_xml, ArrayList<int[]> pair) {
+        this.list_uri_jpg = list_uri_jpg;
+        this.list_uri_xml = list_uri_xml;
+        this.pair_jpg_xml = pair;
+    }
+
+    public ArrayList<int[]> get_pair_jpg_xml() {
+        return this.pair_jpg_xml;
+    }
+
+    public ArrayList<Uri> get_list_uri_jpg() {
+        return this.list_uri_jpg;
+    }
+
+    public ArrayList<Uri> get_list_uri_xml() {
+        return this.list_uri_xml;
+    }
+
+
+    public void store_result_list(ArrayList<ScanResult> resultList) {
+        this.scanResults = resultList;
+    }
 }

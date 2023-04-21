@@ -45,8 +45,10 @@
     <string name="description_scan_results_viewer">Displays the scan results of the stitched image</string>
     <string name="label_number_of_results">Number of results:</string>
     <string name="scan_result_id_label">Scan Result ID:</string>
+    <string name="scan_result_class_label">Class:</string>
     <string name="scan_result_certainty_label">Certainty:</string>
     <string name="content_result_certainty">%1$d%%</string>
+    <string name="button_multi_files">Multi Files</string>
     <string name="button_open_gallery_label">Open Gallery</string>
     <string name="button_mock_results_label">Mock Results</string>
     <string name="ip_url_label">IP/URL:</string>

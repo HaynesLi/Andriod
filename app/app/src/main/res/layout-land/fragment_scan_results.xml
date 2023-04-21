@@ -22,7 +22,7 @@
                 android:id="@+id/scan_results_fragment_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="15dp"
+                android:padding="10dp"
                 android:text="@string/scan_results"
                 android:textAppearance="@style/fragment_title"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -33,7 +33,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 app:layout_constraintDimensionRatio="16:9"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintLeft_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/scan_results_fragment_title">
@@ -44,9 +43,9 @@
                     android:layout_height="match_parent"
                     android:layout_marginTop="0dp"
                     android:layout_marginBottom="0dp"
-                    android:visibility="visible"
                     android:contentDescription="@string/description_stitched_image_viewer"
                     android:src="@android:drawable/ic_menu_report_image"
+                    android:visibility="visible"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="16:9"
                     app:layout_constraintStart_toStartOf="parent"
@@ -59,13 +58,73 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:contentDescription="@string/description_scan_results_viewer"
+                    app:layout_constraintBottom_toBottomOf="@id/imageView_stitched_image"
                     app:layout_constraintDimensionRatio="16:9"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintLeft_toLeftOf="@id/imageView_stitched_image"
                     app:layout_constraintRight_toRightOf="@id/imageView_stitched_image"
-                    app:layout_constraintBottom_toBottomOf="@id/imageView_stitched_image"
-                    app:layout_constraintTop_toTopOf="@id/imageView_stitched_image" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="5dp"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <Button
+                    android:id="@+id/btn_last_pic"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:textSize="20dp"
+                    android:text="←" />
+
+                <Button
+                    android:id="@+id/btn_next_pic"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:textSize="20dp"
+                    android:text="→" />
+
+                <Button
+                    android:id="@+id/btn_add_weed_marker"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:textSize="12dp"
+                    android:text="add" />
+
+                <Button
+                    android:id="@+id/btn_resize_weed_marker"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:textSize="12dp"
+                    android:text="resize" />
+
+                <Button
+                    android:id="@+id/btn_remove_weed_marker"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:textSize="12dp"
+                    android:text="remove" />
+
+            </LinearLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -122,6 +181,7 @@
                 app:layout_constraintVertical_bias="1.0" />
 
 
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
@@ -139,10 +199,28 @@
                 android:layout_weight="1" />
 
             <Button
-                android:id="@+id/button_open_gallery"
-                android:layout_width="200dp"
+                android:id="@+id/button_open_multiple_files"
+                android:layout_width="80dp"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/button_multi_files" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:visibility="visible"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/button_open_gallery"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:visibility="visible"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 android:text="@string/button_open_gallery_label" />
@@ -150,13 +228,15 @@
             <View
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:visibility="visible"
                 android:layout_weight="1" />
 
 
             <Button
                 android:id="@+id/button_mock_results"
-                android:layout_width="200dp"
+                android:layout_width="80dp"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
@@ -169,8 +249,9 @@
 
             <Button
                 android:id="@+id/button_configure_rovers"
-                android:layout_width="200dp"
+                android:layout_width="80dp"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"

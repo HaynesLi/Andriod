@@ -2,68 +2,103 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frame_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/rectangle"
+    android:layout_marginTop="5dp"
     android:layout_marginBottom="5dp"
-    android:layout_marginTop="5dp">
+    android:background="@drawable/rectangle">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/linear_layout_scan_result_id"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="43dp">
 
-            <LinearLayout
-                android:id="@+id/linear_layout_scan_result_id"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:orientation="horizontal"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:layout_editor_absoluteX="43dp">
-
-                <TextView
-                    android:id="@+id/scan_result_id_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/scan_result_id_label"
-                    android:labelFor="@id/content_scan_result_id"
-                    android:textAppearance="@style/input_label"/>
-
-                <TextView
-                    android:id="@+id/content_scan_result_id"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linear_layout_certainty_scan_result"
+            <TextView
+                android:id="@+id/scan_result_id_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linear_layout_scan_result_id">
+                android:labelFor="@id/content_scan_result_id"
+                android:text="@string/scan_result_id_label"
+                android:textAppearance="@style/input_label" />
 
-                <TextView
-                    android:id="@+id/scan_result_certainty_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/scan_result_certainty_label"
-                    android:labelFor="@+id/content_scan_result_certainty"
-                    android:textAppearance="@style/input_label"/>
+            <TextView
+                android:id="@+id/content_scan_result_id"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text=""
+                android:textSize="18dp" />
+        </LinearLayout>
 
-                <TextView
-                    android:id="@+id/content_scan_result_certainty"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="" />
+        <LinearLayout
+            android:id="@+id/linear_layout_scan_result_class"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linear_layout_scan_result_id">
+
+            <TextView
+                android:id="@+id/scan_result_class_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:labelFor="@+id/content_scan_result_class"
+                android:text="@string/scan_result_class_label"
+                android:textAppearance="@style/input_label" />
+
+            <TextView
+                android:id="@+id/content_scan_result_class"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text=""
+                android:textSize="18dp" />
 
 
-            </LinearLayout>
+        </LinearLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <LinearLayout
+            android:id="@+id/linear_layout_certainty_scan_result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linear_layout_scan_result_class">
+
+            <TextView
+                android:id="@+id/scan_result_certainty_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:labelFor="@+id/content_scan_result_certainty"
+                android:text="@string/scan_result_certainty_label"
+                android:textAppearance="@style/input_label" />
+
+            <TextView
+                android:id="@+id/content_scan_result_certainty"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text=""
+                android:textSize="18dp" />
+
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
 
